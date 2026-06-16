@@ -1,0 +1,778 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+  display: none !important;
+}
+
+@layer base {
+  :root {
+    /* HERO brand — primary #283b69, secondary surfaces white / cool gray */
+    --hero-primary: #283b69;
+    /* Hover/pressed darker than primary (solid fills stay exact #283b69) */
+    --hero-primary-hover: #1f2d52;
+    --hero-primary-pressed: #162438;
+    --hero-primary-soft: #eceff6;
+    --hero-primary-muted: rgba(40, 59, 105, 0.12);
+
+    /* Shared accent tokens (maps old “hero-red” naming used across Blade) */
+    --hero-red: var(--hero-primary);
+    --hero-red-600: #283b69;
+    --hero-red-700: var(--hero-primary-pressed);
+    --hero-red-800: #101a2e;
+
+    /* UI accents — aligned to brand */
+    --insta-teal: #283b69;
+    --insta-teal-600: #283b69;
+    --insta-teal-800: #162438;
+    --insta-teal-soft: #eceff6;
+    --insta-teal-muted: rgba(40, 59, 105, 0.12);
+
+    --insta-blue: #3d4d6b;
+    --insta-blue-600: #2f3d56;
+    --insta-blue-soft: #eef1f6;
+
+    --insta-purple: #5c6b8a;
+    --insta-orange: #283b69;
+    --insta-red: #dc2626;
+    --insta-green: #15803d;
+    --insta-page-bg: #f4f5f7;
+
+    /* Charts / semantic accents */
+    --palette-navy: #283b69;
+    --palette-crimson: #dc2626;
+    --palette-orange: #b45309;
+    --palette-gold: #b8860b;
+
+    --palette-navy-600: #283b69;
+    --palette-navy-800: #162438;
+    --palette-navy-soft: #eceff6;
+
+    --palette-crimson-600: #b91c1c;
+    --palette-crimson-soft: #fef2f2;
+
+    --palette-orange-600: #9a3412;
+    --palette-orange-soft: #fff7ed;
+
+    --palette-gold-soft: #fffbeb;
+
+    --hero-ink: #283b69;
+    --portal-accent: var(--hero-primary);
+
+    /* Portal dashboard — primary CTA + neutral secondary */
+    --dashboard-orange: var(--hero-primary);
+    --dashboard-orange-soft: var(--hero-primary-soft);
+    --dashboard-orange-ring: rgba(40, 59, 105, 0.35);
+
+    --dashboard-secondary: var(--insta-blue);
+    --dashboard-secondary-600: var(--insta-blue-600);
+    --dashboard-secondary-soft: var(--insta-blue-soft);
+    --dashboard-secondary-ring: rgba(61, 77, 107, 0.28);
+
+    --dashboard-crimson: var(--insta-red);
+    --dashboard-crimson-soft: #fef2f2;
+    --dashboard-gold: #b8860b;
+    --dashboard-gold-soft: #f8f5eb;
+
+    /* Sidebar — white rail, brand active */
+    --sidebar-surface: #ffffff;
+    --sidebar-border: #e8eaef;
+    --sidebar-text: #5c6470;
+    --sidebar-text-strong: #2a3341;
+    --sidebar-section: #8b95a5;
+    --sidebar-menu-active: var(--hero-primary);
+    --sidebar-menu-active-bg: rgba(40, 59, 105, 0.1);
+    --sidebar-menu-active-bg-hover: rgba(40, 59, 105, 0.16);
+    --sidebar-pill-bg: var(--hero-primary);
+    --sidebar-pill-hover: var(--hero-primary-hover);
+
+    /* Dashboard glow — KPI cards use Vuexy Analytics tint; rest of app stays HERO */
+    --hero-dashboard-glow: rgba(115, 103, 240, 0.14);
+    --hero-dashboard-glow-strong: rgba(115, 103, 240, 0.22);
+    --hero-dashboard-glow-soft: rgba(115, 103, 240, 0.08);
+    --hero-dashboard-ambient: rgba(115, 103, 240, 0.13);
+
+    /* Vuexy Bootstrap Analytics palette (charts + dashboard matrix) */
+    --vuexy-primary: #7367f0;
+    --vuexy-success: #28c76f;
+    --vuexy-warning: #ff9f43;
+    --vuexy-danger: #ea5455;
+    --vuexy-info: #00cfe8;
+    --vuexy-secondary: #82868b;
+  }
+
+  html {
+    font-family: "Open Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  }
+}
+
+@layer components {
+  /* Global full-page loader (see resources/js/page-loader.js) */
+  .hero-page-loader {
+    @apply fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-3 bg-white/75 backdrop-blur-sm;
+  }
+
+  .hero-page-loader[hidden] {
+    display: none !important;
+  }
+
+  .dark-theme .hero-page-loader {
+    @apply bg-slate-950/65;
+  }
+
+  .hero-page-loader__spinner {
+    @apply h-12 w-12 shrink-0 rounded-full border-4 border-slate-200 border-t-[color:var(--hero-red)] animate-spin;
+  }
+
+  .dark-theme .hero-page-loader__spinner {
+    @apply border-slate-600;
+    border-top-color: #94a3b8;
+  }
+
+  .hero-page-loader__label {
+    @apply text-sm font-medium text-slate-600;
+  }
+
+  .dark-theme .hero-page-loader__label {
+    @apply text-slate-300;
+  }
+
+  html[data-hero-loading] {
+    cursor: wait;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-page-loader__spinner {
+      animation-duration: 1.5s;
+    }
+  }
+
+  /* Portal sidebar — flat white list, teal wash on active / expanded parent, chevron right → down */
+  .portal-sidebar {
+    color: var(--sidebar-text);
+    background-color: var(--sidebar-surface);
+    border-right: 1px solid var(--sidebar-border);
+    box-shadow: 8px 0 24px -22px rgba(15, 23, 42, 0.3);
+  }
+
+  .portal-sidebar .sidebar-brand {
+    background-color: var(--sidebar-surface);
+    border-bottom: 1px solid var(--sidebar-border);
+    backdrop-filter: saturate(120%);
+  }
+
+  .portal-sidebar .sidebar-footer {
+    border-top: 1px solid var(--sidebar-border);
+    background-color: var(--sidebar-surface);
+  }
+
+  @media (min-width: 1024px) {
+    .portal-sidebar.portal-sidebar--collapsed .sidebar-brand {
+      justify-content: center;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .portal-sidebar.portal-sidebar--collapsed .sidebar-brand img {
+      height: 2rem;
+      max-width: 4.5rem;
+    }
+
+    .portal-sidebar.portal-sidebar--collapsed .sidebar-link {
+      justify-content: center;
+      gap: 0;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .portal-sidebar.portal-sidebar--collapsed .sidebar-plans-nest {
+      margin-left: 0;
+      border-left-width: 0;
+      padding-left: 0;
+    }
+  }
+
+  .portal-sidebar .sidebar-link {
+    @apply relative flex w-full min-w-0 flex-nowrap items-center gap-3 rounded-md px-3 py-3.5 text-left text-[0.8125rem] font-medium transition;
+    color: var(--sidebar-text);
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-[color:rgba(40,59,105,0.22)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--sidebar-surface)];
+    transition-duration: 180ms;
+    transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .portal-sidebar .sidebar-link:not(.sidebar-link-active):hover {
+    background-color: rgba(15, 23, 42, 0.035);
+    color: var(--sidebar-text-strong);
+    transform: translateX(2px);
+  }
+
+  /* Semantic lists */
+  .portal-sidebar .sidebar-menu-root,
+  .portal-sidebar .sidebar-nav-stack {
+    @apply m-0 list-none p-0;
+  }
+
+  .portal-sidebar .sidebar-menu-root > .sidebar-nav-group,
+  .portal-sidebar .sidebar-menu-item {
+    @apply m-0 min-w-0 p-0;
+  }
+
+  .portal-sidebar .sidebar-nav-stack > .sidebar-menu-item {
+    @apply w-full;
+  }
+
+  /* Dashboards / Reports: pill styling; active = brand navy */
+  .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill {
+    border-radius: 0.625rem;
+    border: 1px solid rgba(40, 59, 105, 0.14);
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--sidebar-text-strong);
+    @apply py-3.5;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 2px 8px -4px rgba(40, 59, 105, 0.08);
+  }
+
+  .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill .sidebar-icon {
+    color: var(--sidebar-pill-bg);
+    opacity: 1;
+  }
+
+  .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill:not(.sidebar-link-active):not([aria-current='page']):not([data-nav-active]):hover {
+    background-color: var(--hero-primary-soft);
+    border-color: rgba(40, 59, 105, 0.22);
+    color: var(--sidebar-text-strong);
+  }
+
+  .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill:not(.sidebar-link-active):not([aria-current='page']):not([data-nav-active]):hover .sidebar-icon {
+    color: var(--sidebar-pill-hover);
+  }
+
+  /* Active: target <a> directly (+ aria-current + data-nav-active) */
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page'],
+  .portal-sidebar a.sidebar-link--pill[data-nav-active] {
+    background-color: var(--hero-primary);
+    border-color: transparent;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 8px 22px rgba(40, 59, 105, 0.38), 0 1px 0 rgba(255, 255, 255, 0.1) inset;
+  }
+
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active::before,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page']::before,
+  .portal-sidebar a.sidebar-link--pill[data-nav-active]::before {
+    display: none;
+  }
+
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active:hover,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page']:hover,
+  .portal-sidebar a.sidebar-link--pill[data-nav-active]:hover {
+    background-color: var(--hero-primary-hover);
+    color: #ffffff;
+  }
+
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active .sidebar-icon,
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active:hover .sidebar-icon,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page'] .sidebar-icon,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page']:hover .sidebar-icon,
+  .portal-sidebar a.sidebar-link--pill[data-nav-active] .sidebar-icon,
+  .portal-sidebar a.sidebar-link--pill[data-nav-active]:hover .sidebar-icon {
+    color: #ffffff;
+    opacity: 1;
+  }
+
+  .portal-sidebar a.sidebar-link--pill.sidebar-link-active .sidebar-icon i,
+  .portal-sidebar a.sidebar-link--pill[aria-current='page'] .sidebar-icon i,
+  .portal-sidebar a.sidebar-link--pill[data-nav-active] .sidebar-icon i {
+    color: inherit;
+    opacity: 1;
+  }
+
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page'],
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active] {
+    background-color: #283b69;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 8px 18px -10px rgba(40, 59, 105, 0.65);
+  }
+
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active::before,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page']::before,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]::before {
+    display: none;
+  }
+
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active:hover,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page']:hover,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]:hover {
+    background-color: var(--hero-primary-hover);
+    color: #ffffff;
+  }
+
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active .sidebar-icon,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active:hover .sidebar-icon,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page'] .sidebar-icon,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page']:hover .sidebar-icon,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active] .sidebar-icon,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]:hover .sidebar-icon {
+    color: #ffffff;
+    opacity: 1;
+  }
+
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active .sidebar-icon i,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page'] .sidebar-icon i,
+  .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active] .sidebar-icon i {
+    color: inherit;
+    opacity: 1;
+  }
+
+  .portal-sidebar .sidebar-nav-group {
+    @apply flex w-full min-w-0 flex-col gap-2 border-0 bg-transparent p-0 shadow-none;
+  }
+
+  .portal-sidebar .sidebar-menu-root > .sidebar-nav-group:not(:first-child) {
+    margin-top: 1.35rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--sidebar-border);
+  }
+
+  .portal-sidebar .sidebar-nav-stack {
+    @apply flex w-full min-w-0 flex-col;
+    gap: 0.5rem;
+  }
+
+  .portal-sidebar .sidebar-icon {
+    @apply inline-flex h-5 w-5 shrink-0 items-center justify-center border-0 bg-transparent transition;
+    color: var(--sidebar-text);
+  }
+
+  .portal-sidebar .sidebar-icon i {
+    font-size: 0.9375rem;
+    line-height: 1;
+    opacity: 0.88;
+    transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .portal-sidebar .sidebar-icon-sm {
+    @apply inline-flex h-4 w-4 shrink-0 items-center justify-center border-0 bg-transparent transition;
+    color: var(--sidebar-text);
+  }
+
+  .portal-sidebar .sidebar-icon-sm i {
+    font-size: 0.8125rem;
+    line-height: 1;
+    opacity: 0.88;
+  }
+
+  .portal-sidebar .sidebar-link:not(.sidebar-link-active):hover .sidebar-icon {
+    color: var(--sidebar-text-strong);
+  }
+  
+  .portal-sidebar .sidebar-link:not(.sidebar-link-active):hover .sidebar-icon i {
+    transform: scale(1.06);
+  }
+
+  .portal-sidebar .sidebar-section-label {
+    @apply px-3 pb-1 pt-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em];
+    color: var(--sidebar-section);
+  }
+
+  .portal-sidebar .sidebar-plans-group .sidebar-section-label {
+    position: relative;
+  }
+
+  .portal-sidebar .sidebar-plans-group .sidebar-section-label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.125rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(40, 59, 105, 0.22), rgba(40, 59, 105, 0));
+  }
+
+  .portal-sidebar .sidebar-plans-nest {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .portal-sidebar .sidebar-plans-nest .sidebar-link {
+    border-radius: 0.55rem;
+  }
+
+  .portal-sidebar .sidebar-footer a:hover {
+    color: var(--sidebar-text-strong);
+  }
+
+  .portal-sidebar .sidebar-menu {
+    scrollbar-width: thin;
+    scrollbar-color: #cfd7e2 transparent;
+  }
+
+  .portal-sidebar .sidebar-menu::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .portal-sidebar .sidebar-menu::-webkit-scrollbar-thumb {
+    background: #cfd7e2;
+    border-radius: 999px;
+  }
+
+  .portal-sidebar .sidebar-menu::-webkit-scrollbar-thumb:hover {
+    background: #b9c5d4;
+  }
+
+  .portal-sidebar .sidebar-link-muted {
+    @apply opacity-45;
+  }
+
+  .dashboard-stat-card {
+    @apply relative overflow-hidden rounded-2xl border border-slate-100/90 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.07)];
+  }
+
+  .dashboard-stat-icon--primary {
+    @apply bg-[color:var(--insta-teal-soft)] text-[color:var(--insta-teal-600)];
+  }
+
+  .dashboard-stat-icon--secondary {
+    @apply bg-[color:var(--insta-blue-soft)] text-[color:var(--insta-blue-600)];
+  }
+
+  .dashboard-stat-icon--accent {
+    background-color: var(--hero-primary-soft);
+    color: var(--hero-primary);
+  }
+
+  .dashboard-stat-icon--green {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+
+  /* Vuexy Analytics–style KPI icon orbs (dashboard matrix) */
+  .dashboard-stat-icon--vuexy-primary {
+    background-color: rgba(115, 103, 240, 0.12);
+    color: var(--vuexy-primary);
+  }
+
+  .dashboard-stat-icon--vuexy-success {
+    background-color: rgba(40, 199, 111, 0.12);
+    color: var(--vuexy-success);
+  }
+
+  .dashboard-stat-icon--vuexy-info {
+    background-color: rgba(0, 207, 232, 0.12);
+    color: var(--vuexy-info);
+  }
+
+  .dashboard-stat-icon--vuexy-warning {
+    background-color: rgba(255, 159, 67, 0.12);
+    color: var(--vuexy-warning);
+  }
+
+  /**
+   * Glowing dashboard shell (Vuexy-like): soft primary-tinted ambience + elevated cards.
+   * Scoped so other portal pages stay unchanged.
+   */
+  .hero-dashboard-shell {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .hero-dashboard-shell::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: -6rem;
+    width: 120%;
+    max-width: 72rem;
+    height: 22rem;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 75% 85% at 50% 0%,
+      var(--hero-dashboard-ambient),
+      transparent 72%
+    );
+    opacity: 0.85;
+  }
+
+  .hero-dashboard-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-dashboard-shell .dashboard-stat-card {
+    border-color: rgba(115, 103, 240, 0.12);
+    background: linear-gradient(165deg, #ffffff 0%, #f8f9fc 100%);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.75) inset,
+      0 1px 2px var(--hero-dashboard-glow-soft),
+      0 18px 36px -20px var(--hero-dashboard-glow),
+      0 10px 28px -18px var(--hero-dashboard-glow-soft);
+    transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+  }
+
+  .hero-dashboard-shell .dashboard-stat-card:hover {
+    border-color: rgba(115, 103, 240, 0.2);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.85) inset,
+      0 2px 4px var(--hero-dashboard-glow-soft),
+      0 26px 52px -18px var(--hero-dashboard-glow-strong),
+      0 14px 36px -16px var(--hero-dashboard-glow);
+    transform: translateY(-2px);
+  }
+
+  .hero-dashboard-shell .dashboard-stat-icon--vuexy-primary {
+    box-shadow: 0 4px 16px -3px rgba(115, 103, 240, 0.4);
+  }
+
+  .hero-dashboard-shell .dashboard-stat-icon--vuexy-success {
+    box-shadow: 0 4px 16px -3px rgba(40, 199, 111, 0.38);
+  }
+
+  .hero-dashboard-shell .dashboard-stat-icon--vuexy-info {
+    box-shadow: 0 4px 16px -3px rgba(0, 207, 232, 0.38);
+  }
+
+  .hero-dashboard-shell .dashboard-stat-icon--vuexy-warning {
+    box-shadow: 0 4px 16px -3px rgba(255, 159, 67, 0.4);
+  }
+
+  .hero-dashboard-panel {
+    border-color: rgba(115, 103, 240, 0.1) !important;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.7) inset,
+      0 2px 4px var(--hero-dashboard-glow-soft),
+      0 20px 48px -28px var(--hero-dashboard-glow),
+      0 12px 32px -24px rgba(15, 23, 42, 0.06) !important;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .hero-dashboard-shell .hero-dashboard-panel:hover {
+    border-color: rgba(115, 103, 240, 0.16) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+      0 4px 8px var(--hero-dashboard-glow-soft),
+      0 28px 56px -26px var(--hero-dashboard-glow-strong),
+      0 14px 36px -22px rgba(15, 23, 42, 0.07) !important;
+  }
+
+  /* InstaDash-style card headers — white bar + subtle divider */
+  .dashboard-card-header {
+    @apply rounded-t-2xl px-6 py-4;
+    background: #ffffff;
+    border-bottom: 1px solid #eef1f5;
+    box-shadow: none;
+  }
+
+  .hero-dashboard-shell .dashboard-card-header {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(115, 103, 240, 0.06) 100%);
+    border-bottom-color: rgba(115, 103, 240, 0.1);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset;
+  }
+
+  .dashboard-card-header__title {
+    @apply font-display text-base font-semibold tracking-tight text-slate-800;
+  }
+
+  .dashboard-card-header__sub {
+    @apply mt-0.5 text-xs leading-relaxed text-slate-500;
+  }
+
+  /* Simple DataTables — match HERO portal (scoped) */
+  .hero-datatable .datatable-wrapper {
+    @apply text-sm text-slate-700;
+    @apply overflow-hidden rounded-t-xl;
+  }
+
+  .hero-datatable .datatable-top,
+  .hero-datatable .datatable-bottom {
+    @apply clear-both flex flex-wrap items-center justify-between gap-3 border-x border-slate-200/80 bg-slate-50/80 px-4 py-3;
+  }
+
+  .hero-datatable .datatable-top {
+    @apply rounded-t-xl border-t border-slate-200/80;
+  }
+
+  .hero-datatable .datatable-bottom {
+    @apply rounded-b-xl border-b border-slate-200/80;
+  }
+
+  .hero-datatable .datatable-bottom > div,
+  .hero-datatable .datatable-top > div {
+    @apply float-none flex flex-wrap items-center gap-2;
+  }
+
+  .hero-datatable .datatable-input {
+    @apply w-full min-w-[12rem] max-w-sm rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm placeholder:text-slate-400 focus:border-[color:var(--dashboard-orange)] focus:outline-none focus:ring-1 focus:ring-[color:var(--dashboard-orange)];
+  }
+
+  /* pr-10 reserves space for @tailwindcss/forms chevron — do not use px-* or it overrides padding-right */
+  .hero-datatable .datatable-selector {
+    @apply min-w-[5.25rem] rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-10 text-sm text-slate-700 focus:border-[color:var(--dashboard-orange)] focus:outline-none focus:ring-1 focus:ring-[color:var(--dashboard-orange)];
+  }
+
+  .hero-datatable .datatable-info {
+    @apply m-0 text-xs text-slate-500;
+  }
+
+  .hero-datatable .datatable-pagination li a,
+  .hero-datatable .datatable-pagination li button {
+    @apply float-none rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 transition hover:border-slate-300 hover:bg-[color:var(--dashboard-orange-soft)] hover:text-[color:var(--dashboard-orange)];
+  }
+
+  .hero-datatable .datatable-pagination .datatable-active a,
+  .hero-datatable .datatable-pagination .datatable-active button {
+    border-color: color-mix(in srgb, var(--dashboard-orange) 35%, transparent);
+    @apply bg-[color:var(--dashboard-orange-soft)] text-[color:var(--dashboard-orange)] font-semibold;
+  }
+
+  .hero-datatable .datatable-container {
+    @apply overflow-x-auto border-x border-slate-200/80 bg-white;
+  }
+
+  .hero-datatable .datatable-table {
+    @apply w-full border-collapse text-left;
+  }
+
+  .hero-datatable table.datatable-table thead th {
+    @apply cursor-pointer select-none whitespace-nowrap border-b border-slate-200 bg-slate-50/90 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-600;
+  }
+
+  .hero-datatable table.datatable-table thead th:hover {
+    @apply bg-slate-100 text-slate-800;
+  }
+
+  .hero-datatable table.datatable-table tbody td {
+    @apply whitespace-nowrap border-b border-slate-200 px-4 py-2.5 text-slate-800;
+  }
+
+  .hero-datatable table.datatable-table tbody tr:hover {
+    @apply bg-slate-50/80;
+  }
+
+  /* Customer plan picker — internal scroll (inline max-height on #plan-select-listbox is the reliable cap) */
+  .hero-plan-dropdown-scroll {
+    max-height: min(15rem, 45vh);
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /**
+   * Admin “add/edit plan” form — @tailwindcss/forms + grid min-width:auto can collapse
+   * label/control spacing and let inputs spill across columns. Scope fixes here.
+   */
+  .hero-admin-plan-form .hero-admin-plan-field {
+    @apply flex min-w-0 flex-col gap-2.5;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-field > label {
+    @apply mb-0 leading-snug;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-grid {
+    @apply grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 sm:items-start;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-grid > * {
+    min-width: 0;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-row-pair {
+    @apply grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 sm:items-start;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-row-pair > * {
+    min-width: 0;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-zoho-grid {
+    @apply grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-2 lg:items-start;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-zoho-grid > * {
+    min-width: 0;
+  }
+
+  .hero-admin-plan-form .hero-admin-plan-field :is(input, select, textarea) {
+    max-width: 100%;
+  }
+
+  /**
+   * Vuexy dark-layout — dashboard shell (beats light .hero-dashboard-shell rules in dark mode).
+   * Canvas #25293c / cards #2f3349 / borders #3b4253 — matches Analytics dark styling.
+   */
+  html.dark-theme .hero-dashboard-shell::before {
+    background: radial-gradient(
+      ellipse 75% 85% at 50% 0%,
+      rgba(115, 103, 240, 0.22),
+      transparent 70%
+    );
+    opacity: 1;
+  }
+
+  html.dark-theme .hero-dashboard-shell .dashboard-stat-card {
+    border-color: #3b4253 !important;
+    background: linear-gradient(165deg, #2f3349 0%, #282c41 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 10px 32px -14px rgba(0, 0, 0, 0.55),
+      0 0 48px -24px rgba(115, 103, 240, 0.12) !important;
+  }
+
+  html.dark-theme .hero-dashboard-shell .dashboard-stat-card:hover {
+    border-color: rgba(115, 103, 240, 0.35) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+      0 16px 40px -14px rgba(0, 0, 0, 0.58),
+      0 0 56px -22px rgba(115, 103, 240, 0.2) !important;
+  }
+
+  html.dark-theme .hero-dashboard-shell .hero-dashboard-panel {
+    border-color: #3b4253 !important;
+    background: linear-gradient(180deg, #2f3349 0%, #2c3046 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 8px 32px -16px rgba(0, 0, 0, 0.52),
+      0 0 40px -20px rgba(115, 103, 240, 0.12) !important;
+  }
+
+  html.dark-theme .hero-dashboard-shell .hero-dashboard-panel:hover {
+    border-color: rgba(115, 103, 240, 0.28) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+      0 12px 40px -16px rgba(0, 0, 0, 0.55),
+      0 0 52px -18px rgba(115, 103, 240, 0.18) !important;
+  }
+
+  html.dark-theme .hero-dashboard-shell .dashboard-card-header {
+    background: linear-gradient(180deg, #2f3349 0%, rgba(115, 103, 240, 0.1) 100%) !important;
+    border-bottom-color: #3b4253 !important;
+  }
+
+  html.dark-theme .dashboard-stat-icon--vuexy-primary {
+    background-color: rgba(115, 103, 240, 0.22) !important;
+  }
+
+  html.dark-theme .dashboard-stat-icon--vuexy-success {
+    background-color: rgba(40, 199, 111, 0.2) !important;
+  }
+
+  html.dark-theme .dashboard-stat-icon--vuexy-info {
+    background-color: rgba(0, 207, 232, 0.2) !important;
+  }
+
+  html.dark-theme .dashboard-stat-icon--vuexy-warning {
+    background-color: rgba(255, 159, 67, 0.2) !important;
+  }
+}
