@@ -22,10 +22,54 @@ class PlanManageController extends Controller
             $from = 'retail';
         }
 
-        return view('admin.plans.create', $this->listingViewData($from));
+        return view('admin.plans.create', array_merge(
+            $this->listingViewData($from),
+            [
+                'plan' => new Plan(),
+                'isEdit' => false,
+                'submitRoute' => route('admin.plans.store'),
+                'submitMethod' => 'post',
+            ],
+        ));
     }
 
     public function store(StorePlanRequest $request): RedirectResponse
+    {
+        $this->upsertPlanFromRequest($request);
+        $listing = $request->validated('return_listing');
+
+        return $this->redirectToListing($listing, __('Plan created successfully.'));
+    }
+
+    public function edit(Request $request, Plan $plan): View
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
+        $from = $request->query('from');
+        if (! is_string($from) || ! in_array($from, self::LISTING_KEYS, true)) {
+            $from = $this->listingKeyForPlan($plan);
+        }
+
+        return view('admin.plans.create', array_merge(
+            $this->listingViewData($from),
+            [
+                'plan' => $plan,
+                'isEdit' => true,
+                'submitRoute' => route('admin.plans.update', $plan),
+                'submitMethod' => 'patch',
+            ],
+        ));
+    }
+
+    public function update(StorePlanRequest $request, Plan $plan): RedirectResponse
+    {
+        $this->upsertPlanFromRequest($request, $plan);
+        $listing = $request->validated('return_listing');
+
+        return $this->redirectToListing($listing, __('Plan updated successfully.'));
+    }
+
+    private function upsertPlanFromRequest(StorePlanRequest $request, ?Plan $plan = null): Plan
     {
         $features = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('features_text', '')))
             ->map(fn (string $line) => trim($line))
@@ -33,7 +77,7 @@ class PlanManageController extends Controller
             ->values()
             ->all();
 
-        Plan::create([
+        $payload = [
             'code' => $request->input('code'),
             'name' => $request->input('name'),
             'category' => $request->input('category'),
@@ -55,19 +99,23 @@ class PlanManageController extends Controller
             'addon_price_yearly' => $request->filled('addon_price_yearly') ? $request->input('addon_price_yearly') : null,
             'currency' => strtoupper($request->input('currency', 'USD')),
             'active' => $request->boolean('active'),
-        ]);
+        ];
 
-        $listing = $request->validated('return_listing');
+        if ($plan) {
+            $plan->fill($payload);
+            $plan->save();
 
-        $routeName = match ($listing) {
-            'small-business' => 'portal.plans.small-business',
-            'corporate' => 'portal.plans.corporate',
-            default => 'portal.plans.retail',
-        };
+            return $plan;
+        }
 
-        return redirect()
-            ->route($routeName)
-            ->with('status', __('Plan created successfully.'));
+        return Plan::create($payload);
+    }
+
+    private function redirectToListing(string $listing, string $status): RedirectResponse
+    {
+        $routeName = $this->listingRouteName($listing);
+
+        return redirect()->route($routeName)->with('status', $status);
     }
 
     /**
@@ -103,6 +151,24 @@ class PlanManageController extends Controller
                 'backRoute' => 'portal.plans.retail',
                 'intro' => 'Category defaults to Retail. Set a retail subgroup so the plan appears in the right catalog section.',
             ],
+        };
+    }
+
+    private function listingRouteName(string $listing): string
+    {
+        return match ($listing) {
+            'small-business' => 'portal.plans.small-business',
+            'corporate' => 'portal.plans.corporate',
+            default => 'portal.plans.retail',
+        };
+    }
+
+    private function listingKeyForPlan(Plan $plan): string
+    {
+        return match ($plan->category) {
+            'business' => 'small-business',
+            'corporate' => 'corporate',
+            default => 'retail',
         };
     }
 }

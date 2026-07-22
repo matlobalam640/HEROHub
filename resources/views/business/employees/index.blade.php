@@ -66,15 +66,29 @@
                 <h2 class="text-sm font-semibold text-slate-900">Add employee</h2>
                 <form method="POST" action="{{ route('business.employees.store') }}" class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                     @csrf
-                    <input name="first_name" required placeholder="First name" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
-                    <input name="last_name" required placeholder="Last name" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
-                    <input name="email" type="email" placeholder="Email (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
-                    <input name="phone" placeholder="Phone (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
+                    <input name="first_name" required value="{{ old('first_name') }}" placeholder="First name" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
+                    <input name="last_name" required value="{{ old('last_name') }}" placeholder="Last name" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
+                    <div class="sm:col-span-2">
+                        <label class="text-xs font-medium text-slate-600">Date of birth</label>
+                        <input
+                            name="date_of_birth"
+                            type="date"
+                            required
+                            max="{{ now()->toDateString() }}"
+                            value="{{ old('date_of_birth') }}"
+                            class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary"
+                        >
+                        @error('date_of_birth')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <input name="email" type="email" value="{{ old('email') }}" placeholder="Email (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
+                    <input name="phone" value="{{ old('phone') }}" placeholder="Phone (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
                     <div class="sm:col-span-2">
                         <label class="text-xs font-medium text-slate-600">Plan</label>
                         <select name="plan_id" required class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
                             @foreach($plans as $plan)
-                                <option value="{{ $plan->id }}">{{ $plan->name }} ({{ $plan->code }})</option>
+                                <option value="{{ $plan->id }}" @selected((string) old('plan_id') === (string) $plan->id)>{{ $plan->name }} ({{ $plan->code }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -86,7 +100,7 @@
 
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
                 <h2 class="text-sm font-semibold text-slate-900">Upload employee list (CSV)</h2>
-                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>. Optional: <span class="font-mono">email</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span> or <span class="font-mono">plan_id</span>. Set a <strong>default plan</strong> under Company billing if rows omit plan.</p>
+                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>. Optional: <span class="font-mono">date_of_birth</span> (or <span class="font-mono">dob</span>), <span class="font-mono">email</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span> or <span class="font-mono">plan_id</span>. Set a <strong>default plan</strong> under Company billing if rows omit plan.</p>
                 <form method="POST" action="{{ route('business.employees.import') }}" enctype="multipart/form-data" class="mt-4 space-y-3">
                     @csrf
                     <input type="file" name="file" accept=".csv,.txt" required class="block w-full text-sm text-slate-600">
@@ -123,6 +137,7 @@
                                 <td class="px-4 py-3">
                                     <div class="font-medium text-slate-900">{{ $mem ? $mem->first_name.' '.$mem->last_name : '—' }}</div>
                                     <div class="text-xs text-slate-500">{{ $mem?->email ?? '—' }}</div>
+                                    <div class="text-xs text-slate-500">DOB: {{ $mem?->date_of_birth?->format('Y-m-d') ?? '—' }}</div>
                                     <div class="font-mono text-xs text-slate-400">{{ $m->membership_number }}</div>
                                 </td>
                                 <td class="px-4 py-3">

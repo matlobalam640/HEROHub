@@ -8,6 +8,8 @@ use Illuminate\Database\Seeder;
 /**
  * Retail membership catalog from HERO Memberships pricing 03-2025.pdf
  * (USD list prices; +10% TCA tax applied at checkout — not stored here.)
+ * For yearly plans, monthly values enforce a 20% annual-prepay discount:
+ * yearly = monthly * 12 * 0.80.
  */
 class RetailPlansSeeder extends Seeder
 {
@@ -126,7 +128,7 @@ class RetailPlansSeeder extends Seeder
                 'billing_interval' => 'yearly',
                 'commitment_months' => null,
                 'price' => 199.99,
-                'price_monthly' => 17.00,
+                'price_monthly' => 20.83,
                 'features' => [
                     'Exclusive Access to HERO’s WhatsApp Security Groups',
                     '1 Emergency Air Evacuation Within Haiti ($750 co-pay)',
@@ -152,7 +154,7 @@ class RetailPlansSeeder extends Seeder
                 'billing_interval' => 'yearly',
                 'commitment_months' => null,
                 'price' => 398.98,
-                'price_monthly' => 33.00,
+                'price_monthly' => 41.56,
                 'features' => [
                     'Includes all benefits of the Local Plan',
                     'No Co-Pay on Air Evacuations',
@@ -178,7 +180,7 @@ class RetailPlansSeeder extends Seeder
                 'billing_interval' => 'yearly',
                 'commitment_months' => null,
                 'price' => 325.00,
-                'price_monthly' => 27.00,
+                'price_monthly' => 33.85,
                 'features' => [
                     'Covers up to 4 family members',
                     'Exclusive Access to HERO’s WhatsApp Security Groups',
@@ -206,7 +208,7 @@ class RetailPlansSeeder extends Seeder
                 'billing_interval' => 'yearly',
                 'commitment_months' => null,
                 'price' => 637.00,
-                'price_monthly' => 53.00,
+                'price_monthly' => 66.35,
                 'features' => [
                     'Includes all Local Plan benefits',
                     '2 In-Country Emergency Air Evacuations per Family (no co-pay)',

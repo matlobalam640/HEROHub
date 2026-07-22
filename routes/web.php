@@ -134,6 +134,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/admin/plans/create', [PlanManageController::class, 'create'])->name('admin.plans.create');
     Route::post('/admin/plans', [PlanManageController::class, 'store'])->name('admin.plans.store');
+    Route::get('/admin/plans/{plan}/edit', [PlanManageController::class, 'edit'])->name('admin.plans.edit');
+    Route::patch('/admin/plans/{plan}', [PlanManageController::class, 'update'])->name('admin.plans.update');
 
     Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])
         ->middleware(['verified', 'role:admin'])

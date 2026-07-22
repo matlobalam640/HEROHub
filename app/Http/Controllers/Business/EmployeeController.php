@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Services\CompanyBillingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -72,6 +73,7 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:80'],
             'last_name' => ['required', 'string', 'max:80'],
+            'date_of_birth' => ['required', 'date', 'before_or_equal:today'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'plan_id' => ['required', 'exists:plans,id'],
@@ -94,6 +96,7 @@ class EmployeeController extends Controller
             'is_primary' => true,
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
+            'date_of_birth' => $validated['date_of_birth'],
             'phone' => $validated['phone'] ?? null,
             'email' => $validated['email'] ?? null,
             'qr_token' => (string) Str::uuid(),
@@ -205,6 +208,13 @@ class EmployeeController extends Controller
 
             $email = isset($map['email']) ? trim((string) ($row[$map['email']] ?? '')) : '';
             $phone = isset($map['phone']) ? trim((string) ($row[$map['phone']] ?? '')) : '';
+            $dobRaw = null;
+            if (isset($map['date_of_birth'])) {
+                $dobRaw = trim((string) ($row[$map['date_of_birth']] ?? ''));
+            } elseif (isset($map['dob'])) {
+                $dobRaw = trim((string) ($row[$map['dob']] ?? ''));
+            }
+            $dob = $this->normalizeDate($dobRaw);
             $planId = $defaultPlanId;
             if (isset($map['plan_id']) && $row[$map['plan_id']] !== '' && $row[$map['plan_id']] !== null) {
                 $planId = (int) $row[$map['plan_id']];
@@ -239,6 +249,7 @@ class EmployeeController extends Controller
                 'is_primary' => true,
                 'first_name' => $first,
                 'last_name' => $last,
+                'date_of_birth' => $dob,
                 'phone' => $phone !== '' ? $phone : null,
                 'email' => $email !== '' ? $email : null,
                 'qr_token' => (string) Str::uuid(),
@@ -252,5 +263,32 @@ class EmployeeController extends Controller
         $this->billingService->recalculate($company);
 
         return redirect()->route('business.employees.index')->with('status', "Import finished: {$added} employees added, {$skipped} rows skipped.");
+    }
+
+    private function normalizeDate(?string $value): ?string
+    {
+        if ($value === null || trim($value) === '') {
+            return null;
+        }
+
+        $value = trim($value);
+        $formats = ['Y-m-d', 'm/d/Y', 'd/m/Y', 'm-d-Y', 'd-m-Y'];
+
+        foreach ($formats as $format) {
+            try {
+                $parsed = Carbon::createFromFormat($format, $value);
+                if ($parsed !== false) {
+                    return $parsed->toDateString();
+                }
+            } catch (\Throwable) {
+                // Try next format.
+            }
+        }
+
+        try {
+            return Carbon::parse($value)->toDateString();
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

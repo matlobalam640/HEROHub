@@ -86,6 +86,9 @@ jobs:
             cd ${{ env.DEPLOY_PATH }}
             composer install --no-dev --optimize-autoloader --no-interaction
             php artisan migrate --force
+            php artisan db:seed --class=RetailPlansSeeder --force
+            php artisan db:seed --class=CorporatePlansSeeder --force
+            php artisan db:seed --class=SmallBusinessPlansSeeder --force
             php artisan storage:link 2>/dev/null || ln -sfn "$(pwd)/storage/app/public" "$(pwd)/public/storage"
             php artisan config:cache
             php artisan route:cache

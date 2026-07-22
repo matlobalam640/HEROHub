@@ -69,6 +69,10 @@
                                 {{ $plan->ideal_for }}
                             </p>
                         @endif
+
+                        <div class="mt-4">
+                            @include('plans.partials.admin-edit-plan-link', ['plan' => $plan, 'from' => $plansReturn])
+                        </div>
                     </div>
 
                     @include('plans.partials.plan-card-stripe-checkout', ['plan' => $plan, 'plansReturn' => $plansReturn])

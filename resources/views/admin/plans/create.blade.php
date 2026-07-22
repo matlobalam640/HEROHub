@@ -5,7 +5,9 @@
             <div class="mt-1 flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <p class="text-sm font-medium text-hero-primary">Membership catalog</p>
-                    <h1 class="font-display mt-1 text-2xl font-bold tracking-tight text-slate-900">Add membership plan</h1>
+                    <h1 class="font-display mt-1 text-2xl font-bold tracking-tight text-slate-900">
+                        {{ $isEdit ? 'Edit membership plan' : 'Add membership plan' }}
+                    </h1>
                 </div>
                 <a
                     href="{{ route($backRoute) }}"
@@ -15,8 +17,11 @@
                 </a>
             </div>
             <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600">
-                {{ $intro }} Catalog <span class="font-mono text-xs text-slate-800">code</span> must be unique (e.g.
-                <span class="font-mono text-xs">HR-01A</span>).
+                {{ $intro }}
+                @if (! $isEdit)
+                    Catalog <span class="font-mono text-xs text-slate-800">code</span> must be unique (e.g.
+                    <span class="font-mono text-xs">HR-01A</span>).
+                @endif
             </p>
         </div>
 
@@ -26,12 +31,19 @@
             </div>
         @endif
 
+        @php
+            $featureTextDefault = is_array($plan->features ?? null) ? implode("\n", $plan->features) : '';
+        @endphp
+
         <form
             method="post"
-            action="{{ route('admin.plans.store') }}"
+            action="{{ $submitRoute }}"
             class="hero-admin-plan-form overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-hero-card ring-1 ring-slate-200/60"
         >
             @csrf
+            @if ($submitMethod !== 'post')
+                @method($submitMethod)
+            @endif
             <input type="hidden" name="return_listing" value="{{ $returnListing }}" />
             <x-input-error class="px-6 pt-4 sm:px-8" :messages="$errors->get('return_listing')" />
 
@@ -52,7 +64,7 @@
                         type="submit"
                         class="inline-flex items-center justify-center rounded-xl bg-hero-primary px-5 py-2.5 text-sm font-semibold text-white shadow-hero-cta transition hover:bg-hero-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-hero-primary/40 focus-visible:ring-offset-2"
                     >
-                        Save plan
+                        {{ $isEdit ? 'Update plan' : 'Save plan' }}
                     </button>
                 </div>
             </div>
@@ -74,7 +86,7 @@
                                 name="code"
                                 type="text"
                                 class="block w-full border border-slate-200 px-3 py-2.5 font-mono text-sm"
-                                value="{{ old('code') }}"
+                                value="{{ old('code', $plan->code) }}"
                                 required
                                 autocomplete="off"
                             />
@@ -82,7 +94,7 @@
                         </div>
                         <div class="hero-admin-plan-field sm:col-span-2">
                             <x-input-label for="name" value="Display name *" />
-                            <x-text-input id="name" name="name" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('name') }}" required />
+                            <x-text-input id="name" name="name" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('name', $plan->name) }}" required />
                             <x-input-error class="mt-1" :messages="$errors->get('name')" />
                         </div>
                     </div>
@@ -107,21 +119,21 @@
                                     required
                                 >
                                     @foreach (['retail' => 'Retail', 'business' => 'Business', 'corporate' => 'Corporate'] as $val => $label)
-                                        <option value="{{ $val }}" @selected(old('category', $defaultCategory) === $val)>{{ $label }}</option>
+                                        <option value="{{ $val }}" @selected(old('category', $plan->category ?: $defaultCategory) === $val)>{{ $label }}</option>
                                     @endforeach
                                 </select>
                                 <x-input-error class="mt-1" :messages="$errors->get('category')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="currency" value="Currency *" />
-                                <x-text-input id="currency" name="currency" type="text" class="block w-full border border-slate-200 px-3 py-2.5 uppercase" value="{{ old('currency', 'USD') }}" required maxlength="3" />
+                                <x-text-input id="currency" name="currency" type="text" class="block w-full border border-slate-200 px-3 py-2.5 uppercase" value="{{ old('currency', $plan->currency ?: 'USD') }}" required maxlength="3" />
                                 <x-input-error class="mt-1" :messages="$errors->get('currency')" />
                             </div>
                         </div>
                         <div class="hero-admin-plan-row-pair">
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="tier" value="Tier" />
-                                <x-text-input id="tier" name="tier" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('tier', $defaultTier ?? '') }}" placeholder="e.g. local, vip" />
+                                <x-text-input id="tier" name="tier" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('tier', $plan->tier ?: ($defaultTier ?? '')) }}" placeholder="e.g. local, vip" />
                                 <x-input-error class="mt-1" :messages="$errors->get('tier')" />
                             </div>
                             <div class="hero-admin-plan-field">
@@ -133,7 +145,7 @@
                                 >
                                     <option value="">— None —</option>
                                     @foreach (['10_day' => '10-Day plans', '1_month' => '1-Month plans', 'annual_individual' => 'Annual — Individual', 'annual_family' => 'Annual — Family'] as $val => $label)
-                                        <option value="{{ $val }}" @selected(old('retail_subgroup') === $val)>{{ $label }}</option>
+                                        <option value="{{ $val }}" @selected(old('retail_subgroup', $plan->retail_subgroup) === $val)>{{ $label }}</option>
                                     @endforeach
                                 </select>
                                 <x-input-error class="mt-1" :messages="$errors->get('retail_subgroup')" />
@@ -142,12 +154,12 @@
                         <div class="hero-admin-plan-row-pair">
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="sort_order" value="Sort order" />
-                                <x-text-input id="sort_order" name="sort_order" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('sort_order', '0') }}" min="0" />
+                                <x-text-input id="sort_order" name="sort_order" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('sort_order', $plan->sort_order ?? 0) }}" min="0" />
                                 <x-input-error class="mt-1" :messages="$errors->get('sort_order')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="coverage_days" value="Coverage (days)" />
-                                <x-text-input id="coverage_days" name="coverage_days" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('coverage_days') }}" min="0" />
+                                <x-text-input id="coverage_days" name="coverage_days" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('coverage_days', $plan->coverage_days) }}" min="0" />
                                 <x-input-error class="mt-1" :messages="$errors->get('coverage_days')" />
                             </div>
                         </div>
@@ -176,26 +188,26 @@
                                 >
                                     <option value="">— None —</option>
                                     @foreach (['one_time' => 'One-time', 'monthly' => 'Monthly', 'yearly' => 'Yearly'] as $val => $label)
-                                        <option value="{{ $val }}" @selected(old('billing_interval') === $val)>{{ $label }}</option>
+                                        <option value="{{ $val }}" @selected(old('billing_interval', $plan->billing_interval) === $val)>{{ $label }}</option>
                                     @endforeach
                                 </select>
                                 <x-input-error class="mt-1" :messages="$errors->get('billing_interval')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="commitment_months" value="Commitment (months)" />
-                                <x-text-input id="commitment_months" name="commitment_months" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('commitment_months') }}" min="0" />
+                                <x-text-input id="commitment_months" name="commitment_months" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('commitment_months', $plan->commitment_months) }}" min="0" />
                                 <x-input-error class="mt-1" :messages="$errors->get('commitment_months')" />
                             </div>
                         </div>
                         <div class="hero-admin-plan-row-pair">
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="price" value="Price (main)" />
-                                <x-text-input id="price" name="price" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('price') }}" placeholder="0.00" />
+                                <x-text-input id="price" name="price" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('price', $plan->price) }}" placeholder="0.00" />
                                 <x-input-error class="mt-1" :messages="$errors->get('price')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="price_monthly" value="Price (monthly)" />
-                                <x-text-input id="price_monthly" name="price_monthly" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('price_monthly') }}" placeholder="0.00" />
+                                <x-text-input id="price_monthly" name="price_monthly" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('price_monthly', $plan->price_monthly) }}" placeholder="0.00" />
                                 <x-input-error class="mt-1" :messages="$errors->get('price_monthly')" />
                             </div>
                         </div>
@@ -215,24 +227,24 @@
                         <div class="hero-admin-plan-row-pair">
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="min_members" value="Min members" />
-                                <x-text-input id="min_members" name="min_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('min_members') }}" min="0" />
+                                <x-text-input id="min_members" name="min_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('min_members', $plan->min_members) }}" min="0" />
                                 <x-input-error class="mt-1" :messages="$errors->get('min_members')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="max_members" value="Max members" />
-                                <x-text-input id="max_members" name="max_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('max_members') }}" min="0" />
+                                <x-text-input id="max_members" name="max_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('max_members', $plan->max_members) }}" min="0" />
                                 <x-input-error class="mt-1" :messages="$errors->get('max_members')" />
                             </div>
                         </div>
                         <div class="hero-admin-plan-row-pair">
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="included_members" value="Included members" />
-                                <x-text-input id="included_members" name="included_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('included_members') }}" min="0" max="255" />
+                                <x-text-input id="included_members" name="included_members" type="number" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('included_members', $plan->included_members) }}" min="0" max="255" />
                                 <x-input-error class="mt-1" :messages="$errors->get('included_members')" />
                             </div>
                             <div class="hero-admin-plan-field">
                                 <x-input-label for="addon_price_yearly" value="Add-on price (yearly)" />
-                                <x-text-input id="addon_price_yearly" name="addon_price_yearly" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('addon_price_yearly') }}" />
+                                <x-text-input id="addon_price_yearly" name="addon_price_yearly" type="text" inputmode="decimal" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('addon_price_yearly', $plan->addon_price_yearly) }}" />
                                 <x-input-error class="mt-1" :messages="$errors->get('addon_price_yearly')" />
                             </div>
                         </div>
@@ -249,7 +261,7 @@
                     </div>
                     <div class="hero-admin-plan-field mt-6">
                         <x-input-label for="ideal_for" value="Ideal for" />
-                        <x-text-input id="ideal_for" name="ideal_for" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('ideal_for') }}" />
+                        <x-text-input id="ideal_for" name="ideal_for" type="text" class="block w-full border border-slate-200 px-3 py-2.5" value="{{ old('ideal_for', $plan->ideal_for) }}" />
                         <x-input-error class="mt-1" :messages="$errors->get('ideal_for')" />
                     </div>
                 </section>
@@ -282,7 +294,7 @@
                                     name="zoho_code_monthly"
                                     type="text"
                                     class="block w-full border border-slate-200 px-3 py-2.5 font-mono text-sm"
-                                    value="{{ old('zoho_code_monthly') }}"
+                                    value="{{ old('zoho_code_monthly', $plan->zoho_code_monthly) }}"
                                     placeholder="e.g. HB-01-M"
                                     autocomplete="off"
                                 />
@@ -301,7 +313,7 @@
                                     name="zoho_code_yearly"
                                     type="text"
                                     class="block w-full border border-slate-200 px-3 py-2.5 font-mono text-sm"
-                                    value="{{ old('zoho_code_yearly') }}"
+                                    value="{{ old('zoho_code_yearly', $plan->zoho_code_yearly) }}"
                                     placeholder="e.g. HB-01-Y"
                                     autocomplete="off"
                                 />
@@ -326,7 +338,7 @@
                             name="features_text"
                             rows="8"
                             class="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm shadow-sm placeholder:text-slate-400 focus:border-hero-primary focus:outline-none focus:ring-1 focus:ring-hero-primary"
-                        >{{ old('features_text') }}</textarea>
+                        >{{ old('features_text', $featureTextDefault) }}</textarea>
                         <p class="text-xs text-slate-500">Each line becomes a bullet on the public plan card.</p>
                         <x-input-error class="mt-1" :messages="$errors->get('features_text')" />
                     </div>
@@ -341,7 +353,7 @@
                             type="checkbox"
                             value="1"
                             class="h-4 w-4 rounded border-slate-300 text-hero-primary focus:ring-hero-primary"
-                            @checked(session()->hasOldInput() ? (bool) old('active') : true)
+                            @checked(session()->hasOldInput() ? (bool) old('active') : ($isEdit ? (bool) $plan->active : true))
                         />
                         <x-input-label for="active" value="Plan is active (visible for new memberships)" class="!mb-0 font-medium" />
                     </div>

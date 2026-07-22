@@ -8,6 +8,8 @@ use Illuminate\Database\Seeder;
 /**
  * Corporate catalog from HERO Client Rescue S.A Corporate Plans 2025.
  * USD list prices; tax is handled outside seeded data.
+ * For yearly plans, monthly values enforce a 20% annual-prepay discount:
+ * yearly = monthly * 12 * 0.80.
  */
 class CorporatePlansSeeder extends Seeder
 {
@@ -22,7 +24,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 10,
                 'billing_interval' => 'yearly',
                 'price' => 12.50,
-                'price_monthly' => 1.05,
+                'price_monthly' => 1.30,
                 'min_members' => 400,
                 'max_members' => null,
                 'features' => [
@@ -44,7 +46,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 20,
                 'billing_interval' => 'yearly',
                 'price' => 50.00,
-                'price_monthly' => 4.17,
+                'price_monthly' => 5.21,
                 'min_members' => 20,
                 'max_members' => null,
                 'features' => [
@@ -66,7 +68,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 30,
                 'billing_interval' => 'yearly',
                 'price' => 100.00,
-                'price_monthly' => 8.35,
+                'price_monthly' => 10.42,
                 'min_members' => null,
                 'max_members' => null,
                 'features' => [
@@ -89,7 +91,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 40,
                 'billing_interval' => 'yearly',
                 'price' => 175.00,
-                'price_monthly' => 14.60,
+                'price_monthly' => 18.23,
                 'min_members' => null,
                 'max_members' => 6,
                 'features' => [
@@ -113,7 +115,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 50,
                 'billing_interval' => 'yearly',
                 'price' => 287.50,
-                'price_monthly' => 23.95,
+                'price_monthly' => 29.95,
                 'min_members' => null,
                 'max_members' => null,
                 'features' => [
@@ -137,7 +139,7 @@ class CorporatePlansSeeder extends Seeder
                 'sort_order' => 60,
                 'billing_interval' => 'yearly',
                 'price' => 468.75,
-                'price_monthly' => 39.04,
+                'price_monthly' => 48.83,
                 'min_members' => null,
                 'max_members' => 6,
                 'features' => [

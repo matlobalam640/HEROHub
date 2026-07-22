@@ -8,6 +8,8 @@ use Illuminate\Database\Seeder;
 /**
  * Small business catalog from HERO Client Rescue S.A Small Business Plans 2025.
  * USD list prices; tax is handled outside seeded data.
+ * For yearly plans, monthly values enforce a 20% annual-prepay discount:
+ * yearly = monthly * 12 * 0.80.
  */
 class SmallBusinessPlansSeeder extends Seeder
 {
@@ -22,7 +24,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 10,
                 'billing_interval' => 'yearly',
                 'price' => 32.00,
-                'price_monthly' => 2.60,
+                'price_monthly' => 3.33,
                 'min_members' => 25,
                 'max_members' => null,
                 'features' => [
@@ -44,7 +46,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 20,
                 'billing_interval' => 'yearly',
                 'price' => 62.50,
-                'price_monthly' => 5.20,
+                'price_monthly' => 6.51,
                 'min_members' => 25,
                 'max_members' => null,
                 'features' => [
@@ -66,7 +68,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 30,
                 'billing_interval' => 'yearly',
                 'price' => 118.75,
-                'price_monthly' => 9.90,
+                'price_monthly' => 12.37,
                 'min_members' => null,
                 'max_members' => null,
                 'features' => [
@@ -89,7 +91,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 40,
                 'billing_interval' => 'yearly',
                 'price' => 200.00,
-                'price_monthly' => 16.50,
+                'price_monthly' => 20.83,
                 'min_members' => null,
                 'max_members' => 6,
                 'features' => [
@@ -113,7 +115,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 50,
                 'billing_interval' => 'yearly',
                 'price' => 312.50,
-                'price_monthly' => 26.00,
+                'price_monthly' => 32.55,
                 'min_members' => null,
                 'max_members' => null,
                 'features' => [
@@ -137,7 +139,7 @@ class SmallBusinessPlansSeeder extends Seeder
                 'sort_order' => 60,
                 'billing_interval' => 'yearly',
                 'price' => 500.00,
-                'price_monthly' => 41.70,
+                'price_monthly' => 52.08,
                 'min_members' => null,
                 'max_members' => 6,
                 'features' => [
@@ -148,7 +150,7 @@ class SmallBusinessPlansSeeder extends Seeder
                     'Patient advocacy support for hospitalization',
                     '3rd-party injury coverage',
                     'VIP medevac coordination with International Concierge plan',
-                    'Additional family members: $95/year each (up to 6 total)',
+                    'Additional family members: $122/year each (up to 6 total)',
                 ],
                 'ideal_for' => 'Executive families requiring premium annual coverage',
                 'included_members' => 4,

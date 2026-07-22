@@ -14,8 +14,11 @@ class StorePlanRequest extends FormRequest
 
     public function rules(): array
     {
+        $plan = $this->route('plan');
+        $planId = is_object($plan) ? $plan->getKey() : $plan;
+
         return [
-            'code' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9][A-Za-z0-9\-_]*$/', 'unique:plans,code'],
+            'code' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9][A-Za-z0-9\-_]*$/', Rule::unique('plans', 'code')->ignore($planId)],
             'name' => ['required', 'string', 'max:255'],
             'category' => ['required', 'string', Rule::in(['retail', 'business', 'corporate'])],
             'tier' => ['nullable', 'string', 'max:64'],
