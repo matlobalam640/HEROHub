@@ -2,7 +2,8 @@
 
 namespace App\Services\Zoho;
 
-use App\Mail\NewSubscriptionMembershipMail;
+use App\Mail\Membership\AdminMembershipEventMail;
+use App\Mail\Membership\UserMembershipEventMail;
 use App\Models\Member;
 use App\Models\Membership;
 use App\Models\Plan;
@@ -115,29 +116,14 @@ class ZohoSubscriptionWebhookService
 
         $membership = $result['membership']->fresh(['plan']);
 
-        if ($result['created'] && config('heroportal.zoho_webhook_new_membership_mail')) {
-            $passwordResetUrl = null;
-            if ($userCreated) {
-                Password::broker()->sendResetLink(
-                    ['email' => $user->email],
-                    function (CanResetPassword $resetUser, string $token) use (&$passwordResetUrl): string {
-                        $passwordResetUrl = url(route('password.reset', [
-                            'token' => $token,
-                            'email' => $resetUser->getEmailForPasswordReset(),
-                        ], false));
+        if (config('heroportal.zoho_webhook_new_membership_mail')) {
+            $passwordResetUrl = $this->resolvePasswordResetUrlForNewUser($user, $userCreated);
 
-                        return Password::RESET_LINK_SENT;
-                    }
-                );
+            if ($result['created']) {
+                $this->notifyMembershipCreated($membership, $user, $userCreated, $passwordResetUrl);
+            } else {
+                $this->notifyMembershipUpdated($membership, $user);
             }
-
-            Mail::to($user->email)->queue(new NewSubscriptionMembershipMail(
-                $user,
-                $membership,
-                $userCreated,
-                $passwordResetUrl,
-                $membership->plan?->name,
-            ));
         }
 
         return [
@@ -145,6 +131,134 @@ class ZohoSubscriptionWebhookService
             'created' => $result['created'],
             'user' => $user,
         ];
+    }
+
+    private function notifyMembershipCreated(Membership $membership, User $user, bool $userCreated, ?string $passwordResetUrl): void
+    {
+        $membershipUrl = route('customer.membership', [], true);
+        $actionUrl = $membershipUrl;
+        $actionLabel = 'Open My membership';
+        $detailLines = [
+            'Your membership has been activated in the HERO portal.',
+            'Status: '.ucfirst((string) $membership->status),
+        ];
+
+        if ($userCreated && $passwordResetUrl) {
+            $actionUrl = $passwordResetUrl;
+            $actionLabel = 'Create your portal password';
+            $detailLines[] = 'A portal account was created for this email from your Zoho subscription.';
+            $detailLines[] = 'Use the button to set your password, then sign in to access your membership.';
+        } elseif ($userCreated) {
+            $detailLines[] = 'A portal account was created for this email. Use "Forgot password" on sign in if needed.';
+        } else {
+            $detailLines[] = 'Your existing portal account has been linked to this subscription.';
+        }
+
+        Mail::to($user->email)->queue(new UserMembershipEventMail(
+            user: $user,
+            subjectLine: 'Your HERO membership is active',
+            headline: 'Your membership is now active in the portal.',
+            membershipNumber: $membership->membership_number,
+            planName: $membership->plan?->name,
+            detailLines: $detailLines,
+            actionUrl: $actionUrl,
+            actionLabel: $actionLabel,
+            footerNote: 'If you did not request this, contact HERO support immediately.',
+        ));
+
+        $this->notifyAdmins(
+            subject: 'Admin alert: new membership created',
+            headline: 'A new Zoho subscription created a portal membership.',
+            detailLines: [
+                'Membership #: '.$membership->membership_number,
+                'Plan: '.($membership->plan?->name ?? '—'),
+                'User email: '.$user->email,
+                'Portal user newly created: '.($userCreated ? 'yes' : 'no'),
+                'Billing subscription ID: '.($membership->billing_subscription_id ?: '—'),
+            ],
+            membership: $membership,
+        );
+    }
+
+    private function notifyMembershipUpdated(Membership $membership, User $user): void
+    {
+        Mail::to($user->email)->queue(new UserMembershipEventMail(
+            user: $user,
+            subjectLine: 'Your HERO membership was updated',
+            headline: 'Your membership details were updated from Zoho Billing.',
+            membershipNumber: $membership->membership_number,
+            planName: $membership->plan?->name,
+            detailLines: [
+                'Status: '.ucfirst((string) $membership->status),
+                'Coverage start: '.($membership->coverage_starts_on?->toDateString() ?? '—'),
+                'Coverage end: '.($membership->coverage_ends_on?->toDateString() ?? '—'),
+                'Next billing date: '.($membership->billing_next_billing_at?->toDateString() ?? '—'),
+            ],
+            actionUrl: route('customer.membership', [], true),
+            actionLabel: 'Review membership',
+            footerNote: 'If these details are unexpected, contact HERO support.',
+        ));
+
+        $this->notifyAdmins(
+            subject: 'Admin alert: membership updated',
+            headline: 'A Zoho subscription update modified an existing membership.',
+            detailLines: [
+                'Membership #: '.$membership->membership_number,
+                'Plan: '.($membership->plan?->name ?? '—'),
+                'User email: '.$user->email,
+                'Status: '.ucfirst((string) $membership->status),
+                'Billing subscription ID: '.($membership->billing_subscription_id ?: '—'),
+            ],
+            membership: $membership,
+        );
+    }
+
+    private function notifyAdmins(string $subject, string $headline, array $detailLines, Membership $membership): void
+    {
+        $adminEmails = User::role('admin')
+            ->whereNotNull('email')
+            ->pluck('email')
+            ->filter(fn ($email) => is_string($email) && $email !== '')
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($adminEmails === []) {
+            return;
+        }
+
+        foreach ($adminEmails as $adminEmail) {
+            Mail::to($adminEmail)->queue(new AdminMembershipEventMail(
+                subjectLine: $subject,
+                headline: $headline,
+                detailLines: $detailLines,
+                actionUrl: route('portal.membership.show', ['membership' => $membership->id], true),
+                actionLabel: 'Open membership record',
+            ));
+        }
+    }
+
+    private function resolvePasswordResetUrlForNewUser(User $user, bool $userCreated): ?string
+    {
+        if (! $userCreated) {
+            return null;
+        }
+
+        $passwordResetUrl = null;
+
+        Password::broker()->sendResetLink(
+            ['email' => $user->email],
+            function (CanResetPassword $resetUser, string $token) use (&$passwordResetUrl): string {
+                $passwordResetUrl = url(route('password.reset', [
+                    'token' => $token,
+                    'email' => $resetUser->getEmailForPasswordReset(),
+                ], false));
+
+                return Password::RESET_LINK_SENT;
+            }
+        );
+
+        return $passwordResetUrl;
     }
 
     private function resolvePlanCode(array $payload): ?string

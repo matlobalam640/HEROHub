@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Mail\NewSubscriptionMembershipMail;
+use App\Mail\Membership\UserMembershipEventMail;
 use App\Models\Membership;
 use App\Models\Plan;
 use App\Models\User;
@@ -100,10 +100,10 @@ class ZohoSubscriptionWebhookTest extends TestCase
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole('customer'));
 
-        Mail::assertQueued(NewSubscriptionMembershipMail::class, function (NewSubscriptionMembershipMail $mail): bool {
-            return $mail->needsPasswordSetup === true
-                && $mail->user->email === 'zoho-webhook-test@example.com'
-                && $mail->passwordResetUrl !== null;
+        Mail::assertQueued(UserMembershipEventMail::class, function (UserMembershipEventMail $mail): bool {
+            return $mail->user->email === 'zoho-webhook-test@example.com'
+                && $mail->subjectLine === 'Your HERO membership is active'
+                && $mail->actionUrl !== null;
         });
     }
 
@@ -163,6 +163,9 @@ class ZohoSubscriptionWebhookTest extends TestCase
             'status' => 'cancelled',
         ]);
 
-        Mail::assertNotQueued(NewSubscriptionMembershipMail::class);
+        Mail::assertQueued(UserMembershipEventMail::class, function (UserMembershipEventMail $mail): bool {
+            return $mail->user->email === 'repeat@example.com'
+                && $mail->subjectLine === 'Your HERO membership was updated';
+        });
     }
 }
