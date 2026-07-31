@@ -8,6 +8,12 @@
     <title>@yield('title', config('app.name'))</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f1f5f9;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;font-family:Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
+    @php
+        $brandLogoUrl = trim((string) config('heroportal.mail_brand_logo_url', ''));
+        $logoPath = public_path('brand/hero-logo.png');
+        $logoExistsLocally = is_file($logoPath);
+        $logoUrl = $brandLogoUrl !== '' ? $brandLogoUrl : ($logoExistsLocally ? asset('brand/hero-logo.png') : null);
+    @endphp
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f1f5f9;">
         <tr>
             <td align="center" style="padding:24px 16px 40px;">
@@ -15,7 +21,13 @@
                     <tr>
                         <td style="background:linear-gradient(135deg,#283b69 0%,#1f2d52 100%);background-color:#283b69;border-radius:16px 16px 0 0;padding:28px 32px 24px;text-align:left;">
                             <a href="{{ url('/') }}" style="text-decoration:none;display:inline-block;" target="_blank" rel="noopener noreferrer">
-                                <img src="{{ asset('brand/hero-logo.png') }}" alt="{{ config('app.name') }}" width="160" height="auto" style="display:block;max-width:160px;height:auto;border:0;outline:none;">
+                                @if($logoUrl)
+                                    <img src="{{ $logoUrl }}" alt="{{ config('app.name') }}" width="160" height="auto" style="display:block;max-width:160px;height:auto;border:0;outline:none;">
+                                @else
+                                    <span style="display:inline-block;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.02em;">
+                                        {{ config('app.name') }}
+                                    </span>
+                                @endif
                             </a>
                             <p style="margin:16px 0 0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.88);font-weight:600;letter-spacing:0.02em;">
                                 @yield('eyebrow', 'Membership portal')

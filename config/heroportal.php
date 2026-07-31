@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail branding
+    |--------------------------------------------------------------------------
+    |
+    | Optional absolute logo URL for email templates. Use this when the app
+    | is behind private hosts or APP_URL is not publicly reachable.
+    |
+    */
+
+    'mail_brand_logo_url' => env('HERO_MAIL_BRAND_LOGO_URL'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Zoho Billing customer portal (optional)
     |--------------------------------------------------------------------------
     |
