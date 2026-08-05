@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Zoho;
+namespace App\Services;
 
 use App\Mail\Membership\AdminMembershipEventMail;
 use App\Mail\Membership\UserMembershipEventMail;
@@ -17,62 +17,53 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class ZohoSubscriptionWebhookService
+class SubscriptionWebhookService
 {
     /**
-     * @param  array<string, mixed>  $payload  Flat Zoho subscription object (nested JSON may be strings).
+     * @param  array<string, mixed>  $payload
      * @return array{membership: Membership, created: bool, user: ?User}
      */
     public function sync(array $payload): array
     {
-        $subscriptionId = (string) ($payload['subscription_id'] ?? '');
+        $subscriptionId = trim((string) ($payload['subscription_id'] ?? ''));
         if ($subscriptionId === '') {
             throw ValidationException::withMessages(['subscription_id' => 'subscription_id is required.']);
         }
 
         $planCode = $this->resolvePlanCode($payload);
         if ($planCode === null || $planCode === '') {
-            throw ValidationException::withMessages(['plan' => 'Could not resolve Zoho plan code from line_items or plan.']);
+            throw ValidationException::withMessages(['plan' => 'Could not resolve a plan identifier from payload.']);
         }
 
-        $plan = Plan::query()
-            ->where(function ($q) use ($planCode) {
-                $q->where('zoho_code_monthly', $planCode)
-                    ->orWhere('zoho_code_yearly', $planCode);
-            })
-            ->first();
-
+        $plan = Plan::query()->where('code', $planCode)->first();
         if (! $plan) {
-            throw ValidationException::withMessages(['plan' => "No portal plan matches Zoho code {$planCode} (check zoho_code_monthly / zoho_code_yearly)."]);
+            throw ValidationException::withMessages(['plan' => "No portal plan matches code {$planCode}."]);
         }
 
         $customer = $this->decodeJsonMaybe($payload['customer'] ?? null);
         $customer = is_array($customer) ? $customer : [];
-
-        $email = $this->normalizeEmail(Arr::get($customer, 'email'));
-        if ($email === null) {
-            $email = $this->emailFromContactPersons($payload);
-        }
+        $email = $this->normalizeEmail(Arr::get($customer, 'email') ?? ($payload['email'] ?? null));
         if ($email === null) {
             throw ValidationException::withMessages(['customer.email' => 'Customer email is required to link a portal user.']);
         }
 
         $userCreated = false;
         $user = User::query()->where('email', $email)->first();
-        if (! $user && config('heroportal.zoho_webhook_auto_create_users')) {
+        if (! $user && config('heroportal.webhook_auto_create_users')) {
             $user = $this->createPortalUser($customer, $email);
             $userCreated = true;
         }
         if (! $user) {
             throw ValidationException::withMessages([
-                'user' => 'No portal user exists for this email. Create the account first, or set ZOHO_WEBHOOK_AUTO_CREATE_USERS=true.',
+                'user' => 'No portal user exists for this email. Create the account first, or set HERO_WEBHOOK_AUTO_CREATE_USERS=true.',
             ]);
         }
 
         $membershipNumber = $this->resolveMembershipNumber($payload, $subscriptionId);
-
         $status = $this->mapStatus((string) ($payload['status'] ?? ''));
         [$coverageStart, $coverageEnd] = $this->resolveCoverageDates($payload);
+        $billingTimeline = $this->resolveBillingTimeline($payload);
+        $billingProvider = $this->resolveBillingProvider($payload);
 
         $result = DB::transaction(function () use (
             $payload,
@@ -83,10 +74,11 @@ class ZohoSubscriptionWebhookService
             $status,
             $coverageStart,
             $coverageEnd,
-            $customer
+            $customer,
+            $billingTimeline,
+            $billingProvider
         ) {
             $customerId = (string) ($payload['customer_id'] ?? Arr::get($customer, 'customer_id') ?? '');
-            $billingTimeline = $this->resolveBillingTimeline($payload);
 
             $membership = Membership::query()->updateOrCreate(
                 ['billing_subscription_id' => $subscriptionId],
@@ -98,7 +90,7 @@ class ZohoSubscriptionWebhookService
                     'coverage_ends_on' => $coverageEnd,
                     'auto_renew' => $this->inferAutoRenew($payload),
                     'status' => $status,
-                    'billing_provider' => 'zoho',
+                    'billing_provider' => $billingProvider,
                     'billing_customer_id' => $customerId !== '' ? $customerId : null,
                     'billing_subscription_created_at' => $billingTimeline['billing_subscription_created_at'],
                     'billing_next_billing_at' => $billingTimeline['billing_next_billing_at'],
@@ -108,7 +100,6 @@ class ZohoSubscriptionWebhookService
             );
 
             $created = $membership->wasRecentlyCreated;
-
             $this->syncPrimaryMember($membership, $customer, $user);
 
             return ['membership' => $membership, 'created' => $created];
@@ -116,9 +107,8 @@ class ZohoSubscriptionWebhookService
 
         $membership = $result['membership']->fresh(['plan']);
 
-        if (config('heroportal.zoho_webhook_new_membership_mail')) {
+        if (config('heroportal.webhook_new_membership_mail')) {
             $passwordResetUrl = $this->resolvePasswordResetUrlForNewUser($user, $userCreated);
-
             if ($result['created']) {
                 $this->notifyMembershipCreated($membership, $user, $userCreated, $passwordResetUrl);
             } else {
@@ -146,7 +136,7 @@ class ZohoSubscriptionWebhookService
         if ($userCreated && $passwordResetUrl) {
             $actionUrl = $passwordResetUrl;
             $actionLabel = 'Create your portal password';
-            $detailLines[] = 'A portal account was created for this email from your Zoho subscription.';
+            $detailLines[] = 'A portal account was created for this email from your subscription.';
             $detailLines[] = 'Use the button to set your password, then sign in to access your membership.';
         } elseif ($userCreated) {
             $detailLines[] = 'A portal account was created for this email. Use "Forgot password" on sign in if needed.';
@@ -168,7 +158,7 @@ class ZohoSubscriptionWebhookService
 
         $this->notifyAdmins(
             subject: 'Admin alert: new membership created',
-            headline: 'A new Zoho subscription created a portal membership.',
+            headline: 'A new subscription created a portal membership.',
             detailLines: [
                 'Membership #: '.$membership->membership_number,
                 'Plan: '.($membership->plan?->name ?? '—'),
@@ -185,7 +175,7 @@ class ZohoSubscriptionWebhookService
         Mail::to($user->email)->queue(new UserMembershipEventMail(
             user: $user,
             subjectLine: 'Your HERO membership was updated',
-            headline: 'Your membership details were updated from Zoho Billing.',
+            headline: 'Your membership details were updated from billing sync.',
             membershipNumber: $membership->membership_number,
             planName: $membership->plan?->name,
             detailLines: [
@@ -201,7 +191,7 @@ class ZohoSubscriptionWebhookService
 
         $this->notifyAdmins(
             subject: 'Admin alert: membership updated',
-            headline: 'A Zoho subscription update modified an existing membership.',
+            headline: 'A subscription update modified an existing membership.',
             detailLines: [
                 'Membership #: '.$membership->membership_number,
                 'Plan: '.($membership->plan?->name ?? '—'),
@@ -223,10 +213,6 @@ class ZohoSubscriptionWebhookService
             ->values()
             ->all();
 
-        if ($adminEmails === []) {
-            return;
-        }
-
         foreach ($adminEmails as $adminEmail) {
             Mail::to($adminEmail)->queue(new AdminMembershipEventMail(
                 subjectLine: $subject,
@@ -245,7 +231,6 @@ class ZohoSubscriptionWebhookService
         }
 
         $passwordResetUrl = null;
-
         Password::broker()->sendResetLink(
             ['email' => $user->email],
             function (CanResetPassword $resetUser, string $token) use (&$passwordResetUrl): string {
@@ -263,14 +248,31 @@ class ZohoSubscriptionWebhookService
 
     private function resolvePlanCode(array $payload): ?string
     {
+        foreach (['plan_code', 'gateway_plan_code', 'membership_plan_code', 'plan_identifier', 'product_code', 'sku'] as $key) {
+            $value = trim((string) ($payload[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
         $lineItems = $this->decodeJsonMaybe($payload['line_items'] ?? null);
-        if (is_array($lineItems) && isset($lineItems[0]['code'])) {
-            return (string) $lineItems[0]['code'];
+        if (is_array($lineItems) && isset($lineItems[0]) && is_array($lineItems[0])) {
+            foreach (['code', 'plan_code', 'product_code', 'sku'] as $key) {
+                $value = trim((string) ($lineItems[0][$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
         }
 
         $plan = $this->decodeJsonMaybe($payload['plan'] ?? null);
-        if (is_array($plan) && isset($plan['plan_code'])) {
-            return (string) $plan['plan_code'];
+        if (is_array($plan)) {
+            foreach (['plan_code', 'code', 'product_code', 'sku'] as $key) {
+                $value = trim((string) ($plan[$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
         }
 
         return null;
@@ -281,13 +283,13 @@ class ZohoSubscriptionWebhookService
      */
     private function resolveCoverageDates(array $payload): array
     {
-        $start = $this->parseZohoDate((string) ($payload['start_date'] ?? $payload['activated_at'] ?? ''));
-        $end = $this->parseZohoDate((string) ($payload['current_term_ends_at'] ?? $payload['expires_at'] ?? ''));
+        $start = $this->parseDate((string) ($payload['coverage_starts_on'] ?? $payload['start_date'] ?? $payload['activated_at'] ?? $payload['membership_start_date'] ?? ''));
+        $end = $this->parseDate((string) ($payload['coverage_ends_on'] ?? $payload['current_term_ends_at'] ?? $payload['expires_at'] ?? $payload['membership_end_date'] ?? ''));
 
         return [$start, $end];
     }
 
-    private function parseZohoDate(string $value): ?Carbon
+    private function parseDate(string $value): ?Carbon
     {
         $value = trim($value);
         if ($value === '') {
@@ -321,13 +323,12 @@ class ZohoSubscriptionWebhookService
             }
         }
         if ($createdAt === null) {
-            $createdAt = $this->parseZohoDate((string) ($payload['created_at'] ?? $payload['created_date'] ?? ''));
+            $createdAt = $this->parseDate((string) ($payload['created_at'] ?? $payload['created_date'] ?? ''));
         }
 
-        $next = $this->parseZohoDate((string) ($payload['next_billing_at'] ?? ''));
-        $last = $this->parseZohoDate((string) ($payload['last_billing_at'] ?? ''));
-
-        $autoCollect = $this->parseZohoBool($payload['auto_collect'] ?? null);
+        $next = $this->parseDate((string) ($payload['next_billing_at'] ?? ''));
+        $last = $this->parseDate((string) ($payload['last_billing_at'] ?? ''));
+        $autoCollect = $this->parseBool($payload['auto_collect'] ?? null);
 
         return [
             'billing_subscription_created_at' => $createdAt,
@@ -337,7 +338,7 @@ class ZohoSubscriptionWebhookService
         ];
     }
 
-    private function parseZohoBool(mixed $value): ?bool
+    private function parseBool(mixed $value): ?bool
     {
         if ($value === null) {
             return null;
@@ -346,9 +347,6 @@ class ZohoSubscriptionWebhookService
             return $value;
         }
         $s = strtolower(trim((string) $value));
-        if ($s === '') {
-            return null;
-        }
 
         return match ($s) {
             '1', 'true', 'yes', 'on' => true,
@@ -359,23 +357,39 @@ class ZohoSubscriptionWebhookService
 
     private function mapStatus(string $status): string
     {
-        return match (strtolower($status)) {
-            'live', 'active' => 'active',
+        return match (strtolower(trim($status))) {
+            'live', 'active', 'paid', 'success', 'succeeded', 'completed' => 'active',
             'cancelled', 'canceled' => 'cancelled',
             'expired' => 'expired',
-            'paused', 'unpaid', 'past_due' => 'inactive',
+            'paused', 'unpaid', 'past_due', 'inactive' => 'inactive',
             default => 'inactive',
         };
     }
 
     private function inferAutoRenew(array $payload): bool
     {
-        $scd = $payload['scheduled_cancellation_date'] ?? '';
-        if (is_string($scd) && trim($scd) !== '') {
+        $scheduledCancel = trim((string) ($payload['scheduled_cancellation_date'] ?? ''));
+        if ($scheduledCancel !== '') {
             return false;
         }
 
-        return strtolower((string) ($payload['status'] ?? '')) === 'live';
+        $status = strtolower((string) ($payload['status'] ?? ''));
+        if ($status === 'cancelled' || $status === 'canceled' || $status === 'expired') {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function resolveBillingProvider(array $payload): string
+    {
+        $raw = strtolower(trim((string) ($payload['billing_provider'] ?? $payload['provider'] ?? $payload['source'] ?? 'manual')));
+
+        return match ($raw) {
+            'stripe' => 'stripe',
+            'manual' => 'manual',
+            default => 'manual',
+        };
     }
 
     private function resolveMembershipNumber(array $payload, string $subscriptionId): string
@@ -385,15 +399,20 @@ class ZohoSubscriptionWebhookService
             return $existing;
         }
 
+        $direct = trim((string) ($payload['membership_number'] ?? ''));
+        if ($direct !== '' && ! Membership::query()->where('membership_number', $direct)->exists()) {
+            return $direct;
+        }
+
         $subNo = trim((string) ($payload['subscription_number'] ?? ''));
         if ($subNo !== '') {
-            $candidate = 'ZOHO-'.$subNo;
+            $candidate = str_starts_with(strtoupper($subNo), 'SUB-') ? 'HERO-'.$subNo : 'HERO-SUB-'.$subNo;
             if (! Membership::query()->where('membership_number', $candidate)->exists()) {
                 return $candidate;
             }
         }
 
-        return 'ZOHO-SUB-'.substr(sha1($subscriptionId), 0, 12);
+        return 'HERO-SUB-'.substr(sha1($subscriptionId), 0, 12);
     }
 
     /**
@@ -404,7 +423,7 @@ class ZohoSubscriptionWebhookService
         $display = trim((string) (Arr::get($customer, 'display_name') ?: $user->name));
         $parts = preg_split('/\s+/', $display, 2, PREG_SPLIT_NO_EMPTY) ?: [];
         $first = $parts[0] ?? 'Member';
-        $last = $parts[1] ?? '';
+        $last = $parts[1] ?? 'Member';
 
         $primary = Member::query()->firstOrNew([
             'membership_id' => $membership->id,
@@ -413,7 +432,7 @@ class ZohoSubscriptionWebhookService
 
         $primary->fill([
             'first_name' => $first,
-            'last_name' => $last !== '' ? $last : 'Member',
+            'last_name' => $last,
             'email' => $user->email,
             'phone' => trim((string) (Arr::get($customer, 'phone') ?? '')) ?: null,
         ]);
@@ -421,7 +440,6 @@ class ZohoSubscriptionWebhookService
         if (! $primary->qr_token) {
             $primary->qr_token = (string) Str::uuid();
         }
-
         $primary->save();
     }
 
@@ -439,32 +457,17 @@ class ZohoSubscriptionWebhookService
             'password' => Str::password(32),
             'email_verified_at' => now(),
         ]);
-
         $user->assignRole('customer');
 
         return $user;
     }
 
-    private function emailFromContactPersons(array $payload): ?string
+    private function normalizeEmail(mixed $value): ?string
     {
-        $raw = $this->decodeJsonMaybe($payload['contactpersons'] ?? $payload['contact_persons_associated'] ?? null);
-        if (! is_array($raw) || $raw === []) {
+        if (! is_string($value)) {
             return null;
         }
-        $first = $raw[0] ?? null;
-        if (! is_array($first)) {
-            return null;
-        }
-
-        return $this->normalizeEmail($first['email'] ?? $first['contact_person_email'] ?? null);
-    }
-
-    private function normalizeEmail(mixed $email): ?string
-    {
-        if (! is_string($email)) {
-            return null;
-        }
-        $email = strtolower(trim($email));
+        $email = strtolower(trim($value));
 
         return $email !== '' && filter_var($email, FILTER_VALIDATE_EMAIL) ? $email : null;
     }

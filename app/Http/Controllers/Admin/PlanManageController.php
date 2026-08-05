@@ -88,8 +88,6 @@ class PlanManageController extends Controller
             'min_members' => $request->filled('min_members') ? (int) $request->input('min_members') : null,
             'max_members' => $request->filled('max_members') ? (int) $request->input('max_members') : null,
             'billing_interval' => $request->filled('billing_interval') ? $request->input('billing_interval') : null,
-            'zoho_code_monthly' => $request->filled('zoho_code_monthly') ? trim((string) $request->input('zoho_code_monthly')) : null,
-            'zoho_code_yearly' => $request->filled('zoho_code_yearly') ? trim((string) $request->input('zoho_code_yearly')) : null,
             'commitment_months' => $request->filled('commitment_months') ? (int) $request->input('commitment_months') : null,
             'price' => $request->filled('price') ? $request->input('price') : null,
             'price_monthly' => $request->filled('price_monthly') ? $request->input('price_monthly') : null,

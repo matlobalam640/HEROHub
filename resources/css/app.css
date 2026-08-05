@@ -696,14 +696,6 @@
     min-width: 0;
   }
 
-  .hero-admin-plan-form .hero-admin-plan-zoho-grid {
-    @apply grid grid-cols-1 gap-x-6 gap-y-10 lg:grid-cols-2 lg:items-start;
-  }
-
-  .hero-admin-plan-form .hero-admin-plan-zoho-grid > * {
-    min-width: 0;
-  }
-
   .hero-admin-plan-form .hero-admin-plan-field :is(input, select, textarea) {
     max-width: 100%;
   }

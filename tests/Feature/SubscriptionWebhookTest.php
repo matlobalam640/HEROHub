@@ -10,24 +10,24 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
-class ZohoSubscriptionWebhookTest extends TestCase
+class SubscriptionWebhookTest extends TestCase
 {
     use RefreshDatabase;
 
     public function test_rejects_request_without_secret_header(): void
     {
-        $this->postJson('/api/v1/webhooks/zoho/subscription', ['subscription_id' => 'x'])
+        $this->postJson('/api/v1/webhooks/subscription', ['subscription_id' => 'x'])
             ->assertStatus(401);
     }
 
     public function test_rejects_wrong_secret(): void
     {
-        $this->postJson('/api/v1/webhooks/zoho/subscription', ['subscription_id' => 'x'], [
-            'X-Hero-Zoho-Webhook-Secret' => 'wrong',
+        $this->postJson('/api/v1/webhooks/subscription', ['subscription_id' => 'x'], [
+            'X-Hero-Webhook-Secret' => 'wrong',
         ])->assertStatus(401);
     }
 
-    public function test_syncs_membership_from_zoho_payload(): void
+    public function test_syncs_membership_from_payload(): void
     {
         Mail::fake();
 
@@ -40,7 +40,6 @@ class ZohoSubscriptionWebhookTest extends TestCase
             'billing_interval' => 'yearly',
             'price' => 100,
             'price_monthly' => 8.33,
-            'zoho_code_yearly' => 'HR-03CY',
             'currency' => 'USD',
             'active' => true,
         ]);
@@ -56,28 +55,29 @@ class ZohoSubscriptionWebhookTest extends TestCase
             'next_billing_at' => '2027-04-24',
             'last_billing_at' => '2026-04-24',
             'auto_collect' => 'true',
+            'plan_code' => 'HR-TEST',
             'line_items' => json_encode([
                 [
-                    'code' => 'HR-03CY',
+                    'code' => 'HR-TEST',
                     'name' => '1 YEAR VIP - FAMILY - YEARLY PAYMENT',
                 ],
             ]),
-            'plan' => json_encode(['plan_code' => 'HR-03CY', 'price' => 637]),
+            'plan' => json_encode(['plan_code' => 'HR-TEST', 'price' => 637]),
             'customer' => json_encode([
                 'customer_id' => '6304056000000152937',
-                'email' => 'zoho-webhook-test@example.com',
+                'email' => 'webhook-test@example.com',
                 'display_name' => 'Katia Brezault',
             ]),
         ];
 
-        $response = $this->postJson('/api/v1/webhooks/zoho/subscription', $payload, [
-            'X-Hero-Zoho-Webhook-Secret' => 'test-zoho-webhook-secret-key',
+        $response = $this->postJson('/api/v1/webhooks/subscription', $payload, [
+            'X-Hero-Webhook-Secret' => 'test-webhook-secret-key',
         ]);
 
         $response->assertOk()
             ->assertJsonPath('ok', true)
             ->assertJsonPath('created', true)
-            ->assertJsonPath('membership_number', 'ZOHO-SUB-00107')
+            ->assertJsonPath('membership_number', 'HERO-SUB-00107')
             ->assertJsonPath('billing_next_billing_at', '2027-04-24')
             ->assertJsonPath('billing_last_billing_at', '2026-04-24')
             ->assertJsonPath('billing_auto_collect', true);
@@ -85,7 +85,7 @@ class ZohoSubscriptionWebhookTest extends TestCase
         $this->assertDatabaseHas('memberships', [
             'billing_subscription_id' => '6304056000000755001',
             'plan_id' => $plan->id,
-            'billing_provider' => 'zoho',
+            'billing_provider' => 'manual',
             'status' => 'active',
             'billing_auto_collect' => 1,
         ]);
@@ -96,12 +96,12 @@ class ZohoSubscriptionWebhookTest extends TestCase
         $this->assertSame('2026-04-24', $membership->billing_last_billing_at?->toDateString());
         $this->assertNotNull($membership->billing_subscription_created_at);
 
-        $user = User::where('email', 'zoho-webhook-test@example.com')->first();
+        $user = User::where('email', 'webhook-test@example.com')->first();
         $this->assertNotNull($user);
         $this->assertTrue($user->hasRole('customer'));
 
         Mail::assertQueued(UserMembershipEventMail::class, function (UserMembershipEventMail $mail): bool {
-            return $mail->user->email === 'zoho-webhook-test@example.com'
+            return $mail->user->email === 'webhook-test@example.com'
                 && $mail->subjectLine === 'Your HERO membership is active'
                 && $mail->actionUrl !== null;
         });
@@ -120,7 +120,6 @@ class ZohoSubscriptionWebhookTest extends TestCase
             'billing_interval' => 'yearly',
             'price' => 50,
             'price_monthly' => 4,
-            'zoho_code_yearly' => 'HR-99Y',
             'currency' => 'USD',
             'active' => true,
         ]);
@@ -128,11 +127,11 @@ class ZohoSubscriptionWebhookTest extends TestCase
         $user = User::factory()->create(['email' => 'repeat@example.com']);
 
         Membership::create([
-            'membership_number' => 'ZOHO-SUB-KEEP',
+            'membership_number' => 'HERO-SUB-KEEP',
             'plan_id' => $plan->id,
             'account_user_id' => $user->id,
             'billing_subscription_id' => '6304056000000999001',
-            'billing_provider' => 'zoho',
+            'billing_provider' => 'manual',
             'billing_customer_id' => 'cust-1',
             'status' => 'active',
             'auto_renew' => true,
@@ -145,21 +144,22 @@ class ZohoSubscriptionWebhookTest extends TestCase
             'start_date' => '2026-01-01',
             'current_term_ends_at' => '2027-01-01',
             'customer_id' => 'cust-1',
-            'line_items' => json_encode([['code' => 'HR-99Y', 'name' => 'Plan']]),
-            'plan' => json_encode(['plan_code' => 'HR-99Y']),
+            'plan_code' => 'HR-TEST2',
+            'line_items' => json_encode([['code' => 'HR-TEST2', 'name' => 'Plan']]),
+            'plan' => json_encode(['plan_code' => 'HR-TEST2']),
             'customer' => json_encode([
                 'email' => 'repeat@example.com',
                 'display_name' => 'Repeat User',
             ]),
         ];
 
-        $this->postJson('/api/v1/webhooks/zoho/subscription', $payload, [
-            'X-Hero-Zoho-Webhook-Secret' => 'test-zoho-webhook-secret-key',
+        $this->postJson('/api/v1/webhooks/subscription', $payload, [
+            'X-Hero-Webhook-Secret' => 'test-webhook-secret-key',
         ])->assertOk()->assertJsonPath('created', false);
 
         $this->assertDatabaseHas('memberships', [
             'billing_subscription_id' => '6304056000000999001',
-            'membership_number' => 'ZOHO-SUB-KEEP',
+            'membership_number' => 'HERO-SUB-KEEP',
             'status' => 'cancelled',
         ]);
 

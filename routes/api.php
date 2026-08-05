@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\ZohoSubscriptionWebhookController;
+use App\Http\Controllers\Api\SubscriptionWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/v1/webhooks/zoho/subscription', ZohoSubscriptionWebhookController::class)
-    ->middleware(['zoho.webhook', 'throttle:120,1'])
-    ->name('api.webhooks.zoho.subscription');
+Route::post('/v1/webhooks/subscription', SubscriptionWebhookController::class)
+    ->middleware(['gateway.webhook', 'throttle:120,1'])
+    ->name('api.webhooks.subscription');

@@ -25,7 +25,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="ZOHO_WEBHOOK_SECRET" value="test-zoho-webhook-secret-key"/>
-        <env name="ZOHO_WEBHOOK_AUTO_CREATE_USERS" value="true"/>
+        <env name="HERO_WEBHOOK_SECRET" value="test-webhook-secret-key"/>
+        <env name="HERO_WEBHOOK_AUTO_CREATE_USERS" value="true"/>
     </php>
 </phpunit>

@@ -28,8 +28,6 @@ class StorePlanRequest extends FormRequest
             'min_members' => ['nullable', 'integer', 'min:0', 'max:999999'],
             'max_members' => ['nullable', 'integer', 'min:0', 'max:999999'],
             'billing_interval' => ['nullable', 'string', Rule::in(['monthly', 'yearly', 'one_time'])],
-            'zoho_code_monthly' => ['nullable', 'string', 'max:96'],
-            'zoho_code_yearly' => ['nullable', 'string', 'max:96'],
             'commitment_months' => ['nullable', 'integer', 'min:0', 'max:120'],
             'price' => ['nullable', 'numeric', 'min:0'],
             'price_monthly' => ['nullable', 'numeric', 'min:0'],
@@ -55,12 +53,5 @@ class StorePlanRequest extends FormRequest
         $this->merge([
             'active' => $this->boolean('active'),
         ]);
-
-        foreach (['zoho_code_monthly', 'zoho_code_yearly'] as $key) {
-            $value = $this->input($key);
-            if ($value === '' || $value === null) {
-                $this->merge([$key => null]);
-            }
-        }
     }
 }

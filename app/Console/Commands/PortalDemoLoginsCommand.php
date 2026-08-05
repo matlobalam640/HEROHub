@@ -37,7 +37,7 @@ class PortalDemoLoginsCommand extends Command
         $this->line('');
         $this->comment('Memberships: DemoDataSeeder creates HERO-000001… style memberships for customer1–12.');
         $this->comment('BindDemoMembershipSeeder: set HERO_BIND_MEMBERSHIP_EMAIL in .env to attach HR-02 demo membership to that user.');
-        $this->comment('Zoho webhook auto-created users: password is random — use the welcome email “Create password” link or Forgot password.');
+        $this->comment('Webhook auto-created users: password is random — use the welcome email “Create password” link or Forgot password.');
         $this->line('');
 
         return self::SUCCESS;

@@ -40,10 +40,10 @@
             <p class="mt-1 text-sm text-slate-600">
                 @if ($stripePlanCheckoutEnabled)
                     Pay with Stripe after you choose a plan.
-                    @if (filled(config('heroportal.zoho_customer_portal_url')))
+                    @if (filled(config('heroportal.billing_customer_portal_url')))
                         Use the
                         <a
-                            href="{{ config('heroportal.zoho_customer_portal_url') }}"
+                            href="{{ config('heroportal.billing_customer_portal_url') }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="font-medium text-hero-primary underline decoration-hero-primary/40 underline-offset-2 hover:text-hero-primary-hover"

@@ -9,8 +9,8 @@ use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\ValidateSignature;
+use App\Http\Middleware\VerifyGatewayWebhookSecret;
 use App\Http\Middleware\VerifyCsrfToken;
-use App\Http\Middleware\VerifyZohoWebhookSecret;
 use Illuminate\Auth\Middleware\AuthenticateWithBasicAuth;
 use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
@@ -97,6 +97,6 @@ class Kernel extends HttpKernel
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
 
-        'zoho.webhook' => VerifyZohoWebhookSecret::class,
+        'gateway.webhook' => VerifyGatewayWebhookSecret::class,
     ];
 }

@@ -22,8 +22,6 @@ class Plan extends Model
         'min_members',
         'max_members',
         'billing_interval',
-        'zoho_code_monthly',
-        'zoho_code_yearly',
         'commitment_months',
         'price',
         'price_monthly',
@@ -92,7 +90,7 @@ class Plan extends Model
     }
 
     /**
-     * Primary list price line for catalog cards (from seeded amounts; Zoho checkout may differ).
+     * Primary list price line for catalog cards.
      */
     public function catalogPrimaryPriceLine(): string
     {

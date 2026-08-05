@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\Zoho\ZohoSubscriptionWebhookService;
+use App\Services\SubscriptionWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
-class ZohoSubscriptionWebhookController extends Controller
+class SubscriptionWebhookController extends Controller
 {
     public function __construct(
-        private readonly ZohoSubscriptionWebhookService $zohoSubscriptionWebhookService
+        private readonly SubscriptionWebhookService $subscriptionWebhookService
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -23,7 +23,7 @@ class ZohoSubscriptionWebhookController extends Controller
         }
 
         try {
-            $result = $this->zohoSubscriptionWebhookService->sync($payload);
+            $result = $this->subscriptionWebhookService->sync($payload);
         } catch (ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed.',

@@ -8,7 +8,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | When STRIPE_SECRET is set, upgrade/downgrade uses Stripe Checkout before
-    | updating the portal and notifying Zoho CRM (create subscription function).
+    | updating the portal membership billing metadata.
     |
     */
 

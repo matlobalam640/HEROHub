@@ -176,7 +176,7 @@ class MembershipController extends Controller
         abort_unless($membership, 404);
 
         $validated = $request->validate([
-            'billing_provider' => ['nullable', 'in:stripe,zoho,manual'],
+            'billing_provider' => ['nullable', 'in:stripe,manual'],
             'billing_customer_id' => ['nullable', 'string', 'max:120'],
         ]);
 

@@ -25,7 +25,6 @@
                         <select name="billing_provider" class="mt-1 w-full rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary">
                             <option value="">Select provider</option>
                             <option value="stripe" @selected($membership->billing_provider === 'stripe')>Stripe</option>
-                            <option value="zoho" @selected($membership->billing_provider === 'zoho')>Zoho</option>
                             <option value="manual" @selected($membership->billing_provider === 'manual')>Manual / bank transfer</option>
                         </select>
                     </div>

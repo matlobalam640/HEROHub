@@ -89,7 +89,7 @@ class StripeMembershipPlanChangeCheckoutService
     }
 
     /**
-     * Apply paid plan change and notify Zoho. Safe to call from success redirect and webhook (idempotent).
+     * Apply paid plan change. Safe to call from success redirect and webhook (idempotent).
      *
      * @param  int|null  $assertUserId  When set (browser success callback), metadata uid must match.
      */
@@ -147,14 +147,6 @@ class StripeMembershipPlanChangeCheckoutService
             ]);
 
             $locked->forceFill(['applied_at' => now()])->save();
-
-            app(ZohoCrmCreateSubscriptionFromPortalNotifier::class)->notify(
-                $membership->fresh(['plan']),
-                $plan,
-                $locked->interval,
-                $checkoutSessionId,
-                $session->amount_total !== null ? (int) $session->amount_total : null
-            );
 
             return true;
         });

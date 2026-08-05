@@ -6,16 +6,16 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class VerifyZohoWebhookSecret
+class VerifyGatewayWebhookSecret
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $secret = config('heroportal.zoho_webhook_secret');
+        $secret = config('heroportal.webhook_secret');
         if (! is_string($secret) || $secret === '') {
-            abort(Response::HTTP_SERVICE_UNAVAILABLE, 'Zoho webhook is not configured.');
+            abort(Response::HTTP_SERVICE_UNAVAILABLE, 'Webhook secret is not configured.');
         }
 
-        $token = $request->header('X-Hero-Zoho-Webhook-Secret')
+        $token = $request->header('X-Hero-Webhook-Secret')
             ?? $request->bearerToken();
 
         if (! is_string($token) || ! hash_equals($secret, $token)) {

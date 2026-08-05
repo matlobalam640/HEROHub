@@ -84,7 +84,7 @@
         <tr>
             <td style="vertical-align:top;width:28px;padding:4px 0 0;font-size:14px;font-weight:700;color:{{ $primary }};">4.</td>
             <td style="padding:0 0 0;color:#475569;font-size:14px;line-height:1.6;">
-                <strong style="color:#0f172a;">Billing</strong> — charges, invoices, and payment method stay in <strong>Zoho Billing</strong>; this portal focuses on membership and your card.
+                <strong style="color:#0f172a;">Billing</strong> — charges, invoices, and payment method are managed in your billing account; this portal focuses on membership and your card.
             </td>
         </tr>
     </table>

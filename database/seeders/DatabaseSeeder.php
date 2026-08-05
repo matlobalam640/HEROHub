@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
             RetailPlansSeeder::class,
             CorporatePlansSeeder::class,
             SmallBusinessPlansSeeder::class,
-            ZohoCrmFunctionEndpointsSeeder::class,
             DemoDataSeeder::class,
             BindDemoMembershipSeeder::class,
         ]);

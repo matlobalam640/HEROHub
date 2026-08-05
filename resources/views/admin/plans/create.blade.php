@@ -266,63 +266,6 @@
                     </div>
                 </section>
 
-                {{-- Zoho product codes (optional — used to match Zoho Billing webhooks to catalog plans) --}}
-                <section
-                    aria-labelledby="plan-section-zoho-codes"
-                    class="rounded-2xl border border-slate-200/90 bg-slate-50/80 p-5 shadow-sm ring-1 ring-slate-100 sm:p-6"
-                >
-                    <div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200/80 pb-4">
-                        <div>
-                            <h2 id="plan-section-zoho-codes" class="text-xs font-bold uppercase tracking-[0.12em] text-slate-600">
-                                Zoho product codes (optional)
-                            </h2>
-                            <p class="mt-2 max-w-2xl text-xs leading-relaxed text-slate-600">
-                                If you use Zoho Billing webhooks, set the product or plan codes here so incoming payloads map to this catalog row. Public checkout uses Stripe only.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="hero-admin-plan-zoho-grid mt-6">
-                        <div class="min-w-0 rounded-xl border border-slate-200/90 bg-white/95 p-4 shadow-sm ring-1 ring-slate-100 sm:p-5">
-                            <div class="border-b border-slate-100 pb-3">
-                                <h3 class="text-sm font-bold text-slate-900">Monthly</h3>
-                            </div>
-                            <div class="hero-admin-plan-field mt-4">
-                                <x-input-label for="zoho_code_monthly" value="Zoho plan / product code" />
-                                <x-text-input
-                                    id="zoho_code_monthly"
-                                    name="zoho_code_monthly"
-                                    type="text"
-                                    class="block w-full border border-slate-200 px-3 py-2.5 font-mono text-sm"
-                                    value="{{ old('zoho_code_monthly', $plan->zoho_code_monthly) }}"
-                                    placeholder="e.g. HB-01-M"
-                                    autocomplete="off"
-                                />
-                                <x-input-error class="mt-1" :messages="$errors->get('zoho_code_monthly')" />
-                            </div>
-                        </div>
-
-                        <div class="min-w-0 rounded-xl border border-slate-200/90 bg-white/95 p-4 shadow-sm ring-1 ring-slate-100 sm:p-5">
-                            <div class="border-b border-slate-100 pb-3">
-                                <h3 class="text-sm font-bold text-slate-900">Annual</h3>
-                            </div>
-                            <div class="hero-admin-plan-field mt-4">
-                                <x-input-label for="zoho_code_yearly" value="Zoho plan / product code" />
-                                <x-text-input
-                                    id="zoho_code_yearly"
-                                    name="zoho_code_yearly"
-                                    type="text"
-                                    class="block w-full border border-slate-200 px-3 py-2.5 font-mono text-sm"
-                                    value="{{ old('zoho_code_yearly', $plan->zoho_code_yearly) }}"
-                                    placeholder="e.g. HB-01-Y"
-                                    autocomplete="off"
-                                />
-                                <x-input-error class="mt-1" :messages="$errors->get('zoho_code_yearly')" />
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
                 {{-- Features --}}
                 <section aria-labelledby="plan-section-features">
                     <div class="flex items-center gap-2 border-b border-slate-200/80 pb-4">

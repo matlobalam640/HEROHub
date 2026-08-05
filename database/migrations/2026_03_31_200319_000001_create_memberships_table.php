@@ -25,8 +25,8 @@ return new class extends Migration
 
             $table->string('status')->default('inactive'); // inactive, active, expired, cancelled
 
-            // Billing integration placeholders (Stripe/Zoho later)
-            $table->string('billing_provider')->nullable(); // stripe, zoho
+            // Billing integration placeholders
+            $table->string('billing_provider')->nullable(); // stripe, manual
             $table->string('billing_customer_id')->nullable();
             $table->string('billing_subscription_id')->nullable();
             $table->timestamps();

@@ -25,7 +25,7 @@ What to do next
 1. My membership — coverage, plan, details.
 2. Digital card — download PDF from My membership after sign-in (QR for verification).
 3. Household — add dependents if your plan includes family coverage.
-4. Billing — Zoho Billing for invoices and payment method; portal for membership and card.
+4. Billing — invoices and payment method are handled in your billing account; portal is for membership and card.
 
 ---
 {{ config('app.name') }} · {{ config('app.url') }}

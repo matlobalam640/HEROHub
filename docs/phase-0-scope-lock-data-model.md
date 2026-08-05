@@ -1,6 +1,6 @@
 # Phase 0 Scope Lock - Final Data Model (v1)
 
-This document locks the baseline data model for the Zoho integration workstream.
+This document locks the baseline data model for the direct gateway/webhook integration workstream.
 
 ## 1) User (Portal Account Holder)
 
@@ -35,7 +35,7 @@ This document locks the baseline data model for the Zoho integration workstream.
 - `coverage_ends_on` (date, nullable)
 - `auto_renew` (bool, default true)
 - `status` (string; expected: `inactive|active|expired|cancelled`)
-- `billing_provider` (string; expected: `zoho|stripe|manual`, nullable)
+- `billing_provider` (string; expected: `stripe|manual`, nullable)
 - `billing_customer_id` (string, nullable)
 - `billing_subscription_id` (string, unique, nullable)
 - `billing_subscription_created_at` (timestamp, nullable)
@@ -45,7 +45,7 @@ This document locks the baseline data model for the Zoho integration workstream.
 - `created_at`, `updated_at`
 
 ### Locked behavior
-- `billing_subscription_id` is the idempotency anchor for Zoho subscription events.
+- `billing_subscription_id` is the idempotency anchor for subscription events.
 - Webhooks must upsert by `billing_subscription_id`.
 - Renewal reminders should use `billing_next_billing_at` as the schedule anchor.
 
@@ -69,7 +69,7 @@ This document locks the baseline data model for the Zoho integration workstream.
 
 ### Locked behavior
 - Exactly one primary member per membership (application invariant).
-- Zoho coverage/profile APIs will upsert this row for identity/profile updates.
+- Profile updates will upsert this row for identity/profile changes.
 
 ## 4) Dependents / Coverage Profile (`member_dependents`)
 
@@ -86,34 +86,33 @@ This document locks the baseline data model for the Zoho integration workstream.
 
 ### Locked behavior
 - Used for both family dependents and temporary visitors.
-- Coverage webhook will upsert dependents per membership.
+- In-portal profile flows will upsert dependents per membership.
 
-## Phase 0 Additions Required Before Coverage API Mapping
+## Phase 0 Additions Required Before Coverage Profile Completion
 
-To safely support richer Zoho CRM form payloads, add these columns to `member_dependents`:
+To safely support richer in-portal profile input and CSV imports, add these columns to `member_dependents`:
 - `email` (nullable string)
 - `id_number` (nullable string)
 - `country` (nullable string)
 - `city` (nullable string)
 
 Optional but recommended:
-- `external_source_id` (nullable string, indexed) for dependable upsert from Zoho row IDs.
+- `external_source_id` (nullable string, indexed) for dependable upsert from external migration sources.
 
 ## Event-Driven Webhook Split (Locked)
 
 Use separate endpoints:
-- `/api/v1/webhooks/zoho/subscription-created`
-- `/api/v1/webhooks/zoho/subscription-updated`
-- `/api/v1/webhooks/zoho/subscription-renewed`
-- `/api/v1/webhooks/zoho/subscription-cancelled`
-- `/api/v1/webhooks/zoho/subscription-deleted`
-- `/api/v1/webhooks/zoho/coverage-profile-submitted`
+- `/api/v1/webhooks/subscription-created`
+- `/api/v1/webhooks/subscription-updated`
+- `/api/v1/webhooks/subscription-renewed`
+- `/api/v1/webhooks/subscription-cancelled`
+- `/api/v1/webhooks/subscription-deleted`
 
 All endpoints must use the same webhook-secret middleware.
 
 ## Historical Data Migration Requirement (Locked)
 
-Include a dedicated migration phase to backfill approximately 5 years of Zoho data after final payload shape is approved:
+Include a dedicated migration phase to backfill approximately 5 years of historical membership data via CSV files after final payload shape is approved:
 - users
 - memberships
 - billing identifiers/timeline
