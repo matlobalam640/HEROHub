@@ -1,3 +1,15 @@
+@php
+    $usaPaymentsEnabled = \App\Services\UsaPaymentsMembershipCheckoutService::isEnabled();
+    $canRenewOnline = $usaPaymentsEnabled
+        && $membership->plan
+        && app(\App\Services\UsaPaymentsMembershipCheckoutService::class)->canCheckoutPlan(
+            $membership->plan,
+            $membership->plan->billing_interval === 'one_time'
+                ? 'onetime'
+                : ($membership->plan->billing_interval === 'monthly' ? 'monthly' : 'yearly')
+        );
+@endphp
+
 <div id="auto-renew" class="scroll-mt-28 mt-8 border-t border-slate-200 pt-6">
     <h2 class="text-sm font-semibold text-slate-900">Auto-renewal</h2>
     <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-between">
@@ -17,15 +29,26 @@
                 </span>
                 <p class="pt-0.5 leading-snug">
                     Auto-renew is currently <span class="font-semibold">disabled</span>.
+                    @if($canRenewOnline)
+                        Pay now to renew your membership and restore coverage.
+                    @endif
                 </p>
             </div>
         @endif
-        <form method="POST" action="{{ route('customer.membership.auto-renew.update') }}" class="flex shrink-0 items-center sm:justify-end">
-            @csrf
-            <input type="hidden" name="auto_renew" value="{{ $membership->auto_renew ? 0 : 1 }}">
-            <button type="submit" class="w-full rounded-full bg-hero-primary px-4 py-2.5 text-sm font-semibold text-white shadow-hero-cta transition hover:bg-hero-primary-hover sm:w-auto">
-                {{ $membership->auto_renew ? 'Disable' : 'Enable' }}
-            </button>
-        </form>
+        <div class="flex shrink-0 flex-col gap-2 sm:items-end">
+            @if($canRenewOnline)
+                <a href="{{ route('customer.membership.renew') }}"
+                   class="inline-flex w-full items-center justify-center rounded-full bg-hero-primary px-4 py-2.5 text-sm font-semibold text-white shadow-hero-cta transition hover:bg-hero-primary-hover sm:w-auto">
+                    Renew / pay now
+                </a>
+            @endif
+            <form method="POST" action="{{ route('customer.membership.auto-renew.update') }}" class="flex shrink-0 items-center sm:justify-end">
+                @csrf
+                <input type="hidden" name="auto_renew" value="{{ $membership->auto_renew ? 0 : 1 }}">
+                <button type="submit" class="w-full rounded-full border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 sm:w-auto">
+                    {{ $membership->auto_renew ? 'Disable auto-renew' : 'Enable auto-renew' }}
+                </button>
+            </form>
+        </div>
     </div>
 </div>

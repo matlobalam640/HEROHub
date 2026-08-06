@@ -8,6 +8,7 @@ use App\Models\Member;
 use App\Models\Membership;
 use App\Models\Plan;
 use App\Models\User;
+use App\Support\UsaPaymentsPlanMapper;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Support\Arr;
@@ -30,7 +31,7 @@ class SubscriptionWebhookService
             throw ValidationException::withMessages(['subscription_id' => 'subscription_id is required.']);
         }
 
-        $planCode = $this->resolvePlanCode($payload);
+        $planCode = UsaPaymentsPlanMapper::portalPlanCodeFromWebhookPayload($payload);
         if ($planCode === null || $planCode === '') {
             throw ValidationException::withMessages(['plan' => 'Could not resolve a plan identifier from payload.']);
         }
@@ -387,6 +388,7 @@ class SubscriptionWebhookService
 
         return match ($raw) {
             'stripe' => 'stripe',
+            'usa_payments', 'usa payments', 'usapayments' => 'usa_payments',
             'manual' => 'manual',
             default => 'manual',
         };
@@ -435,6 +437,8 @@ class SubscriptionWebhookService
             'last_name' => $last,
             'email' => $user->email,
             'phone' => trim((string) (Arr::get($customer, 'phone') ?? '')) ?: null,
+            'country' => trim((string) (Arr::get($customer, 'country') ?? '')) ?: $primary->country,
+            'city' => trim((string) (Arr::get($customer, 'city') ?? '')) ?: $primary->city,
         ]);
 
         if (! $primary->qr_token) {

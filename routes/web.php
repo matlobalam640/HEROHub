@@ -9,7 +9,9 @@ use App\Http\Controllers\Business\VisitorController as BusinessVisitorController
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\StaffMembershipController;
 use App\Http\Controllers\Customer\MembershipController;
+use App\Http\Controllers\Customer\MembershipPaymentMethodController;
 use App\Http\Controllers\Customer\MembershipStripePlanCheckoutController;
+use App\Http\Controllers\Customer\MembershipUsaPaymentsCheckoutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Dispatch\VerificationController;
 use App\Http\Controllers\Partner\CommissionReportController;
@@ -75,6 +77,12 @@ Route::middleware('auth')->group(function () {
             ->name('customer.membership.plan.stripe.start');
         Route::get('/my/membership/plan/stripe/success', [MembershipStripePlanCheckoutController::class, 'success'])
             ->name('customer.membership.plan.stripe.success');
+        Route::get('/my/membership/renew', [MembershipUsaPaymentsCheckoutController::class, 'showRenew'])
+            ->name('customer.membership.renew');
+        Route::get('/my/membership/plan/usa-payments-checkout/{token}', [MembershipUsaPaymentsCheckoutController::class, 'showReview'])
+            ->name('customer.membership.plan.usa-payments.review');
+        Route::post('/my/membership/usa-payments-checkout', [MembershipUsaPaymentsCheckoutController::class, 'submit'])
+            ->name('customer.membership.usa-payments.submit');
         Route::post('/my/membership/dependents', [MembershipController::class, 'storeDependent'])
             ->name('customer.membership.dependents.store');
         Route::delete('/my/membership/dependents/{dependentId}', [MembershipController::class, 'destroyDependent'])
@@ -87,10 +95,12 @@ Route::middleware('auth')->group(function () {
             ->name('customer.membership.visitors');
         Route::get('/my/membership/family-members', [MembershipController::class, 'familyMembers'])
             ->name('customer.membership.family');
-        Route::post('/my/membership/billing', [MembershipController::class, 'updateBilling'])
+        Route::post('/my/membership/billing', [MembershipPaymentMethodController::class, 'updateBillingMeta'])
             ->name('customer.membership.billing.update');
-        Route::get('/my/membership/payment-method', [MembershipController::class, 'paymentMethod'])
+        Route::get('/my/membership/payment-method', [MembershipPaymentMethodController::class, 'show'])
             ->name('customer.membership.billing');
+        Route::post('/my/membership/payment-method/usa-payments', [MembershipPaymentMethodController::class, 'updateUsaPaymentsCard'])
+            ->name('customer.membership.payment-method.usa-payments');
         Route::post('/my/membership/auto-renew', [MembershipController::class, 'updateAutoRenew'])
             ->name('customer.membership.auto-renew.update');
         Route::get('/my/membership/card.pdf', [MembershipController::class, 'downloadCard'])

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Customer\MembershipUsaPaymentsCheckoutController;
 use App\Models\Membership;
 use App\Models\Plan;
 use App\Services\StripeMembershipPlanChangeCheckoutService;
+use App\Services\UsaPaymentsMembershipCheckoutService;
 use App\Support\MembershipCardPresenter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -70,6 +72,11 @@ class MembershipController extends Controller
             return back()->with('status', 'This is already your active plan.');
         }
 
+        $redirect = $this->redirectToUsaPaymentsReviewIfEligible($request, $membership, $plan, $interval);
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
         $redirect = $this->redirectToStripePlanReviewIfEligible($request, $membership, $plan, $interval);
         if ($redirect !== null) {
             return $redirect;
@@ -79,9 +86,9 @@ class MembershipController extends Controller
 
         return back()->with(
             'status',
-            StripeMembershipPlanChangeCheckoutService::isEnabled()
-                ? 'Plan updated in the portal only. This plan has no Stripe price for the selected billing cycle — set catalog prices (USD) or pick another interval.'
-                : 'Plan updated in the portal. Card checkout is disabled — set STRIPE_SECRET in your environment to collect payment when changing plans.'
+            UsaPaymentsMembershipCheckoutService::isEnabled() || StripeMembershipPlanChangeCheckoutService::isEnabled()
+                ? 'Plan updated in the portal only. Online checkout is not available for this plan or billing cycle.'
+                : 'Plan updated in the portal. Card checkout is disabled — configure USA Payments or Stripe in your environment.'
         );
     }
 
@@ -110,13 +117,44 @@ class MembershipController extends Controller
                 ->with('status', 'This is already your active plan.');
         }
 
+        $redirect = $this->redirectToUsaPaymentsReviewIfEligible($request, $membership, $plan, $interval);
+        if ($redirect !== null) {
+            return $redirect;
+        }
+
         $redirect = $this->redirectToStripePlanReviewIfEligible($request, $membership, $plan, $interval);
         if ($redirect !== null) {
             return $redirect;
         }
 
         return redirect()->route('portal.plans.retail')
-            ->with('status', 'Online payment is not available for this plan or billing cycle. Enable Stripe (STRIPE_SECRET) and ensure the plan has a USD price.');
+            ->with('status', 'Online payment is not available for this plan or billing cycle. Configure USA Payments or Stripe and ensure the plan has a USD price.');
+    }
+
+    private function redirectToUsaPaymentsReviewIfEligible(Request $request, Membership $membership, Plan $plan, string $interval): ?RedirectResponse
+    {
+        $checkoutService = app(UsaPaymentsMembershipCheckoutService::class);
+        if (! UsaPaymentsMembershipCheckoutService::isEnabled()) {
+            return null;
+        }
+
+        $interval = strtolower($interval);
+        if (! in_array($interval, ['monthly', 'yearly'], true)) {
+            return null;
+        }
+
+        if (! $checkoutService->canCheckoutPlan($plan, $interval)) {
+            return null;
+        }
+
+        $token = MembershipUsaPaymentsCheckoutController::createReviewToken(
+            $membership,
+            $plan,
+            $interval,
+            (int) $request->user()->id
+        );
+
+        return redirect()->route('customer.membership.plan.usa-payments.review', ['token' => $token]);
     }
 
     private function redirectToStripePlanReviewIfEligible(Request $request, Membership $membership, Plan $plan, string $interval): ?RedirectResponse
@@ -162,27 +200,14 @@ class MembershipController extends Controller
             ->get();
 
         $stripePlanCheckoutEnabled = StripeMembershipPlanChangeCheckoutService::isEnabled();
+        $usaPaymentsCheckoutEnabled = UsaPaymentsMembershipCheckoutService::isEnabled();
 
         return view('customer.membership.plan', [
             'membership' => $membership,
             'availablePlans' => $availablePlans,
             'stripePlanCheckoutEnabled' => $stripePlanCheckoutEnabled,
+            'usaPaymentsCheckoutEnabled' => $usaPaymentsCheckoutEnabled,
         ]);
-    }
-
-    public function updateBilling(Request $request): RedirectResponse
-    {
-        $membership = $this->membershipFor($request);
-        abort_unless($membership, 404);
-
-        $validated = $request->validate([
-            'billing_provider' => ['nullable', 'in:stripe,manual'],
-            'billing_customer_id' => ['nullable', 'string', 'max:120'],
-        ]);
-
-        $membership->update($validated);
-
-        return back()->with('status', 'Payment method updated.');
     }
 
     public function updateAutoRenew(Request $request): RedirectResponse
@@ -330,16 +355,6 @@ class MembershipController extends Controller
             'membership' => $membership,
             'familyDependents' => $familyDependents,
             'canManageFamilyDependents' => $canManageFamilyDependents,
-        ]);
-    }
-
-    public function paymentMethod(Request $request)
-    {
-        $membership = $this->membershipFor($request);
-        abort_unless($membership, 404);
-
-        return view('customer.membership.payment-method', [
-            'membership' => $membership,
         ]);
     }
 
