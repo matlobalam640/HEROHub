@@ -662,10 +662,10 @@ class CoverageInformationController extends Controller
     private function residentStatusOptions(): array
     {
         return [
-            'citizen' => CoverageFormTranslations::en('resident_citizen'),
-            'permanent_resident' => CoverageFormTranslations::en('resident_permanent'),
-            'temporary_resident' => CoverageFormTranslations::en('resident_temporary'),
-            'non_resident' => CoverageFormTranslations::en('resident_non_resident'),
+            'citizen' => CoverageFormTranslations::t('resident_citizen'),
+            'permanent_resident' => CoverageFormTranslations::t('resident_permanent'),
+            'temporary_resident' => CoverageFormTranslations::t('resident_temporary'),
+            'non_resident' => CoverageFormTranslations::t('resident_non_resident'),
         ];
     }
 }

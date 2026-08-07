@@ -22,6 +22,26 @@ final class CoverageFormTranslations
         return self::pair($key)['fr'];
     }
 
+    /**
+     * @return list<string>
+     */
+    public static function supportedLocales(): array
+    {
+        return ['en', 'fr', 'es'];
+    }
+
+    public static function t(string $key, ?string $locale = null): string
+    {
+        $locale = $locale ?? app()->getLocale();
+        $pair = self::pair($key);
+
+        if ($locale === 'fr') {
+            return $pair['fr'];
+        }
+
+        return $pair['en'];
+    }
+
     public static function bilingual(string $key): string
     {
         return self::en($key).' / '.self::fr($key);

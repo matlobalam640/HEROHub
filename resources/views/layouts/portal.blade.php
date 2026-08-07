@@ -54,7 +54,7 @@
                 languageOpen: false,
                 notificationOpen: false,
                 searchOpen: false,
-                locale: 'en',
+                locale: @json(session('portal_locale', 'en')),
                 searchQuery: '',
                 searchLoading: false,
                 searchDataResults: [],
@@ -85,11 +85,11 @@
                 init() {
                     try {
                         this.sidebarCollapsed = localStorage.getItem('hero_portal_sidebar_collapsed') === '1';
-                        this.locale = localStorage.getItem('hero_portal_locale') || 'en';
                         this.notifications = JSON.parse(localStorage.getItem('hero_portal_notifications') || JSON.stringify(this.notifications));
                         localStorage.removeItem('hero_portal_theme');
                     } catch (e) {}
                     document.documentElement.classList.remove('dark-theme');
+                    document.documentElement.lang = this.locale;
                     this.$watch('searchQuery', (value) => {
                         clearTimeout(this.searchDebounce);
                         const q = (value || '').trim();
@@ -109,12 +109,30 @@
                     } catch (e) {}
                 },
                 setLocale(nextLocale) {
-                    this.locale = nextLocale;
-                    this.languageOpen = false;
-                    document.documentElement.lang = nextLocale;
-                    try {
-                        localStorage.setItem('hero_portal_locale', nextLocale);
-                    } catch (e) {}
+                    if (nextLocale === this.locale) {
+                        this.languageOpen = false;
+                        return;
+                    }
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = @json(route('portal.locale.update'));
+                    form.style.display = 'none';
+
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = @json(csrf_token());
+
+                    const localeInput = document.createElement('input');
+                    localeInput.type = 'hidden';
+                    localeInput.name = 'locale';
+                    localeInput.value = nextLocale;
+
+                    form.appendChild(csrf);
+                    form.appendChild(localeInput);
+                    document.body.appendChild(form);
+                    form.submit();
                 },
                 markAllNotificationsRead() {
                     this.notifications = this.notifications.map((item) => ({ ...item, read: true }));
@@ -285,14 +303,14 @@
 
                         <div class="flex shrink-0 items-center gap-1 sm:gap-2">
                             <div class="relative hidden sm:block" @click.outside="languageOpen = false">
-                                <button type="button" class="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-[color:var(--insta-orange)] hover:bg-slate-100" title="Language" aria-label="Language" x-on:click="languageOpen = !languageOpen">
-                                    <i class="fa-solid fa-language text-lg" aria-hidden="true"></i>
-                                    <span class="text-xs font-semibold uppercase text-slate-700" x-text="locale"></span>
+                                <button type="button" class="hero-topbar-icon-btn inline-flex gap-2 px-3" title="Language" aria-label="Language" x-on:click="languageOpen = !languageOpen">
+                                    <i class="fa-solid fa-language text-lg text-[color:var(--hero-primary)]" aria-hidden="true"></i>
+                                    <span class="text-xs font-semibold uppercase text-[color:var(--hero-primary)]" x-text="locale"></span>
                                 </button>
                                 <div x-cloak x-show="languageOpen" class="hero-topbar-popover absolute right-0 z-50 mt-2 w-40 overflow-hidden rounded-xl border border-slate-200 shadow-xl">
-                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" x-on:click="setLocale('en')">English</button>
-                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" x-on:click="setLocale('fr')">Francais</button>
-                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" x-on:click="setLocale('es')">Espanol</button>
+                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" :class="locale === 'en' ? 'bg-[color:var(--hero-primary-soft)] font-semibold text-[color:var(--hero-primary)]' : ''" x-on:click="setLocale('en')">English</button>
+                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" :class="locale === 'fr' ? 'bg-[color:var(--hero-primary-soft)] font-semibold text-[color:var(--hero-primary)]' : ''" x-on:click="setLocale('fr')">Francais</button>
+                                    <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" :class="locale === 'es' ? 'bg-[color:var(--hero-primary-soft)] font-semibold text-[color:var(--hero-primary)]' : ''" x-on:click="setLocale('es')">Espanol</button>
                                 </div>
                             </div>
                             <div class="relative hidden sm:block" @click.outside="notificationOpen = false">
@@ -325,9 +343,9 @@
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button class="hero-topbar-icon-btn relative inline-flex h-10 items-center gap-2 px-2 sm:px-2.5">
-                                        <span class="relative flex h-9 w-9 items-center justify-center rounded-xl text-[color:var(--hero-primary)]" style="background: var(--gradient-gold);">
+                                        <span class="hero-topbar-user-avatar">
                                             <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
-                                            <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[color:var(--hero-gold-500)] ring-2 ring-white" title="Online"></span>
+                                            <span class="hero-topbar-user-avatar__status" title="Online"></span>
                                         </span>
                                         <i class="fa-solid fa-chevron-down hidden pr-1 text-xs text-slate-500 sm:inline" aria-hidden="true"></i>
                                     </button>

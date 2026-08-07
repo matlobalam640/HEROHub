@@ -53,7 +53,7 @@ final class HouseholdDependentFormOptions
 
         $key = self::relationshipOptionKeys()[$value] ?? null;
 
-        return $key ? CoverageFormTranslations::en($key) : ucfirst(str_replace('_', ' ', $value));
+        return $key ? CoverageFormTranslations::t($key) : ucfirst(str_replace('_', ' ', $value));
     }
 
     public static function genderLabel(?string $value): string

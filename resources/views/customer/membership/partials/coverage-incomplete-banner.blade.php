@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-bell text-sm" aria-hidden="true"></i>
                 </span>
                 <div class="min-w-0">
-                    <p class="font-semibold text-amber-950">{{ \App\Support\CoverageFormTranslations::en('banner_complete') }}</p>
+                    <p class="font-semibold text-amber-950">{{ \App\Support\CoverageFormTranslations::t('banner_complete') }}</p>
                     @if ($missing !== [])
                         <div class="mt-2 flex flex-wrap gap-1.5">
                             @foreach ($visible as $label)
@@ -26,7 +26,7 @@
             </div>
             <a href="{{ route('customer.membership.coverage') }}"
                class="inline-flex shrink-0 items-center justify-center rounded-lg bg-hero-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-hero-primary-hover">
-                {{ \App\Support\CoverageFormTranslations::en('banner_complete_now') }}
+                {{ \App\Support\CoverageFormTranslations::t('banner_complete_now') }}
             </a>
         </div>
     </div>

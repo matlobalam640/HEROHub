@@ -32,10 +32,10 @@
     <div>
         <x-coverage-bilingual-label key="gender" />
         <select name="{{ $fieldName('gender') }}" required class="{{ $inputClass }}">
-            <option value="">{{ \App\Support\CoverageFormTranslations::en('select') }}</option>
+            <option value="">{{ \App\Support\CoverageFormTranslations::t('select') }}</option>
             @foreach ($genderOptionKeys as $value => $labelKey)
                 <option value="{{ $value }}" @selected($fieldValue('gender') === $value)>
-                    {{ \App\Support\CoverageFormTranslations::en($labelKey) }}
+                    {{ \App\Support\CoverageFormTranslations::t($labelKey) }}
                 </option>
             @endforeach
         </select>
@@ -43,10 +43,10 @@
     <div>
         <x-coverage-bilingual-label key="relationship" />
         <select name="{{ $fieldName('relationship') }}" required class="{{ $inputClass }}">
-            <option value="">{{ \App\Support\CoverageFormTranslations::en('select') }}</option>
+            <option value="">{{ \App\Support\CoverageFormTranslations::t('select') }}</option>
             @foreach ($relationshipOptionKeys as $value => $labelKey)
                 <option value="{{ $value }}" @selected($fieldValue('relationship') === $value)>
-                    {{ \App\Support\CoverageFormTranslations::en($labelKey) }}
+                    {{ \App\Support\CoverageFormTranslations::t($labelKey) }}
                 </option>
             @endforeach
         </select>

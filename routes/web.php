@@ -22,6 +22,7 @@ use App\Http\Controllers\Partner\EnrollmentController as PartnerEnrollmentContro
 use App\Http\Controllers\Partner\PortalController as PartnerPortalController;
 use App\Http\Controllers\Partner\SalesController as PartnerSalesController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PortalLocaleController;
 use App\Http\Controllers\PortalGlobalSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripeWebhookController;
@@ -58,6 +59,8 @@ Route::get('/dashboard', DashboardController::class)
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/portal/locale', [PortalLocaleController::class, 'update'])->name('portal.locale.update');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 

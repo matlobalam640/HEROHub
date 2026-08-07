@@ -2,7 +2,7 @@
 
 @php
     if ($key) {
-        $en = \App\Support\CoverageFormTranslations::en($key);
+        $en = \App\Support\CoverageFormTranslations::t($key);
     }
 @endphp
 

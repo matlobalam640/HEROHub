@@ -193,7 +193,7 @@ class CoverageProfileRequirement
 
         if (! self::usesFamilyForm($plan) && ! self::usesVipIndividualForm($plan) && ! self::usesVip10DayForm($plan) && ! self::usesIndividualPlanForm($plan)) {
             return array_values(array_map(
-                fn (string $key) => CoverageFormTranslations::en($key),
+                fn (string $key) => CoverageFormTranslations::t($key),
                 self::missingFieldKeys($primary, self::INDIVIDUAL_FIELDS),
             ));
         }
@@ -210,112 +210,112 @@ class CoverageProfileRequirement
 
         $missing = [];
         foreach (self::missingFieldKeys($primary, $primaryFields) as $key) {
-            $missing[] = CoverageFormTranslations::en($key);
+            $missing[] = CoverageFormTranslations::t($key);
         }
 
         $profile = $membership->coverageProfile;
         if (! $profile) {
             if (self::usesVip10DayForm($plan)) {
-                $missing[] = CoverageFormTranslations::en('mailing_address');
-                $missing[] = CoverageFormTranslations::en('emergency_contact');
-                $missing[] = CoverageFormTranslations::en('trip_details_section');
-                $missing[] = CoverageFormTranslations::en('passport_section');
-                $missing[] = CoverageFormTranslations::en('medical_section');
-                $missing[] = CoverageFormTranslations::en('terms_section');
-                $missing[] = CoverageFormTranslations::en('signature_section');
+                $missing[] = CoverageFormTranslations::t('mailing_address');
+                $missing[] = CoverageFormTranslations::t('emergency_contact');
+                $missing[] = CoverageFormTranslations::t('trip_details_section');
+                $missing[] = CoverageFormTranslations::t('passport_section');
+                $missing[] = CoverageFormTranslations::t('medical_section');
+                $missing[] = CoverageFormTranslations::t('terms_section');
+                $missing[] = CoverageFormTranslations::t('signature_section');
             } elseif (self::usesIndividualPlanForm($plan)) {
-                $missing[] = CoverageFormTranslations::en('emergency_contact');
-                $missing[] = CoverageFormTranslations::en('insurance_section');
-                $missing[] = CoverageFormTranslations::en('health_questionnaire_section');
-                $missing[] = CoverageFormTranslations::en('primary_care_provider');
-                $missing[] = CoverageFormTranslations::en('medical_section');
-                $missing[] = CoverageFormTranslations::en('terms_section');
+                $missing[] = CoverageFormTranslations::t('emergency_contact');
+                $missing[] = CoverageFormTranslations::t('insurance_section');
+                $missing[] = CoverageFormTranslations::t('health_questionnaire_section');
+                $missing[] = CoverageFormTranslations::t('primary_care_provider');
+                $missing[] = CoverageFormTranslations::t('medical_section');
+                $missing[] = CoverageFormTranslations::t('terms_section');
             } else {
-                $missing[] = CoverageFormTranslations::en('emergency_contact');
-                $missing[] = CoverageFormTranslations::en('insurance_section');
-                $missing[] = CoverageFormTranslations::en('health_questionnaire_section');
-                $missing[] = CoverageFormTranslations::en('medical_section');
-                $missing[] = CoverageFormTranslations::en('photo_id_document');
-                $missing[] = CoverageFormTranslations::en('passport_document');
-                $missing[] = CoverageFormTranslations::en('terms_section');
+                $missing[] = CoverageFormTranslations::t('emergency_contact');
+                $missing[] = CoverageFormTranslations::t('insurance_section');
+                $missing[] = CoverageFormTranslations::t('health_questionnaire_section');
+                $missing[] = CoverageFormTranslations::t('medical_section');
+                $missing[] = CoverageFormTranslations::t('photo_id_document');
+                $missing[] = CoverageFormTranslations::t('passport_document');
+                $missing[] = CoverageFormTranslations::t('terms_section');
 
                 if (self::usesVipIndividualForm($plan)) {
-                    $missing[] = CoverageFormTranslations::en('physical_metrics');
-                    $missing[] = CoverageFormTranslations::en('occupation');
-                    $missing[] = CoverageFormTranslations::en('resident_status');
+                    $missing[] = CoverageFormTranslations::t('physical_metrics');
+                    $missing[] = CoverageFormTranslations::t('occupation');
+                    $missing[] = CoverageFormTranslations::t('resident_status');
                 }
             }
         } else {
             if (self::usesVip10DayForm($plan)) {
                 if (blank($profile->mailing_street) || blank($profile->mailing_city) || blank($profile->mailing_state) || blank($profile->mailing_zip_code) || blank($profile->mailing_country)) {
-                    $missing[] = CoverageFormTranslations::en('mailing_address');
+                    $missing[] = CoverageFormTranslations::t('mailing_address');
                 }
                 if (blank($profile->emergency_contact_first_name) || blank($profile->emergency_contact_last_name) || blank($profile->emergency_contact_phone)) {
-                    $missing[] = CoverageFormTranslations::en('emergency_contact');
+                    $missing[] = CoverageFormTranslations::t('emergency_contact');
                 }
                 if (! self::tripDetailsAreComplete($profile->trip_details)) {
-                    $missing[] = CoverageFormTranslations::en('trip_details_section');
+                    $missing[] = CoverageFormTranslations::t('trip_details_section');
                 }
                 if (blank($profile->passport_issued_by)) {
-                    $missing[] = CoverageFormTranslations::en('passport_section');
+                    $missing[] = CoverageFormTranslations::t('passport_section');
                 }
                 if (blank($profile->allergies) && blank($profile->chronic_conditions)) {
-                    $missing[] = CoverageFormTranslations::en('medical_section');
+                    $missing[] = CoverageFormTranslations::t('medical_section');
                 }
                 if ($profile->terms_accepted_at === null) {
-                    $missing[] = CoverageFormTranslations::en('terms_section');
+                    $missing[] = CoverageFormTranslations::t('terms_section');
                 }
                 if (blank($profile->applicant_signature) || $profile->signature_date === null) {
-                    $missing[] = CoverageFormTranslations::en('signature_section');
+                    $missing[] = CoverageFormTranslations::t('signature_section');
                 }
             } elseif (self::usesIndividualPlanForm($plan)) {
                 if (blank($profile->emergency_contact_first_name) || blank($profile->emergency_contact_last_name) || blank($profile->emergency_contact_phone) || blank($profile->emergency_contact_relationship)) {
-                    $missing[] = CoverageFormTranslations::en('emergency_contact');
+                    $missing[] = CoverageFormTranslations::t('emergency_contact');
                 }
                 if (blank($profile->health_plan_provider) || blank($profile->health_insurer)) {
-                    $missing[] = CoverageFormTranslations::en('insurance_section');
+                    $missing[] = CoverageFormTranslations::t('insurance_section');
                 }
                 if (blank($profile->primary_care_provider)) {
-                    $missing[] = CoverageFormTranslations::en('primary_care_provider');
+                    $missing[] = CoverageFormTranslations::t('primary_care_provider');
                 }
                 if (! self::individualHealthQuestionnaireIsComplete($profile->health_questionnaire)) {
-                    $missing[] = CoverageFormTranslations::en('health_questionnaire_section');
+                    $missing[] = CoverageFormTranslations::t('health_questionnaire_section');
                 }
                 if (blank($profile->allergies) && blank($profile->chronic_conditions) && blank($profile->other_medical_info) && empty($profile->medical_condition_flags)) {
-                    $missing[] = CoverageFormTranslations::en('medical_section');
+                    $missing[] = CoverageFormTranslations::t('medical_section');
                 }
                 if ($profile->terms_accepted_at === null) {
-                    $missing[] = CoverageFormTranslations::en('terms_section');
+                    $missing[] = CoverageFormTranslations::t('terms_section');
                 }
             } else {
                 if (blank($profile->emergency_contact_first_name) || blank($profile->emergency_contact_last_name) || blank($profile->emergency_contact_phone)) {
-                    $missing[] = CoverageFormTranslations::en('emergency_contact');
+                    $missing[] = CoverageFormTranslations::t('emergency_contact');
                 }
                 if (blank($profile->insurance_company) || blank($profile->insurance_policy_number) || blank($profile->insurance_provider_phone)) {
-                    $missing[] = CoverageFormTranslations::en('insurance_section');
+                    $missing[] = CoverageFormTranslations::t('insurance_section');
                 }
                 if (self::usesVipIndividualForm($plan)) {
                     if (blank($profile->resident_status)) {
-                        $missing[] = CoverageFormTranslations::en('resident_status');
+                        $missing[] = CoverageFormTranslations::t('resident_status');
                     }
                     if (blank($profile->occupation) || blank($profile->measurement_unit) || blank($profile->height) || blank($profile->weight)) {
-                        $missing[] = CoverageFormTranslations::en('physical_metrics');
+                        $missing[] = CoverageFormTranslations::t('physical_metrics');
                     }
                     if (! self::healthQuestionnaireIsComplete($profile->health_questionnaire)) {
-                        $missing[] = CoverageFormTranslations::en('health_questionnaire_section');
+                        $missing[] = CoverageFormTranslations::t('health_questionnaire_section');
                     }
                 }
                 if (blank($profile->blood_type) || blank($profile->allergies)) {
-                    $missing[] = CoverageFormTranslations::en('medical_section');
+                    $missing[] = CoverageFormTranslations::t('medical_section');
                 }
                 if (blank($profile->photo_id_path)) {
-                    $missing[] = CoverageFormTranslations::en('photo_id_document');
+                    $missing[] = CoverageFormTranslations::t('photo_id_document');
                 }
                 if (blank($profile->passport_path)) {
-                    $missing[] = CoverageFormTranslations::en('passport_document');
+                    $missing[] = CoverageFormTranslations::t('passport_document');
                 }
                 if ($profile->terms_accepted_at === null) {
-                    $missing[] = CoverageFormTranslations::en('terms_section');
+                    $missing[] = CoverageFormTranslations::t('terms_section');
                 }
             }
         }
@@ -326,7 +326,7 @@ class CoverageProfileRequirement
                 ->count();
 
             if ($completeDependents < 1) {
-                $missing[] = CoverageFormTranslations::en('at_least_one_dependent');
+                $missing[] = CoverageFormTranslations::t('at_least_one_dependent');
             }
         }
 

@@ -1220,6 +1220,22 @@
     @apply border-slate-300 bg-white text-[color:var(--hero-primary)];
   }
 
+  .hero-topbar-user-avatar {
+    @apply relative flex h-9 w-9 items-center justify-center rounded-xl;
+    background: var(--hero-primary);
+    color: var(--hero-accent-gold);
+    box-shadow: 0 4px 12px -4px rgba(20, 29, 53, 0.35);
+  }
+
+  .hero-topbar-user-avatar i {
+    color: var(--hero-accent-gold);
+  }
+
+  .hero-topbar-user-avatar__status {
+    @apply absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-white;
+    background: var(--hero-accent-gold);
+  }
+
   /* Guest auth — glass panels + premium typography */
   .hero-guest-canvas {
     min-height: 100vh;
