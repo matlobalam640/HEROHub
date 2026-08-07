@@ -1220,10 +1220,91 @@
   }
 
   .hero-topbar-popover {
-    background: rgba(255, 255, 255, 0.92) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(var(--glass-blur));
     -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: var(--shadow-elevated) !important;
+    box-shadow: 0 20px 40px -16px rgba(20, 29, 53, 0.28) !important;
+  }
+
+  .hero-notifications-badge {
+    @apply absolute right-2 top-2 h-2 w-2 rounded-full ring-2 ring-white;
+    background: var(--hero-secondary);
+  }
+
+  .hero-notifications-panel {
+    width: 300px;
+    min-width: 280px;
+    overflow: hidden;
+    border: 1px solid rgba(20, 29, 53, 0.1);
+    border-radius: 1rem;
+  }
+
+  .hero-notifications-panel__header {
+    @apply flex items-center justify-between gap-3 px-4 py-3;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+    border-bottom: 2px solid var(--hero-gold-500);
+  }
+
+  .hero-notifications-panel__title {
+    @apply text-sm font-semibold text-[color:var(--hero-primary)];
+  }
+
+  .hero-notifications-panel__mark-read {
+    @apply whitespace-nowrap rounded-lg px-2.5 py-1 text-xs font-semibold text-[color:var(--hero-primary)] transition;
+    background: var(--hero-primary-soft);
+  }
+
+  .hero-notifications-panel__mark-read:hover {
+    background: rgba(20, 29, 53, 0.12);
+  }
+
+  .hero-notifications-panel__list {
+    @apply max-h-72 overflow-y-auto bg-white;
+  }
+
+  .hero-notification-item {
+    @apply border-b border-slate-100 px-4 py-3 transition last:border-b-0;
+  }
+
+  .hero-notification-item:hover {
+    background: var(--hero-primary-soft);
+  }
+
+  .hero-notification-item--unread {
+    background: rgba(250, 246, 235, 0.92);
+    box-shadow: inset 3px 0 0 var(--hero-gold-500);
+  }
+
+  .hero-notification-item--read {
+    @apply bg-white;
+  }
+
+  .hero-notification-item__icon {
+    @apply mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs;
+    background: var(--hero-primary);
+    color: var(--hero-accent-gold);
+  }
+
+  .hero-notification-item--read .hero-notification-item__icon {
+    background: var(--hero-primary-soft);
+    color: var(--hero-primary);
+  }
+
+  .hero-notification-item__title {
+    @apply text-sm font-semibold leading-snug text-[color:var(--hero-primary)];
+  }
+
+  .hero-notification-item--read .hero-notification-item__title {
+    @apply font-medium text-slate-700;
+  }
+
+  .hero-notification-item__time {
+    @apply mt-1 text-xs text-slate-500;
+  }
+
+  .hero-notification-item__dot {
+    @apply mt-1 h-2 w-2 shrink-0 rounded-full;
+    background: var(--hero-gold-500);
   }
 
   .hero-topbar-icon-btn {

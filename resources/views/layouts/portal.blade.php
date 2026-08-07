@@ -316,21 +316,29 @@
                             <div class="relative hidden sm:block" @click.outside="notificationOpen = false">
                                 <button type="button" class="hero-topbar-icon-btn relative" title="Notifications" aria-label="Notifications" x-on:click="notificationOpen = !notificationOpen">
                                     <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
-                                    <span x-show="notifications.some((item) => !item.read)" class="absolute right-2 top-2 h-2 w-2 rounded-full bg-[color:var(--insta-orange)] ring-2 ring-white"></span>
+                                    <span x-show="notifications.some((item) => !item.read)" class="hero-notifications-badge" aria-hidden="true"></span>
                                 </button>
-                                <div x-cloak x-show="notificationOpen" style="width: 260px; min-width: 260px;" class="hero-topbar-popover absolute right-0 z-50 mt-2 max-w-[calc(100vw-1rem)] overflow-hidden rounded-2xl border border-slate-200 shadow-xl">
-                                    <div class="flex items-center gap-3 border-b border-slate-200 px-4 py-3">
-                                        <div class="text-base font-semibold leading-tight">Notifications</div>
-                                        <button type="button" class="whitespace-nowrap rounded-lg px-2 py-1 text-xs font-semibold text-hero-primary hover:bg-slate-100" x-on:click="markAllNotificationsRead()">Mark all read</button>
+                                <div x-cloak x-show="notificationOpen" class="hero-notifications-panel hero-topbar-popover absolute right-0 z-50 mt-2 max-w-[calc(100vw-1rem)]">
+                                    <div class="hero-notifications-panel__header">
+                                        <div class="hero-notifications-panel__title">Notifications</div>
+                                        <button type="button" class="hero-notifications-panel__mark-read" x-on:click="markAllNotificationsRead()">Mark all read</button>
                                     </div>
-                                    <div class="max-h-72 overflow-y-auto">
+                                    <div class="hero-notifications-panel__list">
                                         <template x-for="note in notifications" :key="note.id">
-                                            <div class="border-b border-slate-100 px-4 py-3 last:border-b-0">
-                                                <div class="flex items-start gap-2">
-                                                    <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[color:var(--insta-orange)]" x-show="!note.read"></span>
-                                                    <p class="text-sm font-medium leading-6 text-slate-800" x-text="note.title"></p>
+                                            <div
+                                                class="hero-notification-item"
+                                                :class="note.read ? 'hero-notification-item--read' : 'hero-notification-item--unread'"
+                                            >
+                                                <div class="flex items-start gap-3">
+                                                    <span class="hero-notification-item__icon" aria-hidden="true">
+                                                        <i class="fa-regular fa-bell"></i>
+                                                    </span>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="hero-notification-item__title" x-text="note.title"></p>
+                                                        <p class="hero-notification-item__time" x-text="note.when"></p>
+                                                    </div>
+                                                    <span x-show="!note.read" class="hero-notification-item__dot" aria-hidden="true"></span>
                                                 </div>
-                                                <p class="mt-1 pl-4 text-xs text-slate-500" x-text="note.when"></p>
                                             </div>
                                         </template>
                                     </div>
