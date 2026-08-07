@@ -1221,7 +1221,7 @@
   }
 
   .hero-topbar-user-avatar {
-    @apply relative flex h-9 w-9 items-center justify-center rounded-xl;
+    @apply relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl;
     background: var(--hero-primary);
     color: var(--hero-accent-gold);
     box-shadow: 0 4px 12px -4px rgba(20, 29, 53, 0.35);
@@ -1234,6 +1234,24 @@
   .hero-topbar-user-avatar__status {
     @apply absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-white;
     background: var(--hero-accent-gold);
+  }
+
+  .hero-topbar-profile-trigger {
+    @apply inline-flex h-10 max-w-full shrink-0 items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-2.5 shadow-sm backdrop-blur-sm;
+    transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .hero-topbar-profile-trigger:hover {
+    transform: translateY(-1px);
+    @apply border-slate-300 bg-white;
+  }
+
+  .hero-topbar-profile-trigger__name {
+    @apply text-sm font-semibold leading-none text-[color:var(--hero-primary)];
+  }
+
+  .hero-topbar-profile-trigger__chevron {
+    @apply shrink-0 text-[10px] text-[color:var(--hero-primary)] opacity-70;
   }
 
   /* Guest auth — glass panels + premium typography */

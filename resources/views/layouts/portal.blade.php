@@ -54,7 +54,7 @@
                 languageOpen: false,
                 notificationOpen: false,
                 searchOpen: false,
-                locale: @json(session('portal_locale', 'en')),
+                locale: '{{ session('portal_locale', 'en') }}',
                 searchQuery: '',
                 searchLoading: false,
                 searchDataResults: [],
@@ -116,13 +116,13 @@
 
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = @json(route('portal.locale.update'));
+                    form.action = '{{ route('portal.locale.update') }}';
                     form.style.display = 'none';
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
                     csrf.name = '_token';
-                    csrf.value = @json(csrf_token());
+                    csrf.value = '{{ csrf_token() }}';
 
                     const localeInput = document.createElement('input');
                     localeInput.type = 'hidden';
@@ -337,17 +337,18 @@
                                 </div>
                             </div>
                             <div class="mx-1 hidden h-8 w-px bg-slate-200 sm:block" aria-hidden="true"></div>
-                            <div class="hidden text-right lg:block" :class="sidebarCollapsed ? 'xl:hidden' : ''">
-                                <div class="text-sm font-semibold leading-4 text-slate-800">{{ auth()->user()->name }}</div>
-                            </div>
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
-                                    <button class="hero-topbar-icon-btn relative inline-flex h-10 items-center gap-2 px-2 sm:px-2.5">
+                                    <button type="button" class="hero-topbar-profile-trigger" aria-label="Account menu">
+                                        <span
+                                            class="hero-topbar-profile-trigger__name hidden max-w-[9rem] truncate lg:inline"
+                                            :class="sidebarCollapsed ? 'xl:hidden' : ''"
+                                        >{{ auth()->user()->name }}</span>
                                         <span class="hero-topbar-user-avatar">
                                             <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
                                             <span class="hero-topbar-user-avatar__status" title="Online"></span>
                                         </span>
-                                        <i class="fa-solid fa-chevron-down hidden pr-1 text-xs text-slate-500 sm:inline" aria-hidden="true"></i>
+                                        <i class="fa-solid fa-chevron-down hero-topbar-profile-trigger__chevron" aria-hidden="true"></i>
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
