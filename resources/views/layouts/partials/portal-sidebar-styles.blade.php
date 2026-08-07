@@ -22,9 +22,11 @@
 
     .hero-panel-header {
 
-        border-bottom: 1px solid rgba(212, 168, 83, 0.22);
+        border-bottom: 1px solid rgba(20, 29, 53, 0.08);
 
-        background: var(--gradient-gold-soft);
+        background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+
+        box-shadow: inset 0 -2px 0 var(--hero-gold-500);
 
     }
 
