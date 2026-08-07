@@ -9,6 +9,7 @@ use App\Models\Plan;
 use App\Services\StripeMembershipPlanChangeCheckoutService;
 use App\Services\UsaPaymentsMembershipCheckoutService;
 use App\Support\HouseholdDependentFormOptions;
+use App\Support\InvoicePdfPresenter;
 use App\Support\MembershipCardPresenter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -319,6 +320,8 @@ class MembershipController extends Controller
         $pdf = Pdf::loadView('customer.membership.invoice-pdf', [
             'membership' => $membership,
             'invoice' => $invoice,
+            'brand' => InvoicePdfPresenter::brand(),
+            'memberName' => InvoicePdfPresenter::memberName($membership),
         ]);
         $pdf->setPaper('a4', 'portrait');
 

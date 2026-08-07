@@ -31,7 +31,10 @@
                                     <td class="px-3 py-2">{{ $payment['paid_at'] }}</td>
                                     <td class="px-3 py-2">${{ $payment['amount'] }}</td>
                                     <td class="px-3 py-2">
-                                        <a href="{{ route('customer.membership.invoices.download', ['invoiceRef' => $payment['invoice']]) }}" class="text-xs font-semibold text-hero-primary hover:underline">
+                                        <a href="{{ route('customer.membership.invoices.download', ['invoiceRef' => $payment['invoice']]) }}"
+                                           download="HERO-invoice-{{ $payment['invoice'] }}.pdf"
+                                           data-no-page-loader
+                                           class="text-xs font-semibold text-hero-primary hover:underline">
                                             Download invoice
                                         </a>
                                     </td>

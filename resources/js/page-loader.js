@@ -113,6 +113,14 @@ function isSameApplicationNav(url) {
     return uLoop && cLoop && url.port === cur.port;
 }
 
+function isFileDownloadUrl(url) {
+    if (/\.(pdf|zip|csv|xlsx?|docx?)$/i.test(url.pathname)) {
+        return true;
+    }
+
+    return /\/invoices\//.test(url.pathname) || /\/card\.pdf$/i.test(url.pathname);
+}
+
 function shouldHandleLink(anchor, event) {
     if (!(anchor instanceof HTMLAnchorElement) || !anchor.href) {
         return false;
@@ -140,6 +148,9 @@ function shouldHandleLink(anchor, event) {
         return false;
     }
     if (!isSameApplicationNav(url)) {
+        return false;
+    }
+    if (isFileDownloadUrl(url)) {
         return false;
     }
     const cur = new URL(window.location.href);

@@ -41,6 +41,8 @@
                                     <div class="text-xs text-slate-500">Save or print — QR encodes your membership reference</div>
                                 </div>
                                 <a href="{{ route('customer.membership.card-pdf') }}"
+                                   download
+                                   data-no-page-loader
                                    class="inline-flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-hero-primary hover:text-hero-primary">
                                     <i class="fa-solid fa-file-pdf text-red-600" aria-hidden="true"></i>
                                     Download PDF
