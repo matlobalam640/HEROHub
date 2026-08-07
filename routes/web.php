@@ -21,6 +21,7 @@ use App\Http\Controllers\Partner\CommissionReportController;
 use App\Http\Controllers\Partner\EnrollmentController as PartnerEnrollmentController;
 use App\Http\Controllers\Partner\PortalController as PartnerPortalController;
 use App\Http\Controllers\Partner\SalesController as PartnerSalesController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PortalGlobalSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripeWebhookController;
