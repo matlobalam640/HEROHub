@@ -1307,6 +1307,46 @@
     background: var(--hero-gold-500);
   }
 
+  .hero-coverage-banner {
+    @apply rounded-2xl border px-4 py-3 text-sm shadow-sm sm:px-5;
+    border-color: rgba(20, 29, 53, 0.12);
+    background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+    box-shadow: inset 3px 0 0 var(--hero-gold-500), 0 8px 24px -14px rgba(20, 29, 53, 0.28);
+  }
+
+  .hero-coverage-banner__icon {
+    @apply mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm;
+    background: var(--hero-primary);
+    color: var(--hero-accent-gold);
+  }
+
+  .hero-coverage-banner__title {
+    @apply font-semibold text-[color:var(--hero-primary)];
+  }
+
+  .hero-coverage-banner__tag {
+    @apply inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium text-[color:var(--hero-primary)];
+    background: var(--hero-primary-soft);
+    border: 1px solid rgba(20, 29, 53, 0.08);
+  }
+
+  .hero-coverage-banner__tag--more {
+    @apply font-semibold;
+    background: rgba(222, 195, 40, 0.16);
+    border-color: rgba(222, 195, 40, 0.35);
+  }
+
+  .hero-coverage-banner__cta {
+    @apply inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold text-white transition;
+    background: var(--hero-primary);
+    box-shadow: 0 8px 20px -10px rgba(20, 29, 53, 0.45);
+  }
+
+  .hero-coverage-banner__cta:hover {
+    background: var(--hero-primary-hover);
+    transform: translateY(-1px);
+  }
+
   .hero-topbar-icon-btn {
     @apply inline-flex h-10 min-h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-600 shadow-sm backdrop-blur-sm;
     transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
