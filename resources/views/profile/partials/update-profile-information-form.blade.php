@@ -1,15 +1,15 @@
 <section>
-    @unless($hideHeader ?? false)
+        @unless($hideHeader ?? false)
         <header>
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="font-display text-lg font-semibold text-slate-900">
                 {{ __('Profile Information') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-slate-600">
                 {{ __("Update your account's profile information and email address.") }}
             </p>
         </header>
-    @endunless
+        @endunless
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
@@ -32,10 +32,10 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                    <p class="mt-2 text-sm text-slate-700">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <button form="send-verification" class="font-semibold text-[color:var(--hero-primary)] underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-[color:var(--hero-primary)]/25 focus:ring-offset-2 rounded-md">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>

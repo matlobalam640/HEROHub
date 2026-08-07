@@ -11,18 +11,18 @@
 @endphp
 
 <x-portal-layout>
-    <div class="w-full max-w-6xl space-y-8">
+    <div class="w-full max-w-6xl space-y-10 animate-fade-up">
         <div>
-            <div class="text-sm font-medium text-hero-primary">{{ __('Settings') }}</div>
-            <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ __('Profile & security') }}</h1>
-            <p class="mt-2 max-w-2xl text-sm text-slate-600">
+            <div class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--hero-accent-teal)]">{{ __('Settings') }}</div>
+            <h1 class="font-display mt-3 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ __('Profile & security') }}</h1>
+            <p class="mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
                 {{ __('Manage how you sign in and keep your membership account details up to date.') }}
             </p>
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
             <aside class="lg:col-span-4 xl:col-span-3">
-                <nav class="sticky top-24 space-y-1 rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm shadow-slate-200/40 ring-1 ring-slate-100"
+                <nav class="sticky top-28 space-y-1 rounded-2xl border border-white/70 bg-white/80 p-3 shadow-hero-card backdrop-blur-xl"
                     aria-label="{{ __('Profile settings sections') }}">
                     <a href="#settings-account"
                        class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
@@ -50,7 +50,7 @@
             </aside>
 
             <div class="min-w-0 space-y-6 lg:col-span-8 xl:col-span-9">
-                <section id="settings-account" class="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
+                <section id="settings-account" class="scroll-mt-28 hero-portal-panel">
                     <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                         <div class="flex flex-wrap items-center gap-4">
                             <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--insta-teal-soft)] to-[color:var(--insta-blue-soft)] text-lg font-bold tracking-tight text-[color:var(--insta-teal-800)] shadow-sm ring-1 ring-slate-200/70"
@@ -87,7 +87,7 @@
                     </div>
                 </section>
 
-                <section id="settings-security" class="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
+                <section id="settings-security" class="scroll-mt-28 hero-portal-panel">
                     <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                         <div class="flex flex-wrap items-center gap-3">
                             <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm"

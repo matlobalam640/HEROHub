@@ -86,22 +86,74 @@ class Plan extends Model
      */
     public function requiresExtendedCoverageForm(): bool
     {
-        if ($this->allowsFamilyDependents()) {
-            return true;
+        return $this->coverageFormVariant() !== 'basic';
+    }
+
+    /**
+     * @return 'basic'|'individual_plan'|'vip_10_day'|'vip_individual'|'family'
+     */
+    public function coverageFormVariant(): string
+    {
+        if ($this->allowsFamilyDependents() || (int) ($this->included_members ?? 0) >= 4) {
+            return 'family';
         }
 
-        return (int) ($this->included_members ?? 0) >= 4;
+        if (($this->tier ?? '') === 'vip' && $this->retail_subgroup === '10_day') {
+            return 'vip_10_day';
+        }
+
+        if (($this->tier ?? '') === 'vip') {
+            return 'vip_individual';
+        }
+
+        if ($this->requiresIndividualPlanCoverageForm()) {
+            return 'individual_plan';
+        }
+
+        return 'basic';
+    }
+
+    public function requiresIndividualPlanCoverageForm(): bool
+    {
+        if (($this->category ?? '') !== 'retail') {
+            return false;
+        }
+
+        return in_array($this->retail_subgroup, ['10_day', '1_month', 'annual_individual'], true)
+            && ($this->tier ?? 'local') !== 'vip';
+    }
+
+    public function requiresVip10DayCoverageForm(): bool
+    {
+        return $this->coverageFormVariant() === 'vip_10_day';
+    }
+
+    public function requiresVipIndividualCoverageForm(): bool
+    {
+        return $this->coverageFormVariant() === 'vip_individual';
     }
 
     public function coverageFormTitle(): string
     {
+        if ($this->requiresVip10DayCoverageForm()) {
+            return 'HERO 10 Day VIP Plan';
+        }
+
+        if ($this->requiresVipIndividualCoverageForm()) {
+            return 'Individual Plan VIP';
+        }
+
+        if ($this->coverageFormVariant() === 'individual_plan') {
+            return 'Individual Plan';
+        }
+
         $included = (int) ($this->included_members ?? 0);
 
         if ($included >= 4) {
             return 'Family of '.$included.' plan';
         }
 
-        if ($this->requiresExtendedCoverageForm()) {
+        if ($this->coverageFormVariant() === 'family') {
             return 'Family coverage plan';
         }
 

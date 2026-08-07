@@ -1,14 +1,14 @@
 <x-portal-layout>
     <div class="hero-dashboard-shell space-y-8">
         {{-- Welcome hero --}}
-        <section class="dashboard-welcome overflow-hidden rounded-3xl border border-[#283b69]/20 bg-gradient-to-br from-[#283b69] via-[#324878] to-[#1e2d50] px-6 py-7 text-white shadow-[0_24px_60px_-28px_rgba(40,59,105,0.65)] sm:px-8 sm:py-8">
-            <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <section class="dashboard-welcome overflow-hidden rounded-3xl border border-white/10 px-8 py-10 text-white sm:px-10 sm:py-12">
+            <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
                 <div class="min-w-0">
-                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">HEROHub admin</p>
-                    <h1 class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/55">HEROHub admin</p>
+                    <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
                         Good {{ now()->format('H') < 12 ? 'morning' : (now()->format('H') < 17 ? 'afternoon' : 'evening') }}, {{ strtok(auth()->user()->name, ' ') }}
                     </h1>
-                    <p class="mt-2 max-w-xl text-sm leading-relaxed text-white/70">
+                    <p class="mt-4 max-w-xl text-base leading-relaxed text-white/75">
                         Live snapshot of memberships, billing, and member activity across the portal.
                         Updated {{ now()->timezone(config('app.timezone'))->format('M j, Y') }}.
                     </p>

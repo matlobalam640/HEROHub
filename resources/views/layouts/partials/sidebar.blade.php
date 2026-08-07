@@ -200,6 +200,22 @@
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
+                        <a href="{{ route('business.small-business.enrollment') }}"
+                           class="sidebar-link group {{ request()->routeIs('business.small-business.enrollment*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('business.small-business.enrollment*')) aria-current="page" data-nav-active @endif>
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-store fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Small business enrollment</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ route('business.enrollment') }}"
+                           class="sidebar-link group {{ request()->routeIs('business.enrollment*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('business.enrollment*')) aria-current="page" data-nav-active @endif>
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-file-signature fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Corporate enrollment</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
                         <a href="{{ route('business.billing.edit') }}"
                            class="sidebar-link group {{ request()->routeIs('business.billing.*') ? 'sidebar-link-active' : '' }}"
                            @if(request()->routeIs('business.billing.*')) aria-current="page" data-nav-active @endif>

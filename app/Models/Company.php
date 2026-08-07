@@ -48,4 +48,9 @@ class Company extends Model
     {
         return $this->hasMany(Membership::class);
     }
+
+    public function enrollmentProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(CompanyEnrollmentProfile::class);
+    }
 }

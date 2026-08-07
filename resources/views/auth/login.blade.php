@@ -1,26 +1,17 @@
 <x-guest-layout>
     @php($subscribeUrl = config('heroportal.membership_subscribe_url'))
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-6" :status="session('status')" />
+    <x-auth-session-status class="hero-alert hero-alert--success mb-6" :status="session('status')" />
 
-    <div class="mb-7">
-        <div class="inline-flex items-center gap-2 rounded-full bg-[color:var(--hero-primary-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--hero-primary)]">
-            <span class="inline-flex h-2 w-2 rounded-full bg-[color:var(--hero-primary)]"></span>
-            Member portal access
-        </div>
-        <h1 class="mt-3 text-3xl font-semibold tracking-tight font-display">
-            Sign in
-        </h1>
-        <p class="mt-2 text-sm text-slate-600 font-['Open_Sans'] leading-relaxed">
-            This portal is for existing HERO members. Sign in to manage your membership, billing, and coverage details.
-        </p>
-    </div>
+    @include('auth.partials.form-header', [
+        'badge' => 'Member portal access',
+        'title' => __('Sign in'),
+        'description' => __('This portal is for existing HERO members. Sign in to manage your membership, billing, and coverage details.'),
+    ])
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
-        <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input
@@ -37,12 +28,11 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Password -->
-        <div class="mt-5">
-            <div class="flex items-center justify-between">
+        <div>
+            <div class="flex items-center justify-between gap-3">
                 <x-input-label for="password" :value="__('Password')" />
                 @if (Route::has('password.request'))
-                    <a class="text-xs font-semibold text-[color:var(--hero-primary)] hover:text-[color:var(--hero-primary-hover)]"
+                    <a class="text-xs font-semibold text-[color:var(--hero-primary)] transition hover:text-[color:var(--hero-primary-hover)]"
                        href="{{ route('password.request') }}">
                         {{ __('Forgot password?') }}
                     </a>
@@ -62,32 +52,31 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <!-- Remember Me -->
-        <div class="mt-5 flex items-center justify-between">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded-lg border-slate-300 text-[color:var(--hero-primary)] shadow-sm focus:ring-[color:var(--hero-primary)]" name="remember">
-                <span class="ms-2 text-sm text-slate-600">{{ __('Remember me') }}</span>
+        <div class="flex items-center">
+            <label for="remember_me" class="inline-flex items-center gap-2">
+                <input id="remember_me" type="checkbox" class="rounded-md border-slate-300 text-[color:var(--hero-primary)] shadow-sm focus:ring-[color:var(--hero-primary)]/30" name="remember">
+                <span class="text-sm text-slate-600">{{ __('Remember me') }}</span>
             </label>
         </div>
 
-        <div class="mt-7">
-            <x-primary-button class="guest-auth-submit w-full py-3 text-sm normal-case tracking-normal rounded-2xl">
+        <div class="pt-2">
+            <x-primary-button class="guest-auth-submit w-full py-3.5 text-sm">
                 {{ __('Log in') }}
             </x-primary-button>
 
-            <div class="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-center text-xs leading-relaxed text-slate-600 font-['Open_Sans']">
-                <p class="font-semibold text-slate-700">Not a member yet?</p>
+            <div class="mt-6 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-5 py-4 text-center text-sm leading-relaxed text-slate-600 backdrop-blur-sm">
+                <p class="font-semibold text-slate-800">Not a member yet?</p>
                 <p class="mt-1">
                     HERO memberships are purchased on our public site — accounts are not created directly in this portal.
                 </p>
                 <a
-                    class="mt-2 inline-flex items-center justify-center font-semibold text-[color:var(--hero-primary)] hover:text-[color:var(--hero-primary-hover)]"
+                    class="mt-3 inline-flex items-center justify-center gap-1.5 font-semibold text-[color:var(--hero-primary)] transition hover:text-[color:var(--hero-primary-hover)]"
                     href="{{ $subscribeUrl }}"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     Subscribe at heroclientrescue.com
-                    <i class="fa-solid fa-arrow-up-right-from-square ms-1.5 text-[10px]" aria-hidden="true"></i>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i>
                 </a>
             </div>
         </div>

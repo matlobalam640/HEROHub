@@ -20,6 +20,8 @@ class Member extends Model
         'phone',
         'email',
         'id_number',
+        'nationality',
+        'passport_expiry_date',
         'country',
         'city',
         'street',
@@ -32,6 +34,7 @@ class Member extends Model
     protected $casts = [
         'is_primary' => 'boolean',
         'date_of_birth' => 'date',
+        'passport_expiry_date' => 'date',
     ];
 
     public function membership(): BelongsTo

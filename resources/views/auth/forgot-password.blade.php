@@ -1,24 +1,27 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+    <x-auth-session-status class="hero-alert hero-alert--success mb-6" :status="session('status')" />
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    @include('auth.partials.form-header', [
+        'badge' => 'Account recovery',
+        'title' => __('Reset password'),
+        'description' => __('Enter your email and we will send a secure link to choose a new password.'),
+    ])
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
         @csrf
 
-        <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
+            <x-text-input id="email" class="mt-2 block w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="you@example.com" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <a href="{{ route('login') }}" class="text-sm font-semibold text-[color:var(--hero-primary)] hover:text-[color:var(--hero-primary-hover)]">
+                {{ __('Back to sign in') }}
+            </a>
+            <x-primary-button class="guest-auth-submit px-6 py-3">
+                {{ __('Email reset link') }}
             </x-primary-button>
         </div>
     </form>

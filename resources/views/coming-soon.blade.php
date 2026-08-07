@@ -14,7 +14,7 @@
         <div class="grid gap-4">
             <div class="grid gap-3">
                 @if(isset($preview['rows']))
-                    <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
+                    <div class="hero-portal-panel overflow-hidden p-0">
                         <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                             <div class="text-sm font-semibold text-slate-800">{{ $page === 'memberships' ? 'Membership directory' : 'Sample records' }}</div>
                             @if($page === 'memberships')

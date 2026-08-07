@@ -40,6 +40,26 @@
             </div>
 
             @if($company)
+                @unless(\App\Support\CorporateEnrollmentRequirement::isComplete($company, \App\Support\CompanyEnrollmentKind::SMALL_BUSINESS))
+                    <div class="rounded-2xl border border-sky-200 bg-sky-50 p-5 text-slate-900">
+                        <p class="font-semibold">{{ \App\Support\SmallBusinessFormTranslations::en('enrollment_banner_title') }}</p>
+                        <p class="mt-1 text-sm text-slate-700">{{ \App\Support\SmallBusinessFormTranslations::en('enrollment_banner_body') }}</p>
+                        <a href="{{ route('business.small-business.enrollment') }}" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">
+                            {{ \App\Support\SmallBusinessFormTranslations::en('enrollment_complete_now') }}
+                        </a>
+                    </div>
+                @endunless
+
+                @unless(\App\Support\CorporateEnrollmentRequirement::isComplete($company, \App\Support\CompanyEnrollmentKind::CORPORATE))
+                    <div class="rounded-2xl border border-teal-200 bg-teal-50 p-5 text-slate-900">
+                        <p class="font-semibold">{{ \App\Support\CorporateFormTranslations::en('enrollment_banner_title') }}</p>
+                        <p class="mt-1 text-sm text-slate-700">{{ \App\Support\CorporateFormTranslations::en('enrollment_banner_body') }}</p>
+                        <a href="{{ route('business.enrollment') }}" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-hero-primary px-4 py-2 text-sm font-semibold text-white hover:bg-hero-primary-hover">
+                            {{ \App\Support\CorporateFormTranslations::en('enrollment_complete_now') }}
+                        </a>
+                    </div>
+                @endunless
+
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
                         <div class="text-xs font-medium uppercase tracking-wide text-slate-500">Active employees</div>
@@ -62,6 +82,14 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('business.small-business.enrollment') }}" class="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-sm font-semibold text-sky-900 shadow-sm hover:border-sky-300">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i>
+                        Small business enrollment
+                    </a>
+                    <a href="{{ route('business.enrollment') }}" class="inline-flex items-center gap-2 rounded-xl border border-teal-200 bg-teal-50 px-4 py-2.5 text-sm font-semibold text-teal-900 shadow-sm hover:border-teal-300">
+                        <i class="fa-solid fa-file-signature" aria-hidden="true"></i>
+                        Corporate enrollment
+                    </a>
                     <a href="{{ route('business.employees.index') }}" class="inline-flex items-center gap-2 rounded-xl bg-hero-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-hero-primary-hover">
                         <i class="fa-solid fa-users" aria-hidden="true"></i>
                         Employees &amp; coverage

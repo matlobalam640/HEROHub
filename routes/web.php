@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\PlanManageController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Business\BillingController;
+use App\Http\Controllers\Business\CorporateEnrollmentController;
 use App\Http\Controllers\Business\EmployeeController;
+use App\Http\Controllers\Business\SmallBusinessEnrollmentController;
 use App\Http\Controllers\Business\PortalController as BusinessPortalController;
 use App\Http\Controllers\Business\VisitorController as BusinessVisitorController;
 use App\Http\Controllers\ComingSoonController;
@@ -144,6 +146,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/billing', [BillingController::class, 'edit'])->name('billing.edit');
         Route::patch('/billing', [BillingController::class, 'update'])->name('billing.update');
+
+        Route::get('/enrollment', [CorporateEnrollmentController::class, 'show'])->name('enrollment');
+        Route::put('/enrollment', [CorporateEnrollmentController::class, 'update'])->name('enrollment.update');
+
+        Route::get('/small-business-enrollment', [SmallBusinessEnrollmentController::class, 'show'])->name('small-business.enrollment');
+        Route::put('/small-business-enrollment', [SmallBusinessEnrollmentController::class, 'update'])->name('small-business.enrollment.update');
     });
 
     Route::redirect('/portal/plans', '/portal/plans/retail')->name('portal.plans');

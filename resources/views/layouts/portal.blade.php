@@ -208,14 +208,14 @@
                     x-transition:enter="transition transform ease-out duration-200"
                     x-transition:enter-start="-translate-x-full"
                     x-transition:enter-end="translate-x-0"
-                    class="portal-sidebar fixed bottom-0 left-0 top-14 z-50 w-72 shadow-xl shadow-slate-900/10"
+                    class="portal-sidebar fixed bottom-0 left-0 top-[3.75rem] z-50 w-72 shadow-xl shadow-slate-900/10"
                 >
                     @include('layouts.partials.sidebar', ['mobile' => true])
                 </div>
             </div>
 
             <div
-                class="portal-sidebar hidden lg:fixed lg:bottom-0 lg:top-14 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
+                class="portal-sidebar hidden lg:fixed lg:bottom-0 lg:top-[3.75rem] lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
                 :class="sidebarCollapsed ? 'lg:w-[88px] portal-sidebar--collapsed' : 'lg:w-72'"
             >
                 @include('layouts.partials.sidebar', ['mobile' => false])
@@ -226,7 +226,7 @@
                     <div class="flex h-[4.25rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
                         <button
                             type="button"
-                            class="lg:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 text-base text-slate-700 hover:bg-slate-50"
+                            class="hero-topbar-icon-btn lg:hidden"
                             x-on:click="sidebarOpen = true"
                             aria-label="Open menu"
                         >
@@ -300,7 +300,7 @@
                                 </div>
                             </div>
                             <div class="relative hidden sm:block" @click.outside="notificationOpen = false">
-                                <button type="button" class="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--insta-purple)] hover:bg-slate-100" title="Notifications" aria-label="Notifications" x-on:click="notificationOpen = !notificationOpen">
+                                <button type="button" class="hero-topbar-icon-btn relative" title="Notifications" aria-label="Notifications" x-on:click="notificationOpen = !notificationOpen">
                                     <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
                                     <span x-show="notifications.some((item) => !item.read)" class="absolute right-2 top-2 h-2 w-2 rounded-full bg-[color:var(--insta-orange)] ring-2 ring-white"></span>
                                 </button>
@@ -328,7 +328,7 @@
                             </div>
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
-                                    <button class="relative inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                                    <button class="hero-topbar-icon-btn relative inline-flex h-10 items-center gap-2 px-2 sm:px-2.5">
                                         <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--insta-teal-soft)] to-[color:var(--insta-blue-soft)] text-[color:var(--insta-teal-800)]">
                                             <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
                                             <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#2f3349]" title="Online"></span>
