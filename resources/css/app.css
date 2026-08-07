@@ -448,7 +448,27 @@
   }
 
   .dashboard-stat-card {
-    @apply relative overflow-hidden rounded-2xl border border-slate-100/90 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.07)];
+    @apply relative flex min-h-[11.5rem] flex-col overflow-hidden rounded-2xl border border-slate-100/90 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.07)];
+  }
+
+  .dashboard-stat-card__label {
+    @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .dashboard-stat-card__value {
+    @apply mt-1 font-display text-[1.75rem] font-bold leading-none tracking-tight text-slate-900;
+  }
+
+  .dashboard-stat-card__hint {
+    @apply mt-auto min-h-[2.75rem] pt-2 text-xs leading-relaxed text-slate-500;
+  }
+
+  .dashboard-stat-card__trend {
+    @apply inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100;
+  }
+
+  .dashboard-stat-card__link {
+    @apply mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[color:var(--hero-primary)] opacity-0 transition group-hover:opacity-100;
   }
 
   .dashboard-stat-icon--primary {
@@ -579,11 +599,39 @@
   }
 
   .dashboard-card-header__title {
-    @apply font-display text-base font-semibold tracking-tight text-slate-800;
+    @apply font-display text-sm font-semibold tracking-tight text-slate-800;
   }
 
   .dashboard-card-header__sub {
     @apply mt-0.5 text-xs leading-relaxed text-slate-500;
+  }
+
+  .hero-dashboard-shell .dashboard-panel-body {
+    @apply p-5;
+  }
+
+  .dashboard-list-primary {
+    @apply text-sm font-semibold text-slate-800;
+  }
+
+  .dashboard-list-secondary {
+    @apply text-sm text-slate-600;
+  }
+
+  .dashboard-list-meta {
+    @apply text-xs text-slate-500;
+  }
+
+  .dashboard-list-time {
+    @apply shrink-0 whitespace-nowrap text-xs text-slate-400;
+  }
+
+  .dashboard-legend-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .dashboard-legend-value {
+    @apply mt-0.5 text-sm font-bold tabular-nums text-slate-900;
   }
 
   /* Simple DataTables — match HERO portal (scoped) */
@@ -873,11 +921,11 @@
   }
 
   .hero-portal-main {
-    @apply flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8;
+    @apply flex-1 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6;
   }
 
   .hero-portal-content {
-    @apply mx-auto w-full max-w-7xl;
+    @apply w-full max-w-none;
   }
 
   .hero-portal-panel {

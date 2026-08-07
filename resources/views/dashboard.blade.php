@@ -35,7 +35,7 @@
         </section>
 
         {{-- Primary KPIs --}}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             @include('portal.partials.dashboard-stat-card', [
                 'href' => route('portal.coming-soon', ['page' => 'memberships']),
                 'icon' => 'fa-solid fa-circle-check',
@@ -84,11 +84,11 @@
                         <div class="dashboard-card-header__title">Membership growth</div>
                         <div class="dashboard-card-header__sub">New memberships per month · last 12 months</div>
                     </div>
-                    <span class="hidden rounded-full bg-[rgba(115,103,240,0.1)] px-3 py-1 text-xs font-semibold text-[color:var(--vuexy-primary)] sm:inline">
+                    <span class="hidden rounded-full bg-[color:var(--hero-primary-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--hero-primary)] sm:inline">
                         {{ number_format($stats['memberships_new_month']) }} this month
                     </span>
                 </div>
-                <div class="p-6">
+                <div class="dashboard-panel-body">
                     <div class="h-72">
                         <canvas id="membershipGrowthChart"></canvas>
                     </div>
@@ -100,7 +100,7 @@
                     <div class="dashboard-card-header__title">Status breakdown</div>
                     <div class="dashboard-card-header__sub">All memberships by status</div>
                 </div>
-                <div class="p-6">
+                <div class="dashboard-panel-body">
                     @if(count($membershipStatusChart['labels']))
                         <div class="mx-auto h-44 w-44 max-w-full">
                             <canvas id="membershipStatusChart"></canvas>
@@ -108,8 +108,8 @@
                         <div class="mt-4 grid grid-cols-2 gap-2">
                             @foreach($membershipStatusChart['labels'] as $i => $label)
                                 <div class="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2">
-                                    <div class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{{ $label }}</div>
-                                    <div class="mt-0.5 text-lg font-bold tabular-nums text-slate-900">{{ number_format($membershipStatusChart['data'][$i]) }}</div>
+                                    <div class="dashboard-legend-label">{{ $label }}</div>
+                                    <div class="dashboard-legend-value">{{ number_format($membershipStatusChart['data'][$i]) }}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -126,7 +126,7 @@
                     <div class="dashboard-card-header__title">Active plan mix</div>
                     <div class="dashboard-card-header__sub">Distribution across live memberships</div>
                 </div>
-                <div class="p-6">
+                <div class="dashboard-panel-body">
                     @if(count($planMixChart['labels']))
                         <div class="h-64">
                             <canvas id="planMixChart"></canvas>
@@ -148,7 +148,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-6">
+                <div class="dashboard-panel-body">
                     @if($stats['partner_sales'] > 0)
                         <div class="h-64">
                             <canvas id="partnerSalesChart"></canvas>
@@ -165,14 +165,14 @@
                                 <li class="dashboard-renewal-item flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3">
                                     <div class="min-w-0">
                                         <div class="truncate font-mono text-xs font-semibold text-slate-800">{{ $membership->membership_number }}</div>
-                                        <div class="truncate text-sm text-slate-600">{{ $memberLabel }}</div>
-                                        <div class="truncate text-xs text-slate-500">{{ $membership->plan?->name ?? '—' }}</div>
+                                        <div class="dashboard-list-secondary truncate">{{ $memberLabel }}</div>
+                                        <div class="dashboard-list-meta truncate">{{ $membership->plan?->name ?? '—' }}</div>
                                     </div>
                                     <div class="shrink-0 text-right">
-                                        <div class="text-sm font-bold tabular-nums text-slate-900">
+                                        <div class="dashboard-list-primary tabular-nums">
                                             {{ $membership->billing_next_billing_at?->format('M j') }}
                                         </div>
-                                        <div class="text-[11px] text-slate-500">
+                                        <div class="dashboard-list-meta">
                                             {{ $membership->billing_next_billing_at?->diffForHumans() }}
                                         </div>
                                     </div>
@@ -200,11 +200,11 @@
                         <div class="dashboard-card-header__title">Recent memberships</div>
                         <div class="dashboard-card-header__sub">Latest records from production data</div>
                     </div>
-                    <a href="{{ route('portal.coming-soon', ['page' => 'memberships']) }}" class="text-xs font-semibold text-[color:var(--vuexy-primary)] hover:underline">
+                    <a href="{{ route('portal.coming-soon', ['page' => 'memberships']) }}" class="text-xs font-semibold text-[color:var(--hero-primary)] hover:underline">
                         View all
                     </a>
                 </div>
-                <div class="overflow-x-auto p-2">
+                <div class="dashboard-panel-body overflow-x-auto !p-2">
                     <div class="hero-datatable min-w-[640px]">
                         <table class="js-datatable w-full text-sm" data-dt-per-page="8">
                             <thead class="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -227,9 +227,9 @@
                                     @endphp
                                     <tr>
                                         <td class="px-3 py-2.5 font-mono text-xs font-semibold text-slate-800">{{ $membership->membership_number }}</td>
-                                        <td class="px-3 py-2.5 text-slate-700">{{ $memberName }}</td>
-                                        <td class="px-3 py-2.5 text-slate-600">{{ $membership->plan?->name ?? '—' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-slate-500">
+                                        <td class="dashboard-list-secondary px-3 py-2.5">{{ $memberName }}</td>
+                                        <td class="dashboard-list-secondary px-3 py-2.5">{{ $membership->plan?->name ?? '—' }}</td>
+                                        <td class="dashboard-list-meta px-3 py-2.5">
                                             @if($membership->billing_provider)
                                                 <span class="font-medium text-slate-700">{{ strtoupper(str_replace('_', ' ', $membership->billing_provider)) }}</span>
                                             @else
@@ -241,7 +241,7 @@
                                         </td>
                                         <td class="px-3 py-2.5 text-right">
                                             @if(auth()->user()->hasAnyRole(['admin', 'dispatch']))
-                                                <a href="{{ route('portal.membership.show', $membership) }}" class="text-xs font-semibold text-[color:var(--vuexy-primary)] hover:underline">Open</a>
+                                                <a href="{{ route('portal.membership.show', $membership) }}" class="text-xs font-semibold text-[color:var(--hero-primary)] hover:underline">Open</a>
                                             @endif
                                         </td>
                                     </tr>
@@ -261,7 +261,7 @@
                     <div class="dashboard-card-header__title">Recent activity</div>
                     <div class="dashboard-card-header__sub">Memberships and partner sales</div>
                 </div>
-                <div class="p-4">
+                <div class="dashboard-panel-body">
                     @forelse($recentActivity as $row)
                         <div class="dashboard-activity-item flex gap-3 py-3 first:pt-0 last:pb-0">
                             <div @class([
@@ -274,13 +274,13 @@
                             <div class="min-w-0 flex-1 border-b border-slate-100 pb-3 last:border-0">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0">
-                                        <div class="truncate font-semibold text-slate-800">{{ $row['title'] }}</div>
-                                        <div class="truncate text-sm text-slate-600">{{ $row['detail'] }}</div>
+                                        <div class="dashboard-list-primary truncate">{{ $row['title'] }}</div>
+                                        <div class="dashboard-list-secondary truncate">{{ $row['detail'] }}</div>
                                         @if(! empty($row['meta']))
-                                            <div class="truncate text-xs text-slate-500">{{ $row['meta'] }}</div>
+                                            <div class="dashboard-list-meta truncate">{{ $row['meta'] }}</div>
                                         @endif
                                     </div>
-                                    <time class="shrink-0 whitespace-nowrap text-[11px] text-slate-400">
+                                    <time class="dashboard-list-time">
                                         {{ $row['at']->timezone(config('app.timezone'))->diffForHumans() }}
                                     </time>
                                 </div>
