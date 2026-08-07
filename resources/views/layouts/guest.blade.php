@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start gap-4">
-                                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--hero-accent-teal-soft)] text-lg text-[color:var(--hero-accent-teal)] shadow-sm">
+                                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-lg shadow-sm" style="background: var(--gradient-gold-soft); color: var(--hero-gold-500);">
                                     <i class="fa-solid fa-lock" aria-hidden="true"></i>
                                 </span>
                                 <div>

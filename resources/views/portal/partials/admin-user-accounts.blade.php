@@ -24,7 +24,7 @@
     }"
     x-on:keydown.escape.window="close()"
 >
-    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+    <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
         <div class="text-sm font-semibold text-slate-800">{{ __('User accounts') }}</div>
         <div class="text-xs text-slate-500">{{ __('Remove portal logins. Membership rows stay; account holder is cleared where linked.') }}</div>
     </div>
@@ -92,7 +92,7 @@
             aria-modal="true"
             x-bind:aria-label="'{{ __('Delete user') }}: ' + (deleteLabel || '')"
         >
-            <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+            <div class="border-b border-slate-100 px-6 py-4">
                 <h2 class="text-base font-semibold text-slate-900">{{ __('Delete user account') }}</h2>
                 <p class="mt-1 text-sm text-slate-600">
                     <span>{{ __('You are about to remove the account for') }}</span>

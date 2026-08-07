@@ -66,7 +66,7 @@
         @endif
 
         <div class="overflow-visible rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-            <div class="hero-panel-header overflow-hidden rounded-t-2xl border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+            <div class="hero-panel-header overflow-hidden rounded-t-2xl border-b border-slate-100 px-6 py-4">
                 <div class="text-sm font-semibold text-slate-900">Plan selection</div>
                 <div class="text-xs text-slate-500">Current plan: {{ $membership->plan?->name ?? '—' }}</div>
             </div>

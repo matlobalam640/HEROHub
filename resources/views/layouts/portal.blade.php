@@ -254,7 +254,7 @@
                                     x-on:focus="searchOpen = true"
                                     x-on:input="searchOpen = true"
                                     x-on:keydown.enter.prevent="submitGlobalSearch()"
-                                    class="w-full rounded-full border border-slate-200/90 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[color:var(--insta-teal)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[color:var(--insta-teal)]/25 focus:ring-offset-0"
+                                    class="w-full rounded-full border border-slate-200/90 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[color:var(--hero-accent-gold)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[color:var(--hero-accent-gold-ring)] focus:ring-offset-0"
                                 />
                                 <div
                                     x-cloak
@@ -266,7 +266,7 @@
                                     </div>
                                     <template x-for="item in combinedSearchResults()" :key="item.url">
                                         <a :href="item.url" class="flex items-start gap-3 border-b border-slate-100 px-4 py-2.5 text-sm text-slate-700 last:border-b-0 hover:bg-slate-50">
-                                            <i class="mt-0.5 text-xs text-[color:var(--hero-accent-teal)]" :class="searchIconClass(item.kind)" aria-hidden="true"></i>
+                                            <i class="mt-0.5 text-xs text-[color:var(--hero-accent-gold)]" :class="searchIconClass(item.kind)" aria-hidden="true"></i>
                                             <span class="min-w-0">
                                                 <span class="block truncate font-medium text-slate-900" x-text="item.label"></span>
                                                 <span x-show="item.meta" class="block truncate text-xs text-slate-500" x-text="item.meta"></span>
@@ -325,7 +325,7 @@
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button class="hero-topbar-icon-btn relative inline-flex h-10 items-center gap-2 px-2 sm:px-2.5">
-                                        <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--insta-teal-soft)] to-[color:var(--insta-blue-soft)] text-[color:var(--insta-teal-800)]">
+                                        <span class="relative flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--hero-primary)]" style="background: var(--gradient-gold-soft);">
                                             <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
                                             <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#2f3349]" title="Online"></span>
                                         </span>

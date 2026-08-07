@@ -23,7 +23,7 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div class="lg:col-span-2 space-y-6">
                 <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                    <div class="hero-panel-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                    <div class="hero-panel-header flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-4">
                         <div>
                             <div class="text-sm font-semibold text-slate-900">Current family members</div>
                             <div class="text-xs text-slate-500">Membership {{ $membership->membership_number }}</div>
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                    <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                         <div class="text-sm font-semibold text-slate-900">Add family member</div>
                         @if (! $canAddMoreDependents)
                             <p class="mt-1 text-xs text-amber-800">You have reached the maximum for your plan.</p>
@@ -100,7 +100,7 @@
             </div>
 
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                     <div class="text-sm font-semibold text-slate-900">Plan</div>
                     <div class="text-xs text-slate-500">Coverage type</div>
                 </div>

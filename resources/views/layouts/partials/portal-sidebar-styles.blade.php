@@ -22,9 +22,9 @@
 
     .hero-panel-header {
 
-        border-bottom: 1px solid rgba(40, 59, 105, 0.08);
+        border-bottom: 1px solid rgba(212, 168, 83, 0.22);
 
-        background: #ffffff;
+        background: var(--gradient-gold-soft);
 
     }
 

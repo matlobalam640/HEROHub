@@ -30,9 +30,9 @@
                         || (($plan->tier ?? '') !== 'vip' && $loop->index % 2 === 1);
                 @endphp
                 <article
-                    class="flex h-full min-h-0 w-full flex-col rounded-2xl p-6 shadow-hero-card ring-1 {{ $isGoldCard ? 'ring-amber-900/20' : 'bg-white ring-slate-200/90' }}"
+                    class="flex h-full min-h-0 w-full flex-col rounded-2xl p-6 shadow-hero-card ring-1 {{ $isGoldCard ? 'plan-card--gold ring-amber-900/20' : 'bg-white ring-slate-200/90' }}"
                     @if ($isGoldCard)
-                        style="background-image: linear-gradient(180deg, #faf6d4 0%, #f2e088 52%, #dec328 100%);"
+                        style="background-image: var(--gradient-gold);"
                     @endif
                 >
                     <div class="flex min-h-0 min-w-0 flex-1 flex-col">

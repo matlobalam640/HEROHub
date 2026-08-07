@@ -33,7 +33,7 @@
                 {{ \App\Support\CoverageFormTranslations::en('family_intro_extended') }}
             </p>
         </details>
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('primary_member') }}</h2>
             <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::en('membership_number') }} {{ $membership->membership_number }}</p>
         </div>
@@ -57,7 +57,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('photo_id') }} &amp; {{ \App\Support\CoverageFormTranslations::en('passport') }}</h2>
             <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::en('file_upload_help') }}</p>
         </div>
@@ -80,7 +80,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('emergency_contact') }}</h2>
         </div>
         <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-3">
@@ -103,7 +103,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('dependents') }}</h2>
             <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::en('dependents_help') }}</p>
         </div>
@@ -160,7 +160,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('notes') }}</h2>
         </div>
         <div class="p-6">
@@ -169,7 +169,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('insurance_section') }}</h2>
             <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::en('insurance_section_help') }}</p>
         </div>
@@ -248,7 +248,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('medical_section') }}</h2>
         </div>
         <div class="space-y-4 p-6">
@@ -291,7 +291,7 @@
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
             <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('terms_section') }}</h2>
         </div>
         <div class="space-y-4 p-6">

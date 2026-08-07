@@ -20,7 +20,13 @@ export default {
                     secondary: 'rgb(255 255 255 / <alpha-value>)',
                     accent: {
                         teal: 'rgb(62 207 202 / <alpha-value>)',
-                        gold: 'rgb(212 168 83 / <alpha-value>)',
+                        gold: {
+                            DEFAULT: 'rgb(212 168 83 / <alpha-value>)',
+                            50: 'rgb(250 246 212 / <alpha-value>)',
+                            200: 'rgb(242 224 136 / <alpha-value>)',
+                            500: 'rgb(222 195 40 / <alpha-value>)',
+                            soft: 'rgb(250 246 235 / <alpha-value>)',
+                        },
                         sky: 'rgb(94 179 255 / <alpha-value>)',
                         coral: 'rgb(255 138 101 / <alpha-value>)',
                     },
@@ -32,9 +38,14 @@ export default {
             },
             boxShadow: {
                 'hero-card': '0 1px 2px rgba(40, 59, 105, 0.04), 0 12px 32px -16px rgba(40, 59, 105, 0.18)',
-                'hero-cta': '0 10px 28px -10px rgba(40, 59, 105, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+                'hero-cta': '0 10px 28px -10px rgba(212, 168, 83, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35)',
                 'hero-panel': '0 0 0 1px rgba(255,255,255,0.75) inset, 0 8px 32px -12px rgba(40,59,105,0.16)',
-                'hero-glow': '0 8px 32px -8px rgba(62, 207, 202, 0.35)',
+                'hero-glow': '0 8px 32px -8px rgba(212, 168, 83, 0.35)',
+            },
+            backgroundImage: {
+                'hero-gold': 'var(--gradient-gold)',
+                'hero-gold-soft': 'var(--gradient-gold-soft)',
+                'hero-gold-cta': 'var(--gradient-gold-cta)',
             },
             borderRadius: {
                 '4xl': '2rem',

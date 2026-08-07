@@ -16,7 +16,7 @@
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-            <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+            <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                 <div class="text-sm font-semibold text-slate-900">Member lookup</div>
                 <p class="mt-1 text-xs text-slate-600">Search by <strong>member name</strong> (given, family, or full name), <strong>membership ID</strong>, <strong>phone</strong>, <strong>company name</strong>, or a <strong>household / family member</strong> (spouse, child, visitor) on the plan.</p>
             </div>

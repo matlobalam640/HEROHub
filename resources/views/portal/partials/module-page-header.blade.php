@@ -5,7 +5,7 @@
 <div class="hero-portal-page-header mb-8">
     <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div class="min-w-0 lg:max-w-[58%]">
-            <div class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--hero-accent-teal)]">{{ $eyebrow }}</div>
+            <div class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--hero-accent-gold)]">{{ $eyebrow }}</div>
             <h1 class="mt-2 font-display text-3xl font-bold tracking-tight text-[color:var(--hero-primary)] sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1] {{ ($capitalizeTitle ?? true) ? 'capitalize' : '' }} {{ $titleClass ?? '' }}">
                 {{ $title }}
             </h1>
