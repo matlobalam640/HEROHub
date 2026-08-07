@@ -19,7 +19,7 @@
             <td align="center" style="padding:24px 16px 40px;">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;margin:0 auto;">
                     <tr>
-                        <td style="background:linear-gradient(135deg,#283b69 0%,#1f2d52 100%);background-color:#283b69;border-radius:16px 16px 0 0;padding:28px 32px 24px;text-align:left;">
+                        <td style="background:linear-gradient(135deg,#283b69 0%,#324878 100%);background-color:#283b69;border-radius:16px 16px 0 0;padding:28px 32px 24px;text-align:left;">
                             <a href="{{ url('/') }}" style="text-decoration:none;display:inline-block;" target="_blank" rel="noopener noreferrer">
                                 @if($logoUrl)
                                     <img src="{{ $logoUrl }}" alt="{{ config('app.name') }}" width="160" height="auto" style="display:block;max-width:160px;height:auto;border:0;outline:none;">

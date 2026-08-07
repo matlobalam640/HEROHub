@@ -175,14 +175,14 @@
                     </div>
                 @elseif(isset($preview['items']))
                     @if($page === 'settings')
-                        <div class="grid w-full max-w-none grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start lg:gap-8">
-                            <div class="space-y-6 lg:col-span-5 xl:col-span-4">
-                                <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                                    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                        <div class="grid w-full max-w-none grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-8">
+                            <div class="flex min-h-full flex-col gap-6">
+                                <div class="hero-portal-panel flex flex-1 flex-col overflow-hidden">
+                                    <div class="hero-panel-header">
                                         <div class="text-sm font-semibold text-slate-800">Environment</div>
                                         <div class="text-xs text-slate-500">Read-only preview</div>
                                     </div>
-                                    <dl class="divide-y divide-slate-100">
+                                    <dl class="flex flex-1 flex-col divide-y divide-slate-100">
                                         @foreach($preview['items'] as $item)
                                             <div class="flex flex-wrap items-center justify-between gap-2 px-6 py-3">
                                                 <dt class="text-sm text-slate-500">{{ $item['label'] }}</dt>
@@ -192,8 +192,8 @@
                                     </dl>
                                 </div>
 
-                                <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                                    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                                <div class="hero-portal-panel overflow-hidden">
+                                    <div class="hero-panel-header">
                                         <div class="text-sm font-semibold text-slate-800">{{ __('Profile & account') }}</div>
                                         <div class="text-xs text-slate-500">{{ __('Name and email on your profile page.') }}</div>
                                     </div>
@@ -202,7 +202,7 @@
                                             {{ __('Open the full profile page to update your display name and email.') }}
                                         </p>
                                         <a href="{{ route('profile.edit') }}"
-                                           class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-hero-primary hover:text-hero-primary sm:w-auto">
+                                           class="hero-btn-secondary inline-flex w-full items-center justify-center gap-2 sm:w-auto">
                                             <i class="fa-solid fa-user-pen" aria-hidden="true"></i>
                                             {{ __('Open profile') }}
                                         </a>
@@ -210,20 +210,18 @@
                                 </div>
                             </div>
 
-                            <div class="lg:col-span-7 xl:col-span-8">
-                                <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                                    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
-                                        <div class="text-sm font-semibold text-slate-800">{{ __('Password') }}</div>
-                                        <div class="text-xs text-slate-500">{{ __('Change the password you use to sign in to this portal.') }}</div>
-                                    </div>
-                                    <div class="p-6 text-slate-900 sm:p-8">
-                                        @include('profile.partials.update-password-form', ['hideHeader' => true])
-                                    </div>
+                            <div class="hero-portal-panel flex h-full min-h-full flex-col overflow-hidden">
+                                <div class="hero-panel-header">
+                                    <div class="text-sm font-semibold text-slate-800">{{ __('Password') }}</div>
+                                    <div class="text-xs text-slate-500">{{ __('Change the password you use to sign in to this portal.') }}</div>
+                                </div>
+                                <div class="flex flex-1 flex-col p-6 text-slate-900 sm:p-8">
+                                    @include('profile.partials.update-password-form', ['hideHeader' => true])
                                 </div>
                             </div>
 
                             @isset($preview['adminUsers'])
-                                <div class="lg:col-span-12">
+                                <div class="lg:col-span-2">
                                     @include('portal.partials.admin-user-accounts', ['users' => $preview['adminUsers']])
                                 </div>
                             @endisset

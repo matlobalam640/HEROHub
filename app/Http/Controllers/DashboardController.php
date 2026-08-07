@@ -8,7 +8,9 @@ use App\Models\Partner;
 use App\Models\PartnerSale;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Support\CoverageProfileRequirement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -23,37 +25,127 @@ class DashboardController extends Controller
             return redirect()->route('business.portal');
         }
 
+        $monthStart = now()->startOfMonth();
+        $statusCounts = Membership::query()
+            ->selectRaw('status, COUNT(*) as c')
+            ->groupBy('status')
+            ->pluck('c', 'status')
+            ->all();
+
         $stats = [
             'customers' => User::role('customer')->count(),
+            'customers_new_month' => User::role('customer')->where('created_at', '>=', $monthStart)->count(),
             'memberships_total' => Membership::count(),
-            'memberships_active' => Membership::where('status', 'active')->count(),
+            'memberships_active' => (int) ($statusCounts['active'] ?? 0),
+            'memberships_inactive' => (int) ($statusCounts['inactive'] ?? 0),
+            'memberships_expired' => (int) ($statusCounts['expired'] ?? 0),
+            'memberships_cancelled' => (int) ($statusCounts['cancelled'] ?? 0),
+            'memberships_new_month' => Membership::where('created_at', '>=', $monthStart)->count(),
+            'usa_payments' => Membership::where('billing_provider', 'usa_payments')->count(),
             'companies' => Company::count(),
             'partners' => Partner::count(),
+            'partners_active' => Partner::where('active', true)->count(),
             'partner_sales' => PartnerSale::count(),
+            'estimated_mrr' => $this->estimateMonthlyRecurringRevenue(),
+            'coverage_incomplete' => $this->countIncompleteCoverage(),
+            'renewals_30_days' => Membership::query()
+                ->where('status', 'active')
+                ->whereNotNull('billing_next_billing_at')
+                ->whereBetween('billing_next_billing_at', [now()->startOfDay(), now()->addDays(30)])
+                ->count(),
         ];
 
         $recentMemberships = Membership::query()
-            ->with(['plan', 'company', 'members'])
+            ->with(['plan', 'company', 'partner', 'primaryMember', 'accountUser'])
             ->latest('id')
-            ->limit(8)
+            ->limit(10)
             ->get();
 
-        // Chart: memberships created per month (last 12 months)
+        $membershipChart = $this->membershipsPerMonthChart(12);
+        $membershipStatusChart = $this->membershipStatusChart($statusCounts);
+        $planMixChart = $this->planMixChart();
+        $partnerSalesChart = $this->partnerSalesPerMonthChart(6);
+
+        $upcomingRenewals = Membership::query()
+            ->where('status', 'active')
+            ->whereNotNull('billing_next_billing_at')
+            ->where('billing_next_billing_at', '>=', now()->startOfDay())
+            ->with(['plan', 'primaryMember'])
+            ->orderBy('billing_next_billing_at')
+            ->limit(6)
+            ->get();
+
+        $recentActivity = $this->recentActivityFeed();
+
+        return view('dashboard', [
+            'stats' => $stats,
+            'recentMemberships' => $recentMemberships,
+            'membershipChart' => $membershipChart,
+            'membershipStatusChart' => $membershipStatusChart,
+            'planMixChart' => $planMixChart,
+            'partnerSalesChart' => $partnerSalesChart,
+            'upcomingRenewals' => $upcomingRenewals,
+            'recentActivity' => $recentActivity,
+        ]);
+    }
+
+    private function estimateMonthlyRecurringRevenue(): float
+    {
+        return round((float) Membership::query()
+            ->where('status', 'active')
+            ->with('plan')
+            ->get()
+            ->sum(function (Membership $membership) {
+                $plan = $membership->plan;
+                if (! $plan) {
+                    return 0;
+                }
+
+                if ($plan->billing_interval === 'yearly') {
+                    $yearly = (float) ($plan->price ?? 0);
+                    if ($yearly <= 0) {
+                        $yearly = (float) ($plan->price_monthly ?? 0) * 12;
+                    }
+
+                    return $yearly > 0 ? $yearly / 12 : 0;
+                }
+
+                $monthly = (float) ($plan->price_monthly ?? 0);
+                if ($monthly <= 0) {
+                    $monthly = (float) ($plan->price ?? 0);
+                }
+
+                return $monthly > 0 ? $monthly : 0;
+            }), 2);
+    }
+
+    private function countIncompleteCoverage(): int
+    {
+        return Membership::query()
+            ->where('status', 'active')
+            ->with(['plan', 'members', 'dependents', 'coverageProfile'])
+            ->get()
+            ->filter(fn (Membership $membership) => ! CoverageProfileRequirement::isComplete($membership))
+            ->count();
+    }
+
+    /**
+     * @return array{labels: list<string>, data: list<int>}
+     */
+    private function membershipsPerMonthChart(int $months): array
+    {
         $labels = [];
         $buckets = [];
-        for ($i = 11; $i >= 0; $i--) {
+        for ($i = $months - 1; $i >= 0; $i--) {
             $labels[] = now()->subMonths($i)->format('M Y');
             $buckets[now()->subMonths($i)->format('Y-m')] = 0;
         }
 
-        $driver = DB::getDriverName();
-        $groupExpr = $driver === 'sqlite'
-            ? "strftime('%Y-%m', created_at)"
-            : "DATE_FORMAT(created_at, '%Y-%m')";
+        $groupExpr = $this->monthGroupExpression('created_at');
 
         $rows = Membership::query()
             ->selectRaw("$groupExpr as ym, COUNT(*) as c")
-            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->where('created_at', '>=', now()->subMonths($months - 1)->startOfMonth())
             ->groupBy('ym')
             ->pluck('c', 'ym')
             ->all();
@@ -64,108 +156,147 @@ class DashboardController extends Controller
             }
         }
 
-        $membershipChart = [
+        return [
             'labels' => $labels,
             'data' => array_values($buckets),
         ];
+    }
 
-        // Doughnut: membership status distribution
-        $statusCounts = Membership::query()
-            ->selectRaw('status, COUNT(*) as c')
-            ->groupBy('status')
-            ->pluck('c', 'status')
-            ->all();
-
+    /**
+     * @param  array<string, int|string>  $statusCounts
+     * @return array{labels: list<string>, data: list<int>}
+     */
+    private function membershipStatusChart(array $statusCounts): array
+    {
         $statusOrder = ['active', 'inactive', 'expired', 'cancelled'];
-        $membershipStatusChart = [
-            'labels' => [],
-            'data' => [],
+        $labels = [];
+        $data = [];
+
+        foreach ($statusOrder as $status) {
+            if (! empty($statusCounts[$status])) {
+                $labels[] = ucfirst($status);
+                $data[] = (int) $statusCounts[$status];
+            }
+        }
+
+        foreach ($statusCounts as $status => $count) {
+            if (! in_array($status, $statusOrder, true) && $count > 0) {
+                $labels[] = ucfirst((string) $status);
+                $data[] = (int) $count;
+            }
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    /**
+     * @return array{labels: list<string>, data: list<int>}
+     */
+    private function planMixChart(): array
+    {
+        $rows = Membership::query()
+            ->where('status', 'active')
+            ->join('plans', 'memberships.plan_id', '=', 'plans.id')
+            ->selectRaw('plans.name as plan_name, COUNT(*) as c')
+            ->groupBy('plans.id', 'plans.name')
+            ->orderByDesc('c')
+            ->limit(8)
+            ->get();
+
+        return [
+            'labels' => $rows->pluck('plan_name')->all(),
+            'data' => $rows->pluck('c')->map(fn ($c) => (int) $c)->all(),
         ];
-        foreach ($statusOrder as $st) {
-            if (! empty($statusCounts[$st])) {
-                $membershipStatusChart['labels'][] = ucfirst($st);
-                $membershipStatusChart['data'][] = (int) $statusCounts[$st];
-            }
-        }
-        foreach ($statusCounts as $st => $c) {
-            if (! in_array($st, $statusOrder, true) && $c > 0) {
-                $membershipStatusChart['labels'][] = ucfirst((string) $st);
-                $membershipStatusChart['data'][] = (int) $c;
-            }
-        }
+    }
 
-        // Bar chart: partner sales count per month (last 6 months)
-        $saleLabels = [];
-        $saleBuckets = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $saleLabels[] = now()->subMonths($i)->format('M Y');
-            $saleBuckets[now()->subMonths($i)->format('Y-m')] = 0;
+    /**
+     * @return array{labels: list<string>, data: list<int>}
+     */
+    private function partnerSalesPerMonthChart(int $months): array
+    {
+        $labels = [];
+        $buckets = [];
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $labels[] = now()->subMonths($i)->format('M Y');
+            $buckets[now()->subMonths($i)->format('Y-m')] = 0;
         }
 
-        $saleGroupExpr = $driver === 'sqlite'
-            ? "strftime('%Y-%m', sold_at)"
-            : "DATE_FORMAT(sold_at, '%Y-%m')";
+        $groupExpr = $this->monthGroupExpression('sold_at');
 
-        $saleRows = PartnerSale::query()
-            ->selectRaw("$saleGroupExpr as ym, COUNT(*) as c")
-            ->where('sold_at', '>=', now()->subMonths(5)->startOfMonth())
+        $rows = PartnerSale::query()
+            ->selectRaw("$groupExpr as ym, COUNT(*) as c")
+            ->where('sold_at', '>=', now()->subMonths($months - 1)->startOfMonth())
             ->groupBy('ym')
             ->pluck('c', 'ym')
             ->all();
 
-        foreach ($saleRows as $ym => $count) {
-            if (array_key_exists($ym, $saleBuckets)) {
-                $saleBuckets[$ym] = (int) $count;
+        foreach ($rows as $ym => $count) {
+            if (array_key_exists($ym, $buckets)) {
+                $buckets[$ym] = (int) $count;
             }
         }
 
-        $partnerSalesChart = [
-            'labels' => $saleLabels,
-            'data' => array_values($saleBuckets),
+        return [
+            'labels' => $labels,
+            'data' => array_values($buckets),
         ];
+    }
 
-        // Recent activity (memberships created + partner sales)
+    private function monthGroupExpression(string $column): string
+    {
+        return DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', {$column})"
+            : "DATE_FORMAT({$column}, '%Y-%m')";
+    }
+
+    /**
+     * @return Collection<int, array{kind: string, title: string, detail: string, meta: ?string, at: \Illuminate\Support\Carbon|\DateTimeInterface}>
+     */
+    private function recentActivityFeed(): Collection
+    {
         $membershipEvents = Membership::query()
-            ->with('plan')
+            ->with(['plan', 'primaryMember'])
             ->latest('created_at')
-            ->limit(8)
+            ->limit(10)
             ->get()
-            ->map(function (Membership $m) {
+            ->map(function (Membership $membership) {
+                $primary = $membership->primaryMember;
+                $memberName = $primary
+                    ? trim($primary->first_name.' '.$primary->last_name)
+                    : null;
+
                 return [
                     'kind' => 'membership',
-                    'title' => 'Membership '.$m->membership_number,
-                    'detail' => $m->plan?->name ?? '—',
-                    'at' => $m->created_at,
+                    'title' => $membership->membership_number,
+                    'detail' => $membership->plan?->name ?? 'Membership created',
+                    'meta' => $memberName ?: null,
+                    'at' => $membership->created_at,
                 ];
             });
 
         $saleEvents = PartnerSale::query()
             ->with('partner')
             ->latest('sold_at')
-            ->limit(8)
+            ->limit(6)
             ->get()
-            ->map(function (PartnerSale $s) {
+            ->map(function (PartnerSale $sale) {
+                $amount = $sale->sale_amount !== null
+                    ? '$'.number_format((float) $sale->sale_amount, 2)
+                    : null;
+
                 return [
                     'kind' => 'sale',
-                    'title' => 'Partner sale',
-                    'detail' => $s->partner?->name ?? 'Partner #'.$s->partner_id,
-                    'at' => $s->sold_at ?? $s->created_at,
+                    'title' => $sale->partner?->name ?? 'Partner sale',
+                    'detail' => $amount ? "Sale {$amount}" : 'Partner sale recorded',
+                    'meta' => null,
+                    'at' => $sale->sold_at ?? $sale->created_at,
                 ];
             });
 
-        $recentActivity = $membershipEvents
+        return $membershipEvents
             ->concat($saleEvents)
-            ->sortByDesc(fn (array $row) => $row['at']->timestamp)
+            ->sortByDesc(fn (array $row) => $row['at']->getTimestamp())
             ->take(12)
             ->values();
-
-        return view('dashboard', [
-            'stats' => $stats,
-            'recentMemberships' => $recentMemberships,
-            'membershipChart' => $membershipChart,
-            'membershipStatusChart' => $membershipStatusChart,
-            'partnerSalesChart' => $partnerSalesChart,
-            'recentActivity' => $recentActivity,
-        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Membership;
 use App\Models\Plan;
 use App\Services\StripeMembershipPlanChangeCheckoutService;
 use App\Services\UsaPaymentsMembershipCheckoutService;
+use App\Support\HouseholdDependentFormOptions;
 use App\Support\MembershipCardPresenter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -230,14 +231,25 @@ class MembershipController extends Controller
         abort_unless($membership, 404);
         abort_unless($membership->plan?->allowsFamilyDependents(), 403);
 
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:80'],
-            'last_name' => ['required', 'string', 'max:80'],
-            'relationship' => ['nullable', 'string', 'max:80'],
-            'phone' => ['nullable', 'string', 'max:30'],
-        ]);
+        $plan = $membership->plan;
+        $dependentLimit = $plan->householdDependentLimit();
+        $currentCount = $this->householdDependentCount($membership);
 
-        $membership->dependents()->create($validated);
+        if ($currentCount >= $dependentLimit) {
+            return back()->withErrors([
+                'first_name' => "Your plan allows up to {$dependentLimit} household member(s) in addition to the primary member ({$plan->householdMemberCapacity()} total on plan).",
+            ]);
+        }
+
+        $validated = $request->validate(HouseholdDependentFormOptions::singleDependentValidationRules());
+
+        $membership->dependents()->create([
+            'first_name' => trim($validated['first_name']),
+            'last_name' => trim($validated['last_name']),
+            'date_of_birth' => $validated['date_of_birth'],
+            'gender' => $validated['gender'],
+            'relationship' => trim($validated['relationship']),
+        ]);
 
         return back()->with('status', 'Family member added.');
     }
@@ -246,6 +258,7 @@ class MembershipController extends Controller
     {
         $membership = $this->membershipFor($request);
         abort_unless($membership, 404);
+        abort_unless($membership->plan?->allowsFamilyDependents(), 403);
 
         $dependent = $membership->dependents()
             ->where('id', $dependentId)
@@ -344,18 +357,40 @@ class MembershipController extends Controller
     {
         $membership = $this->membershipFor($request);
         abort_unless($membership, 404);
+        abort_unless($membership->plan?->allowsFamilyDependents(), 404);
 
+        $plan = $membership->plan;
         $familyDependents = $membership->dependents
-            ->filter(fn ($dep) => $dep->relationship !== 'visitor')
+            ->filter(fn ($dep) => ($dep->relationship ?? '') !== 'visitor')
             ->values();
-
-        $canManageFamilyDependents = $membership->plan?->allowsFamilyDependents() ?? false;
+        $dependentCount = $familyDependents->count();
+        $dependentLimit = $plan->householdDependentLimit();
+        $planCapacity = $plan->householdMemberCapacity();
+        $includedDependentLimit = $plan->includedDependentLimit();
+        $includedPlanCapacity = $plan->includedMemberCapacity();
 
         return view('customer.membership.family-members', [
             'membership' => $membership,
             'familyDependents' => $familyDependents,
-            'canManageFamilyDependents' => $canManageFamilyDependents,
+            'dependentCount' => $dependentCount,
+            'dependentLimit' => $dependentLimit,
+            'planCapacity' => $planCapacity,
+            'includedDependentLimit' => $includedDependentLimit,
+            'includedPlanCapacity' => $includedPlanCapacity,
+            'canAddMoreDependents' => $dependentCount < $dependentLimit,
+            'genderOptionKeys' => HouseholdDependentFormOptions::genderOptionKeys(),
+            'relationshipOptionKeys' => HouseholdDependentFormOptions::relationshipOptionKeys(),
         ]);
+    }
+
+    private function householdDependentCount(Membership $membership): int
+    {
+        return $membership->dependents()
+            ->where(function ($query) {
+                $query->whereNull('relationship')
+                    ->orWhere('relationship', '!=', 'visitor');
+            })
+            ->count();
     }
 
     private function membershipFor(Request $request): ?Membership

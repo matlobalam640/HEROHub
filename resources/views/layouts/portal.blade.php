@@ -15,6 +15,10 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @include('layouts.partials.portal-sidebar-styles')
+        <script>
+            document.documentElement.classList.remove('dark-theme');
+            try { localStorage.removeItem('hero_portal_theme'); } catch (e) {}
+        </script>
         <style id="hero-portal-topbar-styles">
             html, body {
                 margin: 0;
@@ -26,235 +30,12 @@
                 border: 0 !important;
                 outline: 0 !important;
             }
-            /* Sidebar tokens: light values live on :root in app.css; dark must override or borders/text stay paper-white / ink-navy */
-            html.dark-theme {
-                --sidebar-surface: #25293c;
-                --sidebar-border: #3b4253;
-                --sidebar-text: #b4b7bd;
-                --sidebar-text-strong: #e7eaf0;
-                --sidebar-section: #7c7f8e;
-                --sidebar-menu-active-bg: rgba(115, 103, 240, 0.15);
-                --sidebar-menu-active-bg-hover: rgba(115, 103, 240, 0.22);
-            }
-            html.dark-theme .portal-sidebar .sidebar-brand img {
-                filter: brightness(1.08) contrast(1.02);
-            }
-            /* Vuexy Bootstrap dark-layout palette (Analytics-style) */
-            .dark-theme body {
-                background: #25293c !important;
-                color: #d0d2d6;
-            }
-            .dark-theme .portal-sidebar {
-                background: #25293c !important;
-                border-right-color: #3b4253 !important;
-            }
-            .dark-theme .portal-sidebar .sidebar-brand,
-            .dark-theme .portal-sidebar .sidebar-footer {
-                background: #25293c !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme header {
-                background: #2f3349 !important;
-                border-color: #3b4253 !important;
-                box-shadow: 0 4px 24px -12px rgba(0, 0, 0, 0.45) !important;
-            }
-            .dark-theme main {
-                color: #d0d2d6;
-                background: transparent;
-            }
-            /* Module header strip (dashboard, coming-soon): html.dark-theme does not enable Tailwind dark: variants */
-            .dark-theme .hero-portal-page-header {
-                background-image: linear-gradient(180deg, #2f3349 0%, #2a2e42 100%) !important;
-                border-color: #3b4253 !important;
-                --tw-ring-color: rgba(59, 66, 83, 0.65) !important;
-                box-shadow: 0 4px 24px -14px rgba(0, 0, 0, 0.5) !important;
-            }
-            .dark-theme .hero-portal-page-header h1 {
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .hero-portal-page-header .text-slate-400 {
-                color: #7c7f8e !important;
-            }
-            .dark-theme .hero-portal-page-header__metric {
-                background-color: #25293c !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-portal-page-header__metric .text-slate-500 {
-                color: #b4b7bd !important;
-            }
-            .dark-theme .hero-portal-page-header__metric .text-slate-900,
-            .dark-theme .hero-portal-page-header__metric .text-slate-100 {
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .hero-portal-page-header__action {
-                background-color: #25293c !important;
-                border-color: #3b4253 !important;
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .hero-portal-page-header__action:hover {
-                background-color: #363a52 !important;
-            }
-            .dark-theme .bg-white {
-                background-color: #2f3349 !important;
-            }
-            .dark-theme .bg-slate-50,
-            .dark-theme .bg-slate-50\/80 {
-                background-color: rgba(47, 51, 73, 0.85) !important;
-            }
-            .dark-theme .hover\:bg-slate-50:hover,
-            .dark-theme .hover\:bg-slate-100:hover {
-                background-color: rgba(59, 66, 83, 0.55) !important;
-            }
-            .dark-theme .border-slate-200,
-            .dark-theme .border-slate-200\/70,
-            .dark-theme .border-slate-200\/80,
-            .dark-theme .border-slate-100 {
-                border-color: #3b4253 !important;
-            }
             .hero-topbar-popover {
                 background: #fff;
             }
-            .dark-theme .hero-topbar-popover {
-                background: #2f3349;
-                border-color: #3b4253 !important;
-                color: #d0d2d6;
-                box-shadow: 0 12px 40px -16px rgba(0, 0, 0, 0.55) !important;
-            }
-            .dark-theme .hero-topbar-popover a:hover {
-                background: rgba(115, 103, 240, 0.12) !important;
-            }
-            .dark-theme .text-slate-900,
-            .dark-theme .text-slate-800 {
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .text-slate-700,
-            .dark-theme .text-slate-600 {
-                color: #d0d2d6 !important;
-            }
-            .dark-theme .text-slate-500 {
-                color: #b4b7bd !important;
-            }
-            .dark-theme .text-hero-primary {
-                color: #a59cec !important;
-            }
-            .dark-theme .hero-panel-header,
-            .dark-theme .dashboard-card-header {
-                background-image: linear-gradient(180deg, #2f3349 0%, #2c3044 100%) !important;
-                border-bottom-color: #3b4253 !important;
-                box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset !important;
-            }
-            .dark-theme .dashboard-card-header__title {
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .dashboard-card-header__sub {
-                color: #b4b7bd !important;
-            }
-            /* Active nav: Vuexy primary (overridden in sidebar partial for specificity) */
-            .dark-theme .portal-sidebar .sidebar-link--pill.sidebar-link-active,
-            .dark-theme .portal-sidebar .sidebar-link--pill[aria-current="page"],
-            .dark-theme .portal-sidebar .sidebar-link--pill[data-nav-active],
-            .dark-theme .portal-sidebar .sidebar-link:not(.sidebar-link--pill).sidebar-link-active,
-            .dark-theme .portal-sidebar .sidebar-link:not(.sidebar-link--pill)[aria-current="page"],
-            .dark-theme .portal-sidebar .sidebar-link:not(.sidebar-link--pill)[data-nav-active] {
-                background-color: #7367f0 !important;
-                background-image: none !important;
-                box-shadow: 0 8px 22px -8px rgba(115, 103, 240, 0.55) !important;
-            }
-            .dark-theme .portal-sidebar a.sidebar-link--pill.sidebar-link-active:hover,
-            .dark-theme .portal-sidebar a.sidebar-link--pill[aria-current="page"]:hover,
-            .dark-theme .portal-sidebar a.sidebar-link--pill[data-nav-active]:hover,
-            .dark-theme .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active:hover,
-            .dark-theme .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current="page"]:hover,
-            .dark-theme .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]:hover {
-                background-color: #6558d3 !important;
-            }
-            .dark-theme header input[type="search"] {
-                background: #25293c !important;
-                border-color: #3b4253 !important;
-                color: #e7eaf0 !important;
-            }
-            .dark-theme header input[type="search"]:focus {
-                background: #2c3145 !important;
-                border-color: #7367f0 !important;
-            }
-            .dark-theme header input[type="search"]::placeholder {
-                color: #7c7f8e !important;
-            }
-            .dark-theme .shadow-\[0_2px_12px_-4px_rgba\(15\,23\,42\,0\.06\)\] {
-                box-shadow: 0 4px 24px -10px rgba(0, 0, 0, 0.5) !important;
-            }
-            .dark-theme .shadow-sm {
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
-            }
-            .dark-theme .shadow-md {
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32) !important;
-            }
-            .dark-theme .ring-slate-100,
-            .dark-theme .ring-slate-200\/60,
-            .dark-theme .ring-slate-200\/80 {
-                --tw-ring-color: rgba(59, 66, 83, 0.65) !important;
-            }
-            .dark-theme .hero-datatable .datatable-top,
-            .dark-theme .hero-datatable .datatable-bottom {
-                background: #2c3044 !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-datatable .datatable-container {
-                background: #2f3349 !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-datatable table.datatable-table thead th {
-                background: #343752 !important;
-                color: #e7eaf0 !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-datatable table.datatable-table tbody td {
-                color: #d0d2d6 !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-datatable table.datatable-table tbody tr:hover {
-                background: rgba(115, 103, 240, 0.08) !important;
-            }
-            .dark-theme .hero-datatable .datatable-input,
-            .dark-theme .hero-datatable .datatable-selector {
-                background: #25293c !important;
-                color: #e7eaf0 !important;
-                border-color: #3b4253 !important;
-            }
-            .dark-theme .hero-datatable .datatable-info {
-                color: #b4b7bd !important;
-            }
-            .dark-theme .dashboard-stat-card {
-                background: linear-gradient(165deg, #2f3349 0%, #2a2e42 100%) !important;
-                border-color: #3b4253 !important;
-                box-shadow: 0 8px 28px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04) inset !important;
-            }
-            .dark-theme .dashboard-stat-card .text-slate-500 {
-                color: #b4b7bd !important;
-            }
-            .dark-theme .dashboard-stat-card .text-slate-900 {
-                color: #e7eaf0 !important;
-            }
-            .dark-theme .membership-digital-card {
-                background: #e4e4e8 !important;
-                color: #020617 !important;
-            }
-            .dark-theme .membership-digital-card .text-slate-950,
-            .dark-theme .membership-digital-card .text-slate-900 {
-                color: #020617 !important;
-            }
-            .dark-theme .membership-digital-card .text-slate-700 {
-                color: #cbd5e1 !important;
-            }
-            .dark-theme .membership-digital-card .bg-white {
-                background: #ffffff !important;
-            }
-            .dark-theme .membership-digital-card .ring-slate-200 {
-                --tw-ring-color: rgb(226 232 240) !important;
-            }
         </style>
     </head>
-    <body class="min-h-screen bg-[color:var(--insta-page-bg)] font-sans antialiased text-slate-900" style="font-family: Inter, ui-sans-serif, system-ui, sans-serif">
+    <body class="min-h-screen font-sans antialiased text-slate-900" style="font-family: Inter, ui-sans-serif, system-ui, sans-serif">
         @php
             $portalHomeUrl = route('dashboard');
             $portalHomeLabel = 'Dashboard';
@@ -273,15 +54,15 @@
                 languageOpen: false,
                 notificationOpen: false,
                 searchOpen: false,
-                theme: 'light',
                 locale: 'en',
                 searchQuery: '',
-                notifications: [
-                    { id: 1, title: 'New membership submitted', when: '2m ago', read: false },
-                    { id: 2, title: 'Partner payout updated', when: '1h ago', read: false },
-                    { id: 3, title: 'Coverage verification completed', when: 'Today', read: true },
-                ],
-                searchItems: [
+                searchLoading: false,
+                searchDataResults: [],
+                searchDebounce: null,
+                canSearchLiveData: {{ auth()->user()->hasAnyRole(['admin', 'dispatch']) ? 'true' : 'false' }},
+                searchEndpoint: '{{ route('portal.search') }}',
+                verificationSearchUrl: '{{ route('dispatch.verification') }}',
+                navSearchItems: [
                     { label: '{{ $portalHomeLabel }}', url: '{{ $portalHomeUrl }}' },
                     { label: 'Reports', url: '{{ route('portal.coming-soon', ['page' => 'reports']) }}' },
                     { label: 'My Membership', url: '{{ route('customer.membership') }}' },
@@ -296,14 +77,30 @@
                     { label: 'Settings', url: '{{ route('portal.coming-soon', ['page' => 'settings']) }}' },
                     { label: 'Profile', url: '{{ route('profile.edit') }}' },
                 ],
+                notifications: [
+                    { id: 1, title: 'New membership submitted', when: '2m ago', read: false },
+                    { id: 2, title: 'Partner payout updated', when: '1h ago', read: false },
+                    { id: 3, title: 'Coverage verification completed', when: 'Today', read: true },
+                ],
                 init() {
                     try {
                         this.sidebarCollapsed = localStorage.getItem('hero_portal_sidebar_collapsed') === '1';
-                        this.theme = localStorage.getItem('hero_portal_theme') || 'light';
                         this.locale = localStorage.getItem('hero_portal_locale') || 'en';
                         this.notifications = JSON.parse(localStorage.getItem('hero_portal_notifications') || JSON.stringify(this.notifications));
+                        localStorage.removeItem('hero_portal_theme');
                     } catch (e) {}
-                    this.applyTheme();
+                    document.documentElement.classList.remove('dark-theme');
+                    this.$watch('searchQuery', (value) => {
+                        clearTimeout(this.searchDebounce);
+                        const q = (value || '').trim();
+                        if (q.length < 2 || ! this.canSearchLiveData) {
+                            this.searchDataResults = [];
+                            this.searchLoading = false;
+                            return;
+                        }
+                        this.searchLoading = true;
+                        this.searchDebounce = setTimeout(() => this.fetchLiveSearch(), 280);
+                    });
                 },
                 toggleSidebarCollapse() {
                     this.sidebarCollapsed = !this.sidebarCollapsed;
@@ -319,36 +116,90 @@
                         localStorage.setItem('hero_portal_locale', nextLocale);
                     } catch (e) {}
                 },
-                toggleTheme() {
-                    this.theme = this.theme === 'dark' ? 'light' : 'dark';
-                    this.applyTheme();
-                    try {
-                        localStorage.setItem('hero_portal_theme', this.theme);
-                    } catch (e) {}
-                },
-                applyTheme() {
-                    document.documentElement.classList.toggle('dark-theme', this.theme === 'dark');
-                },
                 markAllNotificationsRead() {
                     this.notifications = this.notifications.map((item) => ({ ...item, read: true }));
                     try {
                         localStorage.setItem('hero_portal_notifications', JSON.stringify(this.notifications));
                     } catch (e) {}
                 },
-                searchResults() {
+                navSearchResults() {
                     const q = this.searchQuery.trim().toLowerCase();
-                    if (!q) return [];
-                    return this.searchItems.filter((item) => item.label.toLowerCase().includes(q)).slice(0, 8);
+                    if (! q) {
+                        return [];
+                    }
+
+                    return this.navSearchItems.filter((item) => item.label.toLowerCase().includes(q)).slice(0, 5);
+                },
+                combinedSearchResults() {
+                    const seen = new Set();
+                    const merged = [];
+
+                    for (const item of [...this.searchDataResults, ...this.navSearchResults()]) {
+                        if (seen.has(item.url)) {
+                            continue;
+                        }
+                        seen.add(item.url);
+                        merged.push(item);
+                        if (merged.length >= 10) {
+                            break;
+                        }
+                    }
+
+                    return merged;
+                },
+                async fetchLiveSearch() {
+                    const q = this.searchQuery.trim();
+                    if (q.length < 2 || ! this.canSearchLiveData) {
+                        this.searchLoading = false;
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`${this.searchEndpoint}?q=${encodeURIComponent(q)}`, {
+                            headers: {
+                                Accept: 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
+
+                        if (response.ok) {
+                            const payload = await response.json();
+                            this.searchDataResults = payload.results || [];
+                        }
+                    } catch (error) {
+                        this.searchDataResults = [];
+                    }
+
+                    this.searchLoading = false;
                 },
                 submitGlobalSearch() {
-                    const results = this.searchResults();
+                    const results = this.combinedSearchResults();
                     if (results.length) {
                         window.location.href = results[0].url;
+                        return;
+                    }
+
+                    const q = this.searchQuery.trim();
+                    if (this.canSearchLiveData && q.length >= 2) {
+                        window.location.href = `${this.verificationSearchUrl}?q=${encodeURIComponent(q)}`;
                     }
                 },
+                searchIconClass(kind) {
+                    if (kind === 'membership') {
+                        return 'fa-solid fa-id-card';
+                    }
+                    if (kind === 'customer') {
+                        return 'fa-solid fa-user';
+                    }
+
+                    return 'fa-solid fa-link';
+                },
             }"
-            class="min-h-screen"
+            class="hero-portal-canvas flex min-h-screen flex-col"
         >
+            @include('layouts.partials.hero-site-brand-bar', ['portalLabel' => 'Membership Portal'])
+
+            <div class="hero-portal-body min-h-0 flex-1">
             <div class="lg:hidden">
                 <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-40 bg-black/40" x-on:click="sidebarOpen = false"></div>
                 <div
@@ -357,21 +208,21 @@
                     x-transition:enter="transition transform ease-out duration-200"
                     x-transition:enter-start="-translate-x-full"
                     x-transition:enter-end="translate-x-0"
-                    class="portal-sidebar fixed inset-y-0 left-0 z-50 w-72 shadow-xl shadow-slate-900/10"
+                    class="portal-sidebar fixed bottom-0 left-0 top-14 z-50 w-72 shadow-xl shadow-slate-900/10"
                 >
                     @include('layouts.partials.sidebar', ['mobile' => true])
                 </div>
             </div>
 
             <div
-                class="portal-sidebar hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
+                class="portal-sidebar hidden lg:fixed lg:bottom-0 lg:top-14 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
                 :class="sidebarCollapsed ? 'lg:w-[88px] portal-sidebar--collapsed' : 'lg:w-72'"
             >
                 @include('layouts.partials.sidebar', ['mobile' => false])
             </div>
 
-            <div class="transition-[padding] duration-200 ease-out" :class="sidebarCollapsed ? 'lg:pl-[88px]' : 'lg:pl-72'">
-                <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white shadow-[0_2px_12px_-4px_rgba(15,23,42,0.06)]">
+            <div class="hero-portal-shell min-w-0 flex-1 transition-[padding] duration-200 ease-out" :class="sidebarCollapsed ? 'lg:pl-[88px]' : 'lg:pl-72'">
+                <header class="hero-portal-topbar">
                     <div class="flex h-[4.25rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
                         <button
                             type="button"
@@ -382,21 +233,9 @@
                             <i class="fa-solid fa-bars" aria-hidden="true"></i>
                         </button>
 
-                        <a
-                            href="{{ $portalHomeUrl }}"
-                            class="flex shrink-0 items-center lg:hidden"
-                            aria-label="{{ config('app.name', 'HERO') }} — home"
-                        >
-                            <img
-                                src="{{ asset('brand/hero-logo.png') }}"
-                                alt=""
-                                class="h-8 w-auto max-w-[7.5rem] object-contain object-left"
-                                width="120"
-                                height="32"
-                                loading="eager"
-                                decoding="async"
-                            />
-                        </a>
+                        <div class="hidden shrink-0 items-center lg:flex lg:min-w-[8rem]">
+                            <span class="font-display text-sm font-semibold text-[color:var(--hero-primary)]">Portal</span>
+                        </div>
 
                         <button
                             type="button"
@@ -417,16 +256,33 @@
                                     placeholder="Search here…"
                                     x-model="searchQuery"
                                     x-on:focus="searchOpen = true"
+                                    x-on:input="searchOpen = true"
                                     x-on:keydown.enter.prevent="submitGlobalSearch()"
                                     class="w-full rounded-full border border-slate-200/90 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[color:var(--insta-teal)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[color:var(--insta-teal)]/25 focus:ring-offset-0"
                                 />
-                                <div x-cloak x-show="searchOpen && searchResults().length" class="hero-topbar-popover absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-slate-200 shadow-xl">
-                                    <template x-for="item in searchResults()" :key="item.url">
-                                        <a :href="item.url" class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50">
-                                            <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
-                                            <span x-text="item.label"></span>
+                                <div
+                                    x-cloak
+                                    x-show="searchOpen && (searchLoading || combinedSearchResults().length || (canSearchLiveData && searchQuery.trim().length >= 2) || navSearchResults().length)"
+                                    class="hero-topbar-popover absolute left-0 right-0 z-50 mt-2 overflow-hidden rounded-2xl border border-slate-200 shadow-xl"
+                                >
+                                    <div x-show="searchLoading" class="px-4 py-3 text-sm text-slate-500">
+                                        Searching…
+                                    </div>
+                                    <template x-for="item in combinedSearchResults()" :key="item.url">
+                                        <a :href="item.url" class="flex items-start gap-3 border-b border-slate-100 px-4 py-2.5 text-sm text-slate-700 last:border-b-0 hover:bg-slate-50">
+                                            <i class="mt-0.5 text-xs text-[color:var(--hero-accent-teal)]" :class="searchIconClass(item.kind)" aria-hidden="true"></i>
+                                            <span class="min-w-0">
+                                                <span class="block truncate font-medium text-slate-900" x-text="item.label"></span>
+                                                <span x-show="item.meta" class="block truncate text-xs text-slate-500" x-text="item.meta"></span>
+                                            </span>
                                         </a>
                                     </template>
+                                    <div
+                                        x-show="! searchLoading && ! combinedSearchResults().length && searchQuery.trim().length >= 2 && canSearchLiveData"
+                                        class="px-4 py-3 text-sm text-slate-600"
+                                    >
+                                        No quick matches. Press <kbd class="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-xs font-semibold">Enter</kbd> to open coverage verification.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -443,9 +299,6 @@
                                     <button type="button" class="block w-full px-3 py-2 text-left text-sm hover:bg-slate-50" x-on:click="setLocale('es')">Espanol</button>
                                 </div>
                             </div>
-                            <button type="button" class="hidden h-10 w-10 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 md:inline-flex" title="Theme" aria-label="Theme" x-on:click="toggleTheme()">
-                                <i class="fa-solid text-lg" :class="theme === 'dark' ? 'fa-moon' : 'fa-sun'" aria-hidden="true"></i>
-                            </button>
                             <div class="relative hidden sm:block" @click.outside="notificationOpen = false">
                                 <button type="button" class="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-[color:var(--insta-purple)] hover:bg-slate-100" title="Notifications" aria-label="Notifications" x-on:click="notificationOpen = !notificationOpen">
                                     <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
@@ -500,9 +353,15 @@
                     </div>
                 </header>
 
-                <main class="px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+                <main class="hero-portal-main">
+                    <div class="hero-portal-content">
+                    @auth
+                        @include('customer.membership.partials.coverage-incomplete-banner')
+                    @endauth
                     {{ $slot }}
+                    </div>
                 </main>
+            </div>
             </div>
         </div>
         @stack('scripts')

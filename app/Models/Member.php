@@ -22,6 +22,10 @@ class Member extends Model
         'id_number',
         'country',
         'city',
+        'street',
+        'street_line2',
+        'state',
+        'zip_code',
         'qr_token',
     ];
 

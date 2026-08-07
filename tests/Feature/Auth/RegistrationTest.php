@@ -9,14 +9,14 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_route_redirects_to_public_membership_site(): void
     {
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertRedirect(config('heroportal.membership_subscribe_url'));
     }
 
-    public function test_new_users_can_register(): void
+    public function test_registration_post_redirects_to_public_membership_site(): void
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
@@ -25,7 +25,7 @@ class RegistrationTest extends TestCase
             'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('customer.membership', [], false));
+        $response->assertRedirect(config('heroportal.membership_subscribe_url'));
+        $this->assertGuest();
     }
 }

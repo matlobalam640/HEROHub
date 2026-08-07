@@ -8,6 +8,7 @@ use App\Http\Controllers\Business\PortalController as BusinessPortalController;
 use App\Http\Controllers\Business\VisitorController as BusinessVisitorController;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\StaffMembershipController;
+use App\Http\Controllers\Customer\CoverageInformationController;
 use App\Http\Controllers\Customer\MembershipController;
 use App\Http\Controllers\Customer\MembershipPaymentMethodController;
 use App\Http\Controllers\Customer\MembershipStripePlanCheckoutController;
@@ -18,7 +19,7 @@ use App\Http\Controllers\Partner\CommissionReportController;
 use App\Http\Controllers\Partner\EnrollmentController as PartnerEnrollmentController;
 use App\Http\Controllers\Partner\PortalController as PartnerPortalController;
 use App\Http\Controllers\Partner\SalesController as PartnerSalesController;
-use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PortalGlobalSearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Providers\RouteServiceProvider;
@@ -61,9 +62,17 @@ Route::middleware('auth')->group(function () {
         ->middleware(['verified', 'role:admin|dispatch'])
         ->name('dispatch.verification');
 
+    Route::get('/portal/search', PortalGlobalSearchController::class)
+        ->middleware(['verified', 'role:admin|dispatch'])
+        ->name('portal.search');
+
     Route::middleware('role:customer|business')->group(function () {
         Route::get('/my/membership', [MembershipController::class, 'show'])
             ->name('customer.membership');
+        Route::get('/my/membership/coverage-information', [CoverageInformationController::class, 'show'])
+            ->name('customer.membership.coverage');
+        Route::put('/my/membership/coverage-information', [CoverageInformationController::class, 'update'])
+            ->name('customer.membership.coverage.update');
         Route::get('/my/membership/plan', [MembershipController::class, 'plan'])
             ->name('customer.membership.plan');
         Route::post('/my/membership/plan', [MembershipController::class, 'updatePlan'])

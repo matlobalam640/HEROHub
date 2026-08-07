@@ -13,20 +13,29 @@ export default {
         extend: {
             colors: {
                 hero: {
-                    /* rgb + <alpha-value> so bg-hero-primary, ring-hero-primary/30, etc. resolve in built CSS */
                     primary: 'rgb(40 59 105 / <alpha-value>)',
-                    'primary-hover': 'rgb(31 45 82 / <alpha-value>)',
-                    'primary-pressed': 'rgb(22 36 56 / <alpha-value>)',
-                    'primary-soft': 'rgb(236 239 246 / <alpha-value>)',
+                    'primary-hover': 'rgb(30 45 80 / <alpha-value>)',
+                    'primary-pressed': 'rgb(22 35 57 / <alpha-value>)',
+                    'primary-soft': 'rgb(238 241 247 / <alpha-value>)',
                     secondary: 'rgb(255 255 255 / <alpha-value>)',
+                    accent: {
+                        teal: 'rgb(62 207 202 / <alpha-value>)',
+                        gold: 'rgb(212 168 83 / <alpha-value>)',
+                        sky: 'rgb(94 179 255 / <alpha-value>)',
+                        coral: 'rgb(255 138 101 / <alpha-value>)',
+                    },
                 },
             },
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', 'Figtree', ...defaultTheme.fontFamily.sans],
             },
             boxShadow: {
-                'hero-card': '0 8px 30px -12px rgba(40, 59, 105, 0.14)',
-                'hero-cta': '0 6px 18px -4px rgba(40, 59, 105, 0.45), 0 2px 4px -2px rgba(40, 59, 105, 0.2)',
+                'hero-card': '0 8px 30px -12px rgba(40, 59, 105, 0.16)',
+                'hero-cta': '0 6px 18px -4px rgba(40, 59, 105, 0.42), 0 2px 4px -2px rgba(40, 59, 105, 0.18)',
+                'hero-panel': '0 0 0 1px rgba(255,255,255,0.75) inset, 0 4px 24px -8px rgba(40,59,105,0.12)',
+            },
+            borderRadius: {
+                '4xl': '2rem',
             },
         },
     },

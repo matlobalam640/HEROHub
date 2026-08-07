@@ -23,11 +23,7 @@ function injectFallbackKeyframes() {
 }
 
 function applyOverlaySurface(el) {
-    if (document.documentElement.classList.contains('dark-theme')) {
-        el.style.background = 'rgba(15, 23, 42, 0.72)';
-    } else {
-        el.style.background = 'rgba(255, 255, 255, 0.88)';
-    }
+    el.style.background = 'rgba(255, 255, 255, 0.88)';
 }
 
 function ensureLoader() {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,13 @@ class Membership extends Model
         'billing_auto_collect' => 'boolean',
     ];
 
+    protected function membershipNumber(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => is_string($value) && $value !== '' ? strtoupper($value) : $value,
+        );
+    }
+
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
@@ -74,5 +82,10 @@ class Membership extends Model
     public function dependents(): HasMany
     {
         return $this->hasMany(MemberDependent::class);
+    }
+
+    public function coverageProfile(): HasOne
+    {
+        return $this->hasOne(MembershipCoverageProfile::class);
     }
 }

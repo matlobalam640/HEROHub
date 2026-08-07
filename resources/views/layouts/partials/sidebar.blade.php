@@ -9,6 +9,15 @@
         auth()->user()->hasRole('customer')
         || ($isBusinessNav && $hasPersonalMembership)
     );
+    $allowsFamilyDependentsNav = false;
+    if ($showMyMembershipNav && auth()->check()) {
+        $sidebarMembership = \App\Models\Membership::query()
+            ->with('plan')
+            ->where('account_user_id', auth()->id())
+            ->orderByDesc('id')
+            ->first();
+        $allowsFamilyDependentsNav = $sidebarMembership?->plan?->allowsFamilyDependents() ?? false;
+    }
     $sidebarHomeUrl = route('dashboard');
     if (auth()->check() && \App\Providers\RouteServiceProvider::isCustomerPortalOnly(auth()->user())) {
         $sidebarHomeUrl = route('customer.membership');
@@ -31,14 +40,14 @@
 <div class="flex h-full min-h-0 flex-col">
     <a
         href="{{ $sidebarHomeUrl }}"
-        class="sidebar-brand flex shrink-0 items-center gap-3 px-5 py-5 outline-none transition-opacity hover:opacity-95 focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[color:rgba(40,59,105,0.22)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--sidebar-surface)]"
+        class="sidebar-brand flex shrink-0 items-center gap-3 px-5 py-4 outline-none transition-opacity hover:opacity-95 focus-visible:rounded-md focus-visible:ring-2 focus-visible:ring-[color:var(--hero-primary)]/25 focus-visible:ring-offset-2"
     >
         <img
             src="{{ asset('brand/hero-logo.png') }}"
             alt="{{ config('app.name', 'HERO') }}"
-            class="h-10 w-auto shrink-0 object-contain object-left transition-all duration-200"
-            width="160"
-            height="40"
+            class="h-8 w-auto shrink-0 object-contain object-left transition-all duration-200 lg:hidden"
+            width="128"
+            height="32"
             loading="eager"
             decoding="async"
         />
@@ -46,8 +55,7 @@
             class="flex min-w-0 flex-1 items-center gap-2"
             @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless
         >
-            <div class="truncate text-sm font-semibold tracking-tight text-[color:var(--sidebar-text-strong)]">{{ config('app.name', 'HERO') }}</div>
-            <i class="fa-solid fa-circle shrink-0 text-[0.35rem] text-[color:var(--sidebar-section)] opacity-70" aria-hidden="true"></i>
+            <div class="truncate font-display text-xs font-bold uppercase tracking-[0.14em] text-[color:var(--hero-primary)]">Navigation</div>
         </div>
     </a>
 
@@ -100,10 +108,18 @@
                 <ul class="sidebar-nav-stack" role="list">
                     <li class="sidebar-menu-item">
                         <a href="{{ route('customer.membership') }}"
-                           class="sidebar-link group {{ request()->routeIs('customer.membership') ? 'sidebar-link-active' : '' }}"
-                           @if(request()->routeIs('customer.membership')) aria-current="page" data-nav-active @endif>
+                           class="sidebar-link group {{ request()->routeIs('customer.membership') && ! request()->routeIs('customer.membership.coverage') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('customer.membership') && ! request()->routeIs('customer.membership.coverage')) aria-current="page" data-nav-active @endif>
                             <span class="sidebar-icon shrink-0"><i class="fa-solid fa-id-card fa-fw" aria-hidden="true"></i></span>
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Membership Details & ID Card</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ route('customer.membership.coverage') }}"
+                           class="sidebar-link group {{ request()->routeIs('customer.membership.coverage') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('customer.membership.coverage')) aria-current="page" data-nav-active @endif>
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-user-shield fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Coverage Information</span>
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
@@ -113,6 +129,7 @@
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Upgrade / Downgrade Plan</span>
                         </a>
                     </li>
+                    @if ($allowsFamilyDependentsNav)
                     <li class="sidebar-menu-item">
                         <a href="{{ route('customer.membership.family') }}" class="sidebar-link group {{ request()->routeIs('customer.membership.family') ? 'sidebar-link-active' : '' }}"
                            @if(request()->routeIs('customer.membership.family')) aria-current="page" data-nav-active @endif>
@@ -120,6 +137,7 @@
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Family Members</span>
                         </a>
                     </li>
+                    @endif
                     <li class="sidebar-menu-item">
                         <a href="{{ route('customer.membership') }}#auto-renew" class="sidebar-link group">
                             <span class="sidebar-icon shrink-0"><i class="fa-solid fa-arrows-rotate fa-fw" aria-hidden="true"></i></span>

@@ -54,16 +54,20 @@ class SubscriptionWebhookGatewayPlanTest extends TestCase
             ],
         ];
 
+        $expectedMembershipNumber = 'HERO-SUB-'.strtoupper(substr(sha1('12362239268'), 0, 12));
+
         $this->postJson('/api/v1/webhooks/subscription', $payload, [
             'X-Hero-Webhook-Secret' => 'test-webhook-secret-key',
         ])->assertOk()
             ->assertJsonPath('ok', true)
-            ->assertJsonPath('plan_code', 'HR-02');
+            ->assertJsonPath('plan_code', 'HR-02')
+            ->assertJsonPath('membership_number', $expectedMembershipNumber);
 
         $this->assertDatabaseHas('memberships', [
             'billing_subscription_id' => '12362239268',
             'billing_provider' => 'usa_payments',
             'status' => 'active',
+            'membership_number' => $expectedMembershipNumber,
         ]);
 
         $user = User::where('email', 'gateway-sync@example.com')->first();

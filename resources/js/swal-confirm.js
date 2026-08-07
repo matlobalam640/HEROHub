@@ -20,7 +20,6 @@ document.addEventListener(
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        const isDark = document.documentElement.classList.contains('dark-theme');
         const title = form.dataset.swalTitle || 'Please confirm';
         const confirmBtn = form.dataset.swalConfirmText || 'Yes, continue';
         const cancelBtn = form.dataset.swalCancelText || 'Cancel';
@@ -36,8 +35,8 @@ document.addEventListener(
             confirmButtonText: confirmBtn,
             cancelButtonText: cancelBtn,
             reverseButtons: true,
-            background: isDark ? '#1e293b' : '#ffffff',
-            color: isDark ? '#f1f5f9' : '#0f172a',
+            background: '#ffffff',
+            color: '#0f172a',
         });
 
         if (result.isConfirmed) {

@@ -398,23 +398,25 @@ class SubscriptionWebhookService
     {
         $existing = Membership::query()->where('billing_subscription_id', $subscriptionId)->value('membership_number');
         if (is_string($existing) && $existing !== '') {
-            return $existing;
+            return strtoupper($existing);
         }
 
-        $direct = trim((string) ($payload['membership_number'] ?? ''));
+        $direct = strtoupper(trim((string) ($payload['membership_number'] ?? '')));
         if ($direct !== '' && ! Membership::query()->where('membership_number', $direct)->exists()) {
             return $direct;
         }
 
         $subNo = trim((string) ($payload['subscription_number'] ?? ''));
         if ($subNo !== '') {
-            $candidate = str_starts_with(strtoupper($subNo), 'SUB-') ? 'HERO-'.$subNo : 'HERO-SUB-'.$subNo;
+            $candidate = str_starts_with(strtoupper($subNo), 'SUB-')
+                ? 'HERO-'.strtoupper($subNo)
+                : 'HERO-SUB-'.strtoupper($subNo);
             if (! Membership::query()->where('membership_number', $candidate)->exists()) {
                 return $candidate;
             }
         }
 
-        return 'HERO-SUB-'.substr(sha1($subscriptionId), 0, 12);
+        return 'HERO-SUB-'.strtoupper(substr(sha1($subscriptionId), 0, 12));
     }
 
     /**

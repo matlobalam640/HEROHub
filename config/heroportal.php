@@ -41,6 +41,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public membership signup (non-portal)
+    |--------------------------------------------------------------------------
+    |
+    | Self-service account creation is disabled in the portal. Direct prospects
+    | to the public marketing site to subscribe before signing in here.
+    |
+    */
+
+    'membership_subscribe_url' => env('HERO_MEMBERSHIP_SUBSCRIBE_URL', 'https://www.heroclientrescue.com/'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Website/payment-gateway → portal webhook
     |--------------------------------------------------------------------------
     |

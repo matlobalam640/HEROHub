@@ -1,17 +1,19 @@
 <x-guest-layout>
+    @php($subscribeUrl = config('heroportal.membership_subscribe_url'))
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-6" :status="session('status')" />
 
     <div class="mb-7">
-        <div class="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-            <span class="inline-flex h-2 w-2 rounded-full bg-hero-primary"></span>
-            Secure portal access
+        <div class="inline-flex items-center gap-2 rounded-full bg-[color:var(--hero-primary-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--hero-primary)]">
+            <span class="inline-flex h-2 w-2 rounded-full bg-[color:var(--hero-primary)]"></span>
+            Member portal access
         </div>
         <h1 class="mt-3 text-3xl font-semibold tracking-tight font-display">
             Sign in
         </h1>
         <p class="mt-2 text-sm text-slate-600 font-['Open_Sans'] leading-relaxed">
-            Log in to manage your membership, billing, and coverage details.
+            This portal is for existing HERO members. Sign in to manage your membership, billing, and coverage details.
         </p>
     </div>
 
@@ -40,7 +42,7 @@
             <div class="flex items-center justify-between">
                 <x-input-label for="password" :value="__('Password')" />
                 @if (Route::has('password.request'))
-                    <a class="text-xs font-semibold text-hero-primary hover:text-hero-primary-pressed"
+                    <a class="text-xs font-semibold text-[color:var(--hero-primary)] hover:text-[color:var(--hero-primary-hover)]"
                        href="{{ route('password.request') }}">
                         {{ __('Forgot password?') }}
                     </a>
@@ -63,20 +65,29 @@
         <!-- Remember Me -->
         <div class="mt-5 flex items-center justify-between">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded-lg border-slate-300 text-hero-primary shadow-sm focus:ring-hero-primary" name="remember">
+                <input id="remember_me" type="checkbox" class="rounded-lg border-slate-300 text-[color:var(--hero-primary)] shadow-sm focus:ring-[color:var(--hero-primary)]" name="remember">
                 <span class="ms-2 text-sm text-slate-600">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <div class="mt-7">
-            <x-primary-button class="w-full py-3 text-sm normal-case tracking-normal rounded-2xl">
+            <x-primary-button class="guest-auth-submit w-full py-3 text-sm normal-case tracking-normal rounded-2xl">
                 {{ __('Log in') }}
             </x-primary-button>
 
-            <div class="mt-5 text-center text-xs text-slate-500 font-['Open_Sans']">
-                Don’t have an account?
-                <a class="font-semibold text-hero-primary hover:text-hero-primary-pressed" href="{{ route('register') }}">
-                    Create one
+            <div class="mt-5 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-center text-xs leading-relaxed text-slate-600 font-['Open_Sans']">
+                <p class="font-semibold text-slate-700">Not a member yet?</p>
+                <p class="mt-1">
+                    HERO memberships are purchased on our public site — accounts are not created directly in this portal.
+                </p>
+                <a
+                    class="mt-2 inline-flex items-center justify-center font-semibold text-[color:var(--hero-primary)] hover:text-[color:var(--hero-primary-hover)]"
+                    href="{{ $subscribeUrl }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Subscribe at heroclientrescue.com
+                    <i class="fa-solid fa-arrow-up-right-from-square ms-1.5 text-[10px]" aria-hidden="true"></i>
                 </a>
             </div>
         </div>

@@ -82,11 +82,78 @@ class Plan extends Model
     }
 
     /**
+     * Retail family plans (e.g. Family of 4) require the extended coverage application form.
+     */
+    public function requiresExtendedCoverageForm(): bool
+    {
+        if ($this->allowsFamilyDependents()) {
+            return true;
+        }
+
+        return (int) ($this->included_members ?? 0) >= 4;
+    }
+
+    public function coverageFormTitle(): string
+    {
+        $included = (int) ($this->included_members ?? 0);
+
+        if ($included >= 4) {
+            return 'Family of '.$included.' plan';
+        }
+
+        if ($this->requiresExtendedCoverageForm()) {
+            return 'Family coverage plan';
+        }
+
+        return $this->name ?? 'Coverage plan';
+    }
+
+    /**
      * Retail (and similar) plans where the member may add household dependents in the customer portal.
      */
     public function allowsFamilyDependents(): bool
     {
         return $this->retail_subgroup === 'annual_family';
+    }
+
+    /**
+     * Total people covered on a household plan (primary member + dependents).
+     * Uses plan maximum when set (e.g. 6 with paid add-ons).
+     */
+    public function householdMemberCapacity(): int
+    {
+        $max = (int) ($this->max_members ?? 0);
+        if ($max > 0) {
+            return $max;
+        }
+
+        return $this->includedMemberCapacity();
+    }
+
+    /**
+     * People included in the base plan price (e.g. Family of 4).
+     */
+    public function includedMemberCapacity(): int
+    {
+        $included = (int) ($this->included_members ?? 0);
+
+        return $included > 0 ? $included : 4;
+    }
+
+    /**
+     * Dependents included in the base plan (excludes primary member).
+     */
+    public function includedDependentLimit(): int
+    {
+        return max($this->includedMemberCapacity() - 1, 0);
+    }
+
+    /**
+     * Maximum household dependents the primary member may add (excludes visitors).
+     */
+    public function householdDependentLimit(): int
+    {
+        return max($this->householdMemberCapacity() - 1, 0);
     }
 
     /**
