@@ -5,7 +5,7 @@
 
 @section('content')
     @php
-        $primary = '#283b69';
+        $primary = '#141d35';
         $daysLabel = isset($daysUntilRenewal) ? (int) $daysUntilRenewal : null;
     @endphp
 

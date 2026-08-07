@@ -4,7 +4,7 @@
 
     .portal-sidebar {
 
-        box-shadow: 1px 0 0 rgba(40, 59, 105, 0.08);
+        box-shadow: 1px 0 0 rgba(20, 29, 53, 0.08);
 
     }
 
@@ -42,7 +42,7 @@
 
     .hero-panel-header .text-xs {
 
-        color: rgba(40, 59, 105, 0.62);
+        color: rgba(20, 29, 53, 0.62);
 
     }
 

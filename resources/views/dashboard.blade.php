@@ -304,9 +304,9 @@
                 return v || fallback;
             };
             const H = {
-                primary: cssVar('--hero-primary', '#283b69'),
+                primary: cssVar('--hero-primary', '#141d35'),
                 teal: cssVar('--hero-accent-teal', '#3ecfca'),
-                gold: cssVar('--hero-accent-gold', '#d4a853'),
+                gold: cssVar('--hero-accent-gold', '#dec328'),
                 sky: cssVar('--hero-accent-sky', '#5eb3ff'),
                 coral: cssVar('--hero-accent-coral', '#ff8a65'),
                 success: cssVar('--vuexy-success', '#10b981'),
@@ -321,9 +321,9 @@
                 H.success,
                 H.coral,
                 H.muted,
-                cssVar('--dashboard-chart-8', '#324878'),
+                cssVar('--dashboard-chart-8', '#1e2a45'),
             ];
-            const gridColor = 'rgba(40, 59, 105, 0.1)';
+            const gridColor = 'rgba(20, 29, 53, 0.1)';
             const tickColor = '#64748b';
 
             const lineEl = document.getElementById('membershipGrowthChart');
@@ -333,8 +333,8 @@
                 const h = lineEl.offsetHeight || 288;
                 const lineFill = ctx.createLinearGradient(0, 0, 0, h);
                 lineFill.addColorStop(0, 'rgba(62, 207, 202, 0.32)');
-                lineFill.addColorStop(0.55, 'rgba(40, 59, 105, 0.1)');
-                lineFill.addColorStop(1, 'rgba(40, 59, 105, 0.02)');
+                lineFill.addColorStop(0.55, 'rgba(20, 29, 53, 0.1)');
+                lineFill.addColorStop(1, 'rgba(20, 29, 53, 0.02)');
                 new window.Chart(lineEl, {
                     type: 'line',
                     data: {

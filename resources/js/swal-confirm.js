@@ -30,7 +30,7 @@ document.addEventListener(
             icon: 'warning',
             showCancelButton: true,
             focusCancel: true,
-            confirmButtonColor: '#283b69',
+            confirmButtonColor: '#141d35',
             cancelButtonColor: '#64748b',
             confirmButtonText: confirmBtn,
             cancelButtonText: cancelBtn,

@@ -35,7 +35,7 @@
             }
         </style>
     </head>
-    <body class="min-h-screen font-sans antialiased text-slate-900" style="font-family: Inter, ui-sans-serif, system-ui, sans-serif">
+    <body class="min-h-screen font-sans antialiased text-slate-900" style="font-family: 'Open Sans', Inter, ui-sans-serif, system-ui, sans-serif">
         @php
             $portalHomeUrl = route('dashboard');
             $portalHomeLabel = 'Dashboard';
@@ -208,14 +208,14 @@
                     x-transition:enter="transition transform ease-out duration-200"
                     x-transition:enter-start="-translate-x-full"
                     x-transition:enter-end="translate-x-0"
-                    class="portal-sidebar fixed bottom-0 left-0 top-[3.75rem] z-50 w-72 shadow-xl shadow-slate-900/10"
+                    class="portal-sidebar fixed bottom-0 left-0 top-[4.1875rem] z-50 w-72 shadow-xl shadow-slate-900/10"
                 >
                     @include('layouts.partials.sidebar', ['mobile' => true])
                 </div>
             </div>
 
             <div
-                class="portal-sidebar hidden lg:fixed lg:bottom-0 lg:top-[3.75rem] lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
+                class="portal-sidebar hidden lg:fixed lg:bottom-0 lg:top-[4.1875rem] lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out"
                 :class="sidebarCollapsed ? 'lg:w-[88px] portal-sidebar--collapsed' : 'lg:w-72'"
             >
                 @include('layouts.partials.sidebar', ['mobile' => false])

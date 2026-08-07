@@ -8,7 +8,7 @@
     @php
         $loginUrl = route('login');
         $membershipUrl = route('customer.membership');
-        $primary = '#283b69';
+        $primary = '#141d35';
     @endphp
 
     <h1 style="margin:0 0 12px;font-size:22px;line-height:1.3;font-weight:700;color:#0f172a;">

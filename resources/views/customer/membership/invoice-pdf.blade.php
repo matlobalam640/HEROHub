@@ -18,7 +18,7 @@
             padding: 0 0 28px;
         }
         .brand-header {
-            background: #283b69;
+            background: #141d35;
             color: #ffffff;
             padding: 24px 32px 22px;
         }
@@ -111,7 +111,7 @@
             overflow: hidden;
         }
         .line-items th {
-            background: #283b69;
+            background: #141d35;
             color: #ffffff;
             font-size: 10px;
             font-weight: 700;
@@ -133,7 +133,7 @@
             text-align: right;
             font-size: 15px;
             font-weight: 700;
-            color: #283b69;
+            color: #141d35;
         }
         .status-paid {
             display: inline-block;

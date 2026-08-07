@@ -34,7 +34,7 @@
                 background-color: #e2e8f0;
             }
             .hero-coverage-filter a[data-coverage-active] {
-                background-color: #283b69;
+                background-color: #141d35;
                 background-image: none;
                 color: #fff !important;
                 border-color: transparent;
@@ -49,7 +49,7 @@
                 background-color: #334155;
             }
             .dark-theme .hero-coverage-filter a[data-coverage-active] {
-                background-color: #283b69;
+                background-color: #141d35;
                 background-image: none;
                 color: #fff !important;
                 border-color: transparent;

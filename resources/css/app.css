@@ -8,29 +8,34 @@
 
 @layer base {
   :root {
-    /* HERO brand — primary #283b69 (2026 portal system) */
-    --hero-primary: #283b69;
-    --hero-primary-hover: #1e2d50;
-    --hero-primary-pressed: #162339;
-    --hero-primary-soft: #eef1f7;
-    --hero-primary-muted: rgba(40, 59, 105, 0.12);
-    --hero-primary-ring: rgba(40, 59, 105, 0.28);
+    /* Hero Sentinel design system — Primary #141D35 · Secondary #CA0600 · Tertiary #DEC328 */
+    --hero-primary: #141d35;
+    --hero-primary-hover: #101828;
+    --hero-primary-pressed: #0a0f1c;
+    --hero-primary-soft: #eef0f4;
+    --hero-primary-muted: rgba(20, 29, 53, 0.12);
+    --hero-primary-ring: rgba(20, 29, 53, 0.28);
 
-    /* Complementary accents — distinct from brand navy */
+    --hero-secondary: #ca0600;
+    --hero-secondary-hover: #a80500;
+    --hero-secondary-soft: rgba(202, 6, 0, 0.1);
+    --hero-secondary-ring: rgba(202, 6, 0, 0.28);
+
+    /* Tertiary gold gradient (VIP cards, panel washes, icon buttons) */
     --hero-accent-teal: #3ecfca;
     --hero-accent-teal-soft: rgba(62, 207, 202, 0.14);
-    --hero-accent-gold: #d4a853;
-    --hero-accent-gold-soft: rgba(212, 168, 83, 0.14);
+    --hero-accent-gold: #dec328;
+    --hero-accent-gold-soft: rgba(222, 195, 40, 0.14);
     --hero-gold-50: #faf6d4;
     --hero-gold-200: #f2e088;
     --hero-gold-300: #e8d76a;
     --hero-gold-500: #dec328;
-    --hero-gold-600: #d4a853;
-    --hero-accent-gold-ring: rgba(212, 168, 83, 0.35);
-    --hero-gold-shadow: 0 8px 24px -8px rgba(212, 168, 83, 0.42);
+    --hero-gold-600: #c4ad22;
+    --hero-accent-gold-ring: rgba(222, 195, 40, 0.35);
+    --hero-gold-shadow: 0 8px 24px -8px rgba(222, 195, 40, 0.38);
     --gradient-gold: linear-gradient(180deg, var(--hero-gold-50) 0%, var(--hero-gold-200) 52%, var(--hero-gold-500) 100%);
     --gradient-gold-hover: linear-gradient(180deg, var(--hero-gold-200) 0%, var(--hero-gold-500) 100%);
-    --gradient-gold-soft: linear-gradient(90deg, #ffffff 0%, var(--palette-gold-soft) 48%, rgba(242, 224, 136, 0.35) 100%);
+    --gradient-gold-soft: linear-gradient(90deg, #ffffff 0%, #faf6eb 48%, rgba(242, 224, 136, 0.35) 100%);
     --gradient-gold-cta: linear-gradient(135deg, var(--hero-gold-50) 0%, var(--hero-gold-200) 42%, var(--hero-gold-500) 100%);
     --hero-accent-sky: #5eb3ff;
     --hero-accent-sky-soft: rgba(94, 179, 255, 0.14);
@@ -38,14 +43,14 @@
     --hero-accent-coral-soft: rgba(255, 138, 101, 0.14);
 
     /* Shared accent tokens (maps legacy naming used across Blade) */
-    --hero-red: var(--hero-primary);
-    --hero-red-600: #283b69;
-    --hero-red-700: var(--hero-primary-pressed);
-    --hero-red-800: #101828;
+    --hero-red: var(--hero-secondary);
+    --hero-red-600: var(--hero-secondary);
+    --hero-red-700: var(--hero-secondary-hover);
+    --hero-red-800: #7a0400;
 
     --insta-teal: var(--hero-accent-teal);
     --insta-teal-600: #2bb8b4;
-    --insta-teal-800: #283b69;
+    --insta-teal-800: var(--hero-primary);
     --insta-teal-soft: var(--hero-accent-teal-soft);
     --insta-teal-muted: rgba(62, 207, 202, 0.18);
 
@@ -55,26 +60,26 @@
 
     --insta-purple: #8b93ff;
     --insta-orange: var(--hero-accent-gold);
-    --insta-red: #ef4444;
+    --insta-red: var(--hero-secondary);
     --insta-green: #10b981;
-    --insta-page-bg: #f7f8fb;
+    --insta-page-bg: #f5f6f8;
 
     /* Marketing site accents (heroclientrescue.com) */
-    --hero-marketing-red: #ca0600;
-    --hero-marketing-red-hover: #a80500;
+    --hero-marketing-red: var(--hero-secondary);
+    --hero-marketing-red-hover: var(--hero-secondary-hover);
     --hero-marketing-gold: var(--hero-gold-500);
 
     /* Charts / semantic accents */
-    --palette-navy: #283b69;
-    --palette-crimson: #ef4444;
+    --palette-navy: #141d35;
+    --palette-crimson: var(--hero-secondary);
     --palette-orange: #ff8a65;
-    --palette-gold: var(--hero-gold-600);
+    --palette-gold: var(--hero-gold-500);
 
-    --palette-navy-600: #283b69;
-    --palette-navy-800: #162339;
-    --palette-navy-soft: #eef1f7;
+    --palette-navy-600: #141d35;
+    --palette-navy-800: #0a0f1c;
+    --palette-navy-soft: #eef0f4;
 
-    --palette-crimson-600: #dc2626;
+    --palette-crimson-600: var(--hero-secondary);
     --palette-crimson-soft: #fef2f2;
 
     --palette-orange-600: #ea580c;
@@ -82,10 +87,10 @@
 
     --palette-gold-soft: #faf6eb;
 
-    --hero-ink: #283b69;
+    --hero-ink: #141d35;
     --portal-accent: var(--hero-accent-gold);
 
-    /* Portal dashboard — gold CTA + accent secondary */
+    /* Portal dashboard accents */
     --dashboard-orange: var(--hero-gold-600);
     --dashboard-orange-soft: var(--palette-gold-soft);
     --dashboard-orange-ring: var(--hero-accent-gold-ring);
@@ -95,46 +100,46 @@
     --dashboard-secondary-soft: var(--hero-accent-gold-soft);
     --dashboard-secondary-ring: var(--hero-accent-gold-ring);
 
-    --dashboard-crimson: var(--insta-red);
-    --dashboard-crimson-soft: #fef2f2;
+    --dashboard-crimson: var(--hero-secondary);
+    --dashboard-crimson-soft: var(--hero-secondary-soft);
     --dashboard-gold: var(--hero-accent-gold);
     --dashboard-gold-soft: var(--palette-gold-soft);
 
-    /* Sidebar — light rail (matches public site white sections) */
+    /* Sidebar — light rail */
     --sidebar-surface: #ffffff;
-    --sidebar-surface-elevated: #f4f6fa;
-    --sidebar-border: rgba(40, 59, 105, 0.1);
-    --sidebar-text: rgba(40, 59, 105, 0.78);
-    --sidebar-text-strong: #283b69;
-    --sidebar-section: rgba(40, 59, 105, 0.52);
-    --sidebar-menu-active: #283b69;
-    --sidebar-menu-active-bg: rgba(40, 59, 105, 0.08);
-    --sidebar-menu-active-bg-hover: rgba(40, 59, 105, 0.12);
-    --sidebar-pill-bg: rgba(40, 59, 105, 0.04);
-    --sidebar-pill-hover: rgba(40, 59, 105, 0.08);
+    --sidebar-surface-elevated: #f4f5f7;
+    --sidebar-border: rgba(20, 29, 53, 0.1);
+    --sidebar-text: rgba(20, 29, 53, 0.72);
+    --sidebar-text-strong: #141d35;
+    --sidebar-section: rgba(20, 29, 53, 0.48);
+    --sidebar-menu-active: #141d35;
+    --sidebar-menu-active-bg: rgba(20, 29, 53, 0.06);
+    --sidebar-menu-active-bg-hover: rgba(20, 29, 53, 0.1);
+    --sidebar-pill-bg: rgba(20, 29, 53, 0.04);
+    --sidebar-pill-hover: rgba(20, 29, 53, 0.08);
     --sidebar-active-accent: var(--hero-gold-500);
 
-    /* Dashboard ambience — brand-tinted glow */
-    --hero-dashboard-glow: rgba(40, 59, 105, 0.14);
-    --hero-dashboard-glow-strong: rgba(40, 59, 105, 0.22);
-    --hero-dashboard-glow-soft: rgba(40, 59, 105, 0.08);
-    --hero-dashboard-ambient: rgba(62, 207, 202, 0.1);
+    /* Dashboard ambience */
+    --hero-dashboard-glow: rgba(20, 29, 53, 0.12);
+    --hero-dashboard-glow-strong: rgba(20, 29, 53, 0.2);
+    --hero-dashboard-glow-soft: rgba(20, 29, 53, 0.06);
+    --hero-dashboard-ambient: rgba(222, 195, 40, 0.1);
 
-    /* Chart palette — HERO brand (legacy --vuexy-* aliases for Chart.js) */
-    --vuexy-primary: #3ecfca;
+    /* Chart palette — Sentinel colors */
+    --vuexy-primary: var(--hero-accent-gold);
     --vuexy-success: #10b981;
-    --vuexy-warning: #d4a853;
-    --vuexy-danger: #ef4444;
+    --vuexy-warning: var(--hero-gold-500);
+    --vuexy-danger: var(--hero-secondary);
     --vuexy-info: #5eb3ff;
     --vuexy-secondary: #94a3b8;
     --dashboard-chart-1: var(--hero-primary);
-    --dashboard-chart-2: var(--hero-accent-teal);
-    --dashboard-chart-3: var(--hero-accent-gold);
+    --dashboard-chart-2: var(--hero-accent-gold);
+    --dashboard-chart-3: var(--hero-secondary);
     --dashboard-chart-4: var(--hero-accent-sky);
     --dashboard-chart-5: var(--vuexy-success);
     --dashboard-chart-6: var(--hero-accent-coral);
     --dashboard-chart-7: var(--vuexy-secondary);
-    --dashboard-chart-8: #324878;
+    --dashboard-chart-8: #1e2a45;
 
     /* ─── 2026 SaaS design system (8px grid) ─── */
     --space-section: 5rem;
@@ -147,19 +152,19 @@
     --glass-surface: rgba(255, 255, 255, 0.72);
     --glass-border: rgba(255, 255, 255, 0.55);
     --glass-blur: 16px;
-    --shadow-soft: 0 1px 2px rgba(40, 59, 105, 0.04), 0 8px 24px -12px rgba(40, 59, 105, 0.14);
-    --shadow-elevated: 0 4px 6px -2px rgba(40, 59, 105, 0.06), 0 24px 48px -24px rgba(40, 59, 105, 0.22);
+    --shadow-soft: 0 1px 2px rgba(20, 29, 53, 0.04), 0 8px 24px -12px rgba(20, 29, 53, 0.12);
+    --shadow-elevated: 0 4px 6px -2px rgba(20, 29, 53, 0.06), 0 24px 48px -24px rgba(20, 29, 53, 0.18);
     --shadow-glow-gold: var(--hero-gold-shadow);
-    --gradient-brand: linear-gradient(135deg, #283b69 0%, #324878 45%, #1e2d50 100%);
-    --gradient-cta: var(--gradient-gold-cta);
-    --gradient-mesh-a: radial-gradient(ellipse 70% 55% at 100% -5%, rgba(242, 224, 136, 0.18), transparent 55%);
-    --gradient-mesh-b: radial-gradient(ellipse 55% 45% at 0% 0%, rgba(212, 168, 83, 0.1), transparent 50%);
+    --gradient-brand: linear-gradient(180deg, #141d35 0%, #101828 100%);
+    --gradient-cta: linear-gradient(180deg, #141d35 0%, #0a0f1c 100%);
+    --gradient-mesh-a: radial-gradient(ellipse 70% 55% at 100% -5%, rgba(222, 195, 40, 0.12), transparent 55%);
+    --gradient-mesh-b: radial-gradient(ellipse 55% 45% at 0% 0%, rgba(20, 29, 53, 0.06), transparent 50%);
     --transition-fast: 150ms cubic-bezier(0.2, 0.7, 0.2, 1);
     --transition-smooth: 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   html {
-    font-family: Inter, "Open Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Open Sans", Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     scroll-behavior: smooth;
   }
 
@@ -307,7 +312,7 @@
   /* Dashboards / Reports: pill styling; active = brand navy */
   .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill {
     border-radius: 0.75rem;
-    border: 1px solid rgba(40, 59, 105, 0.1);
+    border: 1px solid rgba(20, 29, 53, 0.1);
     background-color: var(--sidebar-pill-bg);
     color: var(--sidebar-text-strong);
     @apply py-3.5;
@@ -321,7 +326,7 @@
 
   .portal-sidebar .sidebar-nav-stack--pill .sidebar-link--pill:not(.sidebar-link-active):not([aria-current='page']):not([data-nav-active]):hover {
     background-color: var(--sidebar-pill-hover);
-    border-color: rgba(40, 59, 105, 0.14);
+    border-color: rgba(20, 29, 53, 0.14);
     color: var(--sidebar-text-strong);
   }
 
@@ -376,7 +381,7 @@
     background-color: var(--sidebar-menu-active-bg);
     color: var(--sidebar-menu-active);
     font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--sidebar-active-accent), 0 4px 14px -10px rgba(40, 59, 105, 0.16);
+    box-shadow: inset 3px 0 0 var(--sidebar-active-accent), 0 4px 14px -10px rgba(20, 29, 53, 0.16);
   }
 
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active::before,
@@ -471,7 +476,7 @@
     right: 0;
     bottom: 0.125rem;
     height: 1px;
-    background: linear-gradient(90deg, rgba(40, 59, 105, 0.18), rgba(40, 59, 105, 0));
+    background: linear-gradient(90deg, rgba(20, 29, 53, 0.18), rgba(20, 29, 53, 0));
   }
 
   .portal-sidebar .sidebar-plans-nest {
@@ -526,7 +531,7 @@
 
   .dashboard-stat-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(40, 59, 105, 0.14);
+    border-color: rgba(20, 29, 53, 0.14);
     box-shadow: var(--shadow-elevated);
   }
 
@@ -610,7 +615,7 @@
     transform: translateX(-50%);
     pointer-events: none;
     background:
-      radial-gradient(ellipse 70% 80% at 50% 0%, rgba(40, 59, 105, 0.07), transparent 68%),
+      radial-gradient(ellipse 70% 80% at 50% 0%, rgba(20, 29, 53, 0.07), transparent 68%),
       radial-gradient(ellipse 55% 65% at 88% 8%, rgba(62, 207, 202, 0.1), transparent 58%),
       radial-gradient(ellipse 45% 50% at 8% 12%, rgba(212, 168, 83, 0.06), transparent 52%);
     opacity: 0.9;
@@ -622,15 +627,15 @@
   }
 
   .hero-dashboard-shell .dashboard-stat-card {
-    border-color: rgba(40, 59, 105, 0.08);
+    border-color: rgba(20, 29, 53, 0.08);
     background: #ffffff;
-    box-shadow: 0 1px 2px rgba(40, 59, 105, 0.04), 0 8px 24px -16px rgba(40, 59, 105, 0.12);
+    box-shadow: 0 1px 2px rgba(20, 29, 53, 0.04), 0 8px 24px -16px rgba(20, 29, 53, 0.12);
     transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
   }
 
   .hero-dashboard-shell .dashboard-stat-card:hover {
-    border-color: rgba(40, 59, 105, 0.14);
-    box-shadow: 0 2px 4px rgba(40, 59, 105, 0.05), 0 16px 36px -14px rgba(40, 59, 105, 0.16);
+    border-color: rgba(20, 29, 53, 0.14);
+    box-shadow: 0 2px 4px rgba(20, 29, 53, 0.05), 0 16px 36px -14px rgba(20, 29, 53, 0.16);
     transform: translateY(-1px);
   }
 
@@ -651,15 +656,15 @@
   }
 
   .hero-dashboard-panel {
-    border-color: rgba(40, 59, 105, 0.08) !important;
+    border-color: rgba(20, 29, 53, 0.08) !important;
     background: #ffffff !important;
-    box-shadow: 0 1px 2px rgba(40, 59, 105, 0.04), 0 10px 28px -18px rgba(40, 59, 105, 0.12) !important;
+    box-shadow: 0 1px 2px rgba(20, 29, 53, 0.04), 0 10px 28px -18px rgba(20, 29, 53, 0.12) !important;
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .hero-dashboard-shell .hero-dashboard-panel:hover {
-    border-color: rgba(40, 59, 105, 0.14) !important;
-    box-shadow: 0 2px 4px rgba(40, 59, 105, 0.05), 0 16px 40px -16px rgba(40, 59, 105, 0.14) !important;
+    border-color: rgba(20, 29, 53, 0.14) !important;
+    box-shadow: 0 2px 4px rgba(20, 29, 53, 0.05), 0 16px 40px -16px rgba(20, 29, 53, 0.14) !important;
   }
 
   /* InstaDash-style card headers — white bar + subtle divider */
@@ -672,7 +677,7 @@
 
   .hero-dashboard-shell .dashboard-card-header {
     background: var(--gradient-gold-soft);
-    border-bottom-color: rgba(40, 59, 105, 0.08);
+    border-bottom-color: rgba(20, 29, 53, 0.08);
     box-shadow: none;
   }
 
@@ -717,8 +722,8 @@
   }
 
   .hero-dashboard-shell .rounded-xl.border-slate-100.bg-slate-50\/80 {
-    border-color: rgba(40, 59, 105, 0.08);
-    background: linear-gradient(180deg, rgba(40, 59, 105, 0.025) 0%, rgba(248, 250, 252, 0.9) 100%);
+    border-color: rgba(20, 29, 53, 0.08);
+    background: linear-gradient(180deg, rgba(20, 29, 53, 0.025) 0%, rgba(248, 250, 252, 0.9) 100%);
   }
 
   /* Simple DataTables — match HERO portal (scoped) */
@@ -846,7 +851,7 @@
 
   html.dark-theme .hero-dashboard-shell .dashboard-stat-card {
     border-color: rgba(255, 255, 255, 0.08) !important;
-    background: linear-gradient(165deg, #324878 0%, #283b69 100%) !important;
+    background: linear-gradient(165deg, #1e2a45 0%, #141d35 100%) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 10px 32px -14px rgba(0, 0, 0, 0.55),
@@ -863,7 +868,7 @@
 
   html.dark-theme .hero-dashboard-shell .hero-dashboard-panel {
     border-color: rgba(255, 255, 255, 0.08) !important;
-    background: linear-gradient(180deg, #324878 0%, #283b69 100%) !important;
+    background: linear-gradient(180deg, #1e2a45 0%, #141d35 100%) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 8px 32px -16px rgba(0, 0, 0, 0.52),
@@ -879,7 +884,7 @@
   }
 
   html.dark-theme .hero-dashboard-shell .dashboard-card-header {
-    background: linear-gradient(180deg, #324878 0%, rgba(62, 207, 202, 0.08) 100%) !important;
+    background: linear-gradient(180deg, #1e2a45 0%, rgba(62, 207, 202, 0.08) 100%) !important;
     border-bottom-color: rgba(255, 255, 255, 0.08) !important;
   }
 
@@ -946,25 +951,25 @@
   .plan-edit-btn--on-white-card {
     background-image: var(--gradient-gold);
     border: 1px solid rgba(120, 53, 15, 0.22);
-    color: #283b69;
+    color: #141d35;
     box-shadow: 0 2px 8px -2px rgba(212, 168, 83, 0.35);
   }
 
   .plan-edit-btn--on-white-card:hover {
     background-image: var(--gradient-gold-hover);
-    border-color: #283b69;
+    border-color: #141d35;
     color: #ffffff;
   }
 
   .plan-edit-btn--on-gold-card {
     background-color: #ffffff;
-    border: 1px solid rgba(40, 59, 105, 0.35);
-    color: #283b69;
+    border: 1px solid rgba(20, 29, 53, 0.35);
+    color: #141d35;
   }
 
   .plan-edit-btn--on-gold-card:hover {
-    background-color: #283b69;
-    border-color: #283b69;
+    background-color: #141d35;
+    border-color: #141d35;
     color: #ffffff;
   }
 
@@ -981,19 +986,29 @@
     border-color: #3b4253 !important;
   }
 
-  /* ─── 2026 portal shell — premium SaaS (HERO Client Rescue language) ─── */
+  /* ─── Hero Sentinel header (Stitch-inspired) ─── */
   .hero-site-brand-bar {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--gradient-brand);
-    border-bottom: 2px solid var(--hero-gold-500);
-    box-shadow: 0 12px 40px -24px rgba(16, 24, 40, 0.45), 0 4px 20px -8px rgba(212, 168, 83, 0.25);
-    backdrop-filter: blur(12px);
+    background: var(--hero-primary);
+    box-shadow: 0 4px 24px -10px rgba(20, 29, 53, 0.45);
+    --hero-header-total: 4.1875rem;
+  }
+
+  .hero-site-brand-bar__strip {
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      var(--hero-secondary) 0%,
+      var(--hero-secondary) 38%,
+      var(--hero-gold-500) 38%,
+      var(--hero-gold-500) 100%
+    );
   }
 
   .hero-site-brand-bar__inner {
-    @apply mx-auto flex h-[3.75rem] max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8;
+    @apply mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8;
   }
 
   .hero-site-brand-bar__logo {
@@ -1002,8 +1017,27 @@
   }
 
   .hero-site-brand-bar__logo:hover {
-    opacity: 0.92;
-    transform: translateY(-0.5px);
+    opacity: 0.94;
+  }
+
+  .hero-site-brand-bar__center {
+    @apply absolute left-1/2 hidden -translate-x-1/2 md:flex;
+  }
+
+  .hero-site-brand-bar__portal-pill {
+    @apply inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/90;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .hero-site-brand-bar__portal-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--hero-gold-500);
+    box-shadow: 0 0 8px rgba(222, 195, 40, 0.65);
   }
 
   .hero-site-brand-bar__title {
@@ -1015,14 +1049,19 @@
   }
 
   .hero-site-brand-bar__nav a {
-    @apply rounded-xl px-3 py-2;
-    color: rgba(255, 255, 255, 0.84);
+    @apply rounded-lg px-3 py-2;
+    color: rgba(255, 255, 255, 0.82);
     transition: color var(--transition-fast), background-color var(--transition-fast);
   }
 
   .hero-site-brand-bar__nav a:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.1);
+  }
+
+  .hero-site-brand-bar__nav a:focus-visible {
+    outline: 2px solid var(--hero-gold-500);
+    outline-offset: 2px;
   }
 
   .hero-portal-shell {
@@ -1040,11 +1079,10 @@
   }
 
   .hero-portal-topbar {
-    @apply sticky top-[3.75rem] z-30 border-b border-slate-200/60;
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    box-shadow: 0 1px 0 rgba(40, 59, 105, 0.04);
+    @apply sticky z-30 border-b border-slate-200/80;
+    top: var(--hero-header-total, 4.1875rem);
+    background: #ffffff;
+    box-shadow: 0 1px 0 rgba(20, 29, 53, 0.04);
   }
 
   .hero-portal-main {
@@ -1098,19 +1136,16 @@
   }
 
   .hero-btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-[color:var(--hero-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--hero-accent-gold-ring)] focus:ring-offset-2;
-    background: var(--gradient-gold-cta);
-    border: 1px solid rgba(120, 53, 15, 0.18);
-    box-shadow: var(--hero-gold-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-[color:var(--hero-primary-ring)] focus:ring-offset-2;
+    background: var(--gradient-cta);
+    box-shadow: 0 8px 24px -8px rgba(20, 29, 53, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
   }
 
   .hero-btn-primary:hover {
     transform: translateY(-1px);
-    background: var(--gradient-gold-hover);
-    color: #ffffff;
-    border-color: var(--hero-primary);
-    box-shadow: 0 12px 28px -10px rgba(212, 168, 83, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    filter: brightness(1.06);
+    box-shadow: 0 12px 28px -10px rgba(20, 29, 53, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   .hero-btn-primary:active {
@@ -1118,25 +1153,18 @@
     filter: brightness(0.98);
   }
 
-  /* Tailwind bg-hero-primary CTAs → gold gradient (buttons/links with white label text) */
-  a.bg-hero-primary.text-white,
-  button.bg-hero-primary.text-white,
-  input.bg-hero-primary.text-white,
-  [type='submit'].bg-hero-primary {
-    background-color: transparent !important;
-    background-image: var(--gradient-gold) !important;
-    color: var(--hero-primary) !important;
-    border: 1px solid rgba(120, 53, 15, 0.2);
+  .hero-btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-[color:var(--hero-primary)] focus:outline-none focus:ring-2 focus:ring-[color:var(--hero-accent-gold-ring)] focus:ring-offset-2;
+    background: var(--gradient-gold);
+    border: 1px solid rgba(120, 53, 15, 0.18);
     box-shadow: var(--hero-gold-shadow);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
   }
 
-  a.bg-hero-primary.text-white:hover,
-  button.bg-hero-primary.text-white:hover,
-  input.bg-hero-primary.text-white:hover,
-  [type='submit'].bg-hero-primary:hover {
-    background-image: var(--gradient-gold-hover) !important;
-    background-color: transparent !important;
-    color: #ffffff !important;
+  .hero-btn-gold:hover {
+    transform: translateY(-1px);
+    background: var(--gradient-gold-hover);
+    color: #ffffff;
     border-color: var(--hero-primary);
   }
 
@@ -1204,19 +1232,17 @@
 
   .guest-auth-submit,
   .guest-auth-panel .guest-auth-submit {
-    background: var(--gradient-gold-cta) !important;
-    border: 1px solid rgba(120, 53, 15, 0.2) !important;
-    color: var(--hero-primary) !important;
-    box-shadow: var(--hero-gold-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast), color var(--transition-fast), background var(--transition-fast) !important;
+    background: var(--gradient-cta) !important;
+    border: none !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 28px -10px rgba(20, 29, 53, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast) !important;
   }
 
   .guest-auth-submit:hover,
   .guest-auth-panel .guest-auth-submit:hover {
     transform: translateY(-1px) !important;
-    background: var(--gradient-gold-hover) !important;
-    color: #ffffff !important;
-    border-color: var(--hero-primary) !important;
+    filter: brightness(1.06) !important;
   }
 
   .guest-auth-submit:active,
@@ -1262,8 +1288,9 @@
 
   .dashboard-welcome {
     background: var(--gradient-brand) !important;
-    box-shadow: 0 20px 48px -28px rgba(40, 59, 105, 0.65), 0 8px 32px -12px rgba(212, 168, 83, 0.35) !important;
+    box-shadow: 0 20px 48px -28px rgba(20, 29, 53, 0.6) !important;
     border-bottom: 3px solid var(--hero-gold-500);
+    box-decoration-break: clone;
   }
 
   .dashboard-quick-link {
@@ -1285,27 +1312,27 @@
   }
 
   html.dark-theme .hero-portal-topbar {
-    background: rgba(40, 59, 105, 0.88) !important;
+    background: rgba(20, 29, 53, 0.88) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
     backdrop-filter: blur(16px);
   }
 
   html.dark-theme .hero-portal-panel,
   html.dark-theme .hero-portal-page-header {
-    background: linear-gradient(165deg, #324878 0%, #283b69 100%) !important;
+    background: linear-gradient(165deg, #1e2a45 0%, #141d35 100%) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
 
   html.dark-theme .hero-panel-header {
-    background: linear-gradient(135deg, #324878 0%, rgba(212, 168, 83, 0.12) 100%) !important;
+    background: linear-gradient(135deg, #1e2a45 0%, rgba(212, 168, 83, 0.12) 100%) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
 
   /* Flatpickr — HERO branded date picker */
   .flatpickr-calendar {
     border-radius: 1rem;
-    border: 1px solid rgba(40, 59, 105, 0.12);
-    box-shadow: 0 18px 40px -16px rgba(40, 59, 105, 0.35);
+    border: 1px solid rgba(20, 29, 53, 0.12);
+    box-shadow: 0 18px 40px -16px rgba(20, 29, 53, 0.35);
     font-family: "Open Sans", ui-sans-serif, system-ui, sans-serif;
     overflow: hidden;
   }
@@ -1659,9 +1686,9 @@
   position: relative;
   min-height: 220px;
   background:
-    linear-gradient(180deg, rgba(22, 35, 57, 0.35) 0%, rgba(40, 59, 105, 0.92) 100%),
+    linear-gradient(180deg, rgba(22, 35, 57, 0.35) 0%, rgba(20, 29, 53, 0.92) 100%),
     url('/images/vip-10day-hero.jpg') center center / cover no-repeat,
-    linear-gradient(135deg, #5eb8ff 0%, #283b69 55%, #162339 100%);
+    linear-gradient(135deg, #5eb8ff 0%, #141d35 55%, #0a0f1c 100%);
 }
 
 .coverage-vip10-hero-overlay {

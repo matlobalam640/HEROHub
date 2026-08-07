@@ -4,7 +4,8 @@
     $showWebsiteLink = $showWebsiteLink ?? true;
 @endphp
 <header class="hero-site-brand-bar">
-    <div class="hero-site-brand-bar__inner">
+    <div class="hero-site-brand-bar__strip" aria-hidden="true"></div>
+    <div class="hero-site-brand-bar__inner relative">
         <a href="{{ $homeUrl }}" class="hero-site-brand-bar__logo" @if(str_starts_with($homeUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
             <img
                 src="{{ asset('brand/hero-logo.png') }}"
@@ -15,15 +16,18 @@
                 loading="eager"
                 decoding="async"
             >
-            <span class="hero-site-brand-bar__title">{{ $portalLabel }}</span>
         </a>
+
+        <div class="hero-site-brand-bar__center">
+            <span class="hero-site-brand-bar__portal-pill">{{ $portalLabel }}</span>
+        </div>
 
         @if($showWebsiteLink)
             <nav class="hero-site-brand-bar__nav" aria-label="External links">
                 <a href="https://www.heroclientrescue.com/" target="_blank" rel="noopener noreferrer">
                     Main website
                 </a>
-                <a href="https://www.heroclientrescue.com/" target="_blank" rel="noopener noreferrer">
+                <a href="https://www.heroclientrescue.com/" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex">
                     Become a member
                 </a>
             </nav>

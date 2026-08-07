@@ -13,15 +13,16 @@ export default {
         extend: {
             colors: {
                 hero: {
-                    primary: 'rgb(40 59 105 / <alpha-value>)',
-                    'primary-hover': 'rgb(30 45 80 / <alpha-value>)',
-                    'primary-pressed': 'rgb(22 35 57 / <alpha-value>)',
-                    'primary-soft': 'rgb(238 241 247 / <alpha-value>)',
-                    secondary: 'rgb(255 255 255 / <alpha-value>)',
+                    primary: 'rgb(20 29 53 / <alpha-value>)',
+                    'primary-hover': 'rgb(16 24 40 / <alpha-value>)',
+                    'primary-pressed': 'rgb(10 15 28 / <alpha-value>)',
+                    'primary-soft': 'rgb(238 240 244 / <alpha-value>)',
+                    secondary: 'rgb(202 6 0 / <alpha-value>)',
+                    'secondary-hover': 'rgb(168 5 0 / <alpha-value>)',
                     accent: {
                         teal: 'rgb(62 207 202 / <alpha-value>)',
                         gold: {
-                            DEFAULT: 'rgb(212 168 83 / <alpha-value>)',
+                            DEFAULT: 'rgb(222 195 40 / <alpha-value>)',
                             50: 'rgb(250 246 212 / <alpha-value>)',
                             200: 'rgb(242 224 136 / <alpha-value>)',
                             500: 'rgb(222 195 40 / <alpha-value>)',
@@ -37,9 +38,9 @@ export default {
                 display: ['Montserrat', ...defaultTheme.fontFamily.sans],
             },
             boxShadow: {
-                'hero-card': '0 1px 2px rgba(40, 59, 105, 0.04), 0 12px 32px -16px rgba(40, 59, 105, 0.18)',
-                'hero-cta': '0 10px 28px -10px rgba(212, 168, 83, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35)',
-                'hero-panel': '0 0 0 1px rgba(255,255,255,0.75) inset, 0 8px 32px -12px rgba(40,59,105,0.16)',
+                'hero-card': '0 1px 2px rgba(20, 29, 53, 0.04), 0 12px 32px -16px rgba(20, 29, 53, 0.16)',
+                'hero-cta': '0 10px 28px -10px rgba(20, 29, 53, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                'hero-panel': '0 0 0 1px rgba(255,255,255,0.75) inset, 0 8px 32px -12px rgba(20,29,53,0.14)',
                 'hero-glow': '0 8px 32px -8px rgba(212, 168, 83, 0.35)',
             },
             backgroundImage: {

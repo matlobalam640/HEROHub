@@ -65,7 +65,7 @@ function ensureLoader() {
             'height:3rem',
             'border-radius:9999px',
             'border:4px solid #e2e8f0',
-            'border-top-color:#283b69',
+            'border-top-color:#141d35',
             'animation:hero-pl-spin 0.85s linear infinite',
             'flex-shrink:0',
         ].join(';');
