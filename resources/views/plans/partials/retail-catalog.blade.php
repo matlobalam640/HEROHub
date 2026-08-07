@@ -63,7 +63,7 @@
                         @endif
 
                         <div class="mt-4">
-                            @include('plans.partials.admin-edit-plan-link', ['plan' => $plan, 'from' => $plansReturn])
+                            @include('plans.partials.admin-edit-plan-link', ['plan' => $plan, 'from' => $plansReturn, 'goldCard' => $isGoldCard])
                         </div>
                     </div>
 
