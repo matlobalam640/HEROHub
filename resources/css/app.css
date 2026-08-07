@@ -765,13 +765,22 @@
 
   .hero-datatable .datatable-pagination li a,
   .hero-datatable .datatable-pagination li button {
-    @apply float-none rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 transition hover:border-slate-300 hover:bg-[color:var(--dashboard-orange-soft)] hover:text-[color:var(--dashboard-orange)];
+    @apply float-none rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 transition;
+  }
+
+  .hero-datatable .datatable-pagination li a:hover,
+  .hero-datatable .datatable-pagination li button:hover {
+    border-color: color-mix(in srgb, var(--hero-primary) 22%, transparent);
+    background: var(--hero-primary-soft);
+    color: var(--hero-primary);
   }
 
   .hero-datatable .datatable-pagination .datatable-active a,
   .hero-datatable .datatable-pagination .datatable-active button {
-    border-color: color-mix(in srgb, var(--dashboard-orange) 35%, transparent);
-    @apply bg-[color:var(--dashboard-orange-soft)] text-[color:var(--dashboard-orange)] font-semibold;
+    border-color: var(--hero-primary);
+    background: var(--hero-primary);
+    color: #ffffff;
+    @apply font-semibold;
   }
 
   .hero-datatable .datatable-container {
@@ -934,14 +943,16 @@
     @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs;
   }
 
-  .dashboard-activity-icon--membership {
-    background: var(--hero-accent-gold-soft);
-    color: var(--hero-gold-600);
+  .dashboard-activity-icon--membership,
+  .dashboard-activity-icon--sale {
+    background: var(--hero-primary);
+    color: var(--hero-accent-gold);
+    box-shadow: 0 4px 12px -4px rgba(20, 29, 53, 0.4);
   }
 
-  .dashboard-activity-icon--sale {
-    background: var(--hero-secondary-soft);
-    color: var(--hero-secondary);
+  .dashboard-activity-icon--membership i,
+  .dashboard-activity-icon--sale i {
+    color: var(--hero-accent-gold);
   }
 
   /* Plan catalog — Edit plan button contrasts with card background (plain CSS for reliable deploy) */
@@ -1223,6 +1234,17 @@
   .guest-auth-hero-photo {
     transform: translateZ(0);
     backface-visibility: hidden;
+  }
+
+  .guest-auth-feature-icon {
+    @apply inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-lg;
+    background: var(--hero-primary);
+    color: var(--hero-accent-gold);
+    box-shadow: 0 6px 18px -6px rgba(20, 29, 53, 0.45);
+  }
+
+  .guest-auth-feature-icon i {
+    color: var(--hero-accent-gold);
   }
 
   .hero-auth-eyebrow {

@@ -43,7 +43,7 @@
 
                         <div class="grid shrink-0 gap-6 border-t border-slate-100/80 bg-white/80 p-8 backdrop-blur-sm">
                             <div class="flex items-start gap-4">
-                                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-lg shadow-sm" style="background: var(--gradient-gold); color: var(--hero-primary);">
+                                <span class="guest-auth-feature-icon">
                                     <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
                                 </span>
                                 <div>
@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start gap-4">
-                                <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-lg shadow-sm" style="background: var(--gradient-gold); color: var(--hero-primary);">
+                                <span class="guest-auth-feature-icon">
                                     <i class="fa-solid fa-lock" aria-hidden="true"></i>
                                 </span>
                                 <div>
