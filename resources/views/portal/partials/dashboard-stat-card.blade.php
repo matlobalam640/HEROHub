@@ -8,7 +8,7 @@
     class="dashboard-stat-card group block h-full no-underline {{ $href ? 'cursor-pointer' : '' }}"
 >
     <div class="flex items-start justify-between gap-3">
-        <div class="dashboard-stat-icon--{{ $iconVariant ?? 'vuexy-primary' }} flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-base">
+        <div class="dashboard-stat-icon--{{ $iconVariant ?? 'vuexy-primary' }} flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm">
             <i class="{{ $icon }}" aria-hidden="true"></i>
         </div>
         @if($trend)
@@ -17,7 +17,7 @@
             </span>
         @endif
     </div>
-    <div class="dashboard-stat-card__label mt-4">{{ $label }}</div>
+    <div class="dashboard-stat-card__label mt-3">{{ $label }}</div>
     <div class="dashboard-stat-card__value">{{ $value }}</div>
     @if(! empty($hint))
         <div class="dashboard-stat-card__hint">{!! $hint !!}</div>

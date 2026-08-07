@@ -1,14 +1,14 @@
 <x-portal-layout>
-    <div class="hero-dashboard-shell space-y-8">
+    <div class="hero-dashboard-shell space-y-6">
         {{-- Welcome hero --}}
-        <section class="dashboard-welcome overflow-hidden rounded-3xl border border-white/10 px-8 py-10 text-white sm:px-10 sm:py-12">
-            <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <section class="dashboard-welcome overflow-hidden rounded-2xl border border-white/10 px-6 py-6 text-white sm:px-8 sm:py-7">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div class="min-w-0">
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/55">HEROHub admin</p>
-                    <h1 class="mt-3 font-display text-4xl font-bold tracking-tight sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55">HEROHub admin</p>
+                    <h1 class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
                         Good {{ now()->format('H') < 12 ? 'morning' : (now()->format('H') < 17 ? 'afternoon' : 'evening') }}, {{ strtok(auth()->user()->name, ' ') }}
                     </h1>
-                    <p class="mt-4 max-w-xl text-base leading-relaxed text-white/75">
+                    <p class="mt-2 max-w-xl text-sm leading-relaxed text-white/75">
                         Live snapshot of memberships, billing, and member activity across the portal.
                         Updated {{ now()->timezone(config('app.timezone'))->format('M j, Y') }}.
                     </p>
@@ -77,7 +77,7 @@
         </div>
 
         {{-- Charts --}}
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
             <div class="hero-dashboard-panel overflow-hidden rounded-2xl border border-slate-100 bg-white xl:col-span-2">
                 <div class="dashboard-card-header flex items-center justify-between gap-3">
                     <div>
@@ -89,7 +89,7 @@
                     </span>
                 </div>
                 <div class="dashboard-panel-body">
-                    <div class="h-72">
+                    <div class="h-56">
                         <canvas id="membershipGrowthChart"></canvas>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                 </div>
                 <div class="dashboard-panel-body">
                     @if(count($membershipStatusChart['labels']))
-                        <div class="mx-auto h-44 w-44 max-w-full">
+                        <div class="mx-auto h-36 w-36 max-w-full">
                             <canvas id="membershipStatusChart"></canvas>
                         </div>
                         <div class="mt-4 grid grid-cols-2 gap-2">
@@ -120,7 +120,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-2">
             <div class="hero-dashboard-panel overflow-hidden rounded-2xl border border-slate-100 bg-white">
                 <div class="dashboard-card-header">
                     <div class="dashboard-card-header__title">Active plan mix</div>
@@ -128,7 +128,7 @@
                 </div>
                 <div class="dashboard-panel-body">
                     @if(count($planMixChart['labels']))
-                        <div class="h-64">
+                        <div class="h-52">
                             <canvas id="planMixChart"></canvas>
                         </div>
                     @else
@@ -150,11 +150,11 @@
                 </div>
                 <div class="dashboard-panel-body">
                     @if($stats['partner_sales'] > 0)
-                        <div class="h-64">
+                        <div class="h-52">
                             <canvas id="partnerSalesChart"></canvas>
                         </div>
                     @elseif($upcomingRenewals->isNotEmpty())
-                        <ul class="dashboard-renewal-list space-y-3">
+                        <ul class="dashboard-renewal-list space-y-2">
                             @foreach($upcomingRenewals as $membership)
                                 @php
                                     $primary = $membership->primaryMember;
@@ -162,7 +162,7 @@
                                         ? trim($primary->first_name.' '.$primary->last_name)
                                         : $membership->membership_number;
                                 @endphp
-                                <li class="dashboard-renewal-item flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3">
+                                <li class="dashboard-renewal-item flex items-center justify-between gap-3 rounded-lg border border-slate-100 bg-slate-50/70 px-3 py-2">
                                     <div class="min-w-0">
                                         <div class="truncate font-mono text-xs font-semibold text-slate-800">{{ $membership->membership_number }}</div>
                                         <div class="dashboard-list-secondary truncate">{{ $memberLabel }}</div>
@@ -193,7 +193,7 @@
         </div>
 
         {{-- Tables + activity --}}
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-5">
+        <div class="grid grid-cols-1 gap-5 xl:grid-cols-5">
             <div class="hero-dashboard-panel overflow-hidden rounded-2xl border border-slate-100 bg-white xl:col-span-3">
                 <div class="dashboard-card-header flex flex-wrap items-center justify-between gap-3">
                     <div>
@@ -226,20 +226,20 @@
                                             : ($membership->accountUser?->name ?? '—');
                                     @endphp
                                     <tr>
-                                        <td class="px-3 py-2.5 font-mono text-xs font-semibold text-slate-800">{{ $membership->membership_number }}</td>
-                                        <td class="dashboard-list-secondary px-3 py-2.5">{{ $memberName }}</td>
-                                        <td class="dashboard-list-secondary px-3 py-2.5">{{ $membership->plan?->name ?? '—' }}</td>
-                                        <td class="dashboard-list-meta px-3 py-2.5">
+                                        <td class="px-3 py-2 font-mono text-xs font-semibold text-slate-800">{{ $membership->membership_number }}</td>
+                                        <td class="dashboard-list-secondary px-3 py-2">{{ $memberName }}</td>
+                                        <td class="dashboard-list-secondary px-3 py-2">{{ $membership->plan?->name ?? '—' }}</td>
+                                        <td class="dashboard-list-meta px-3 py-2">
                                             @if($membership->billing_provider)
                                                 <span class="font-medium text-slate-700">{{ strtoupper(str_replace('_', ' ', $membership->billing_provider)) }}</span>
                                             @else
                                                 —
                                             @endif
                                         </td>
-                                        <td class="px-3 py-2.5">
+                                        <td class="px-3 py-2">
                                             @include('portal.partials.membership-status-badge', ['status' => $membership->status])
                                         </td>
-                                        <td class="px-3 py-2.5 text-right">
+                                        <td class="px-3 py-2 text-right">
                                             @if(auth()->user()->hasAnyRole(['admin', 'dispatch']))
                                                 <a href="{{ route('portal.membership.show', $membership) }}" class="text-xs font-semibold text-[color:var(--hero-primary)] hover:underline">Open</a>
                                             @endif
@@ -263,7 +263,7 @@
                 </div>
                 <div class="dashboard-panel-body">
                     @forelse($recentActivity as $row)
-                        <div class="dashboard-activity-item flex gap-3 py-3 first:pt-0 last:pb-0">
+                        <div class="dashboard-activity-item flex gap-2.5 py-2 first:pt-0 last:pb-0">
                             <div @class([
                                 'dashboard-activity-icon',
                                 'dashboard-activity-icon--membership' => $row['kind'] === 'membership',
@@ -271,7 +271,7 @@
                             ])>
                                 <i class="{{ $row['kind'] === 'membership' ? 'fa-solid fa-id-card' : 'fa-solid fa-handshake' }}" aria-hidden="true"></i>
                             </div>
-                            <div class="min-w-0 flex-1 border-b border-slate-100 pb-3 last:border-0">
+                            <div class="min-w-0 flex-1 border-b border-slate-100 pb-2 last:border-0">
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0">
                                         <div class="dashboard-list-primary truncate">{{ $row['title'] }}</div>

@@ -223,7 +223,7 @@
 
             <div class="hero-portal-shell min-w-0 flex-1 transition-[padding] duration-200 ease-out" :class="sidebarCollapsed ? 'lg:pl-[88px]' : 'lg:pl-72'">
                 <header class="hero-portal-topbar">
-                    <div class="flex h-[4.25rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
+                    <div class="flex h-16 items-center gap-2 px-4 sm:px-6 lg:px-8">
                         <button
                             type="button"
                             class="hero-topbar-icon-btn lg:hidden"
@@ -232,10 +232,6 @@
                         >
                             <i class="fa-solid fa-bars" aria-hidden="true"></i>
                         </button>
-
-                        <div class="hidden shrink-0 items-center lg:flex lg:min-w-[8rem]">
-                            <span class="font-display text-sm font-semibold text-[color:var(--hero-primary)]">Portal</span>
-                        </div>
 
                         <button
                             type="button"
