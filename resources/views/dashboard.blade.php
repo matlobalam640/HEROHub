@@ -23,7 +23,7 @@
                         Customers
                     </a>
                     <a href="{{ route('dispatch.verification') }}" class="dashboard-quick-link">
-                        <i class="fa-solid fa-shield-check" aria-hidden="true"></i>
+                        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
                         Dispatch
                     </a>
                     <a href="{{ route('portal.coming-soon', ['page' => 'reports']) }}" class="dashboard-quick-link">
