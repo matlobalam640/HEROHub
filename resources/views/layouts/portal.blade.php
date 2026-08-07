@@ -303,7 +303,7 @@
 
                         <div class="flex shrink-0 items-center gap-1 sm:gap-2">
                             <div class="relative hidden sm:block" @click.outside="languageOpen = false">
-                                <button type="button" class="hero-topbar-icon-btn inline-flex gap-2 px-3" title="Language" aria-label="Language" x-on:click="languageOpen = !languageOpen">
+                                <button type="button" class="hero-topbar-lang-btn" title="Language" aria-label="Language" x-on:click="languageOpen = !languageOpen">
                                     <i class="fa-solid fa-language text-lg text-[color:var(--hero-primary)]" aria-hidden="true"></i>
                                     <span class="text-xs font-semibold uppercase text-[color:var(--hero-primary)]" x-text="locale"></span>
                                 </button>
@@ -336,7 +336,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mx-1 hidden h-8 w-px bg-slate-200 sm:block" aria-hidden="true"></div>
+                            <div class="mx-1 hidden h-10 w-px bg-slate-200 sm:block" aria-hidden="true"></div>
+                            <div class="hero-topbar-profile-menu">
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button type="button" class="hero-topbar-profile-trigger" aria-label="Account menu">
@@ -345,7 +346,7 @@
                                             :class="sidebarCollapsed ? 'xl:hidden' : ''"
                                         >{{ auth()->user()->name }}</span>
                                         <span class="hero-topbar-user-avatar">
-                                            <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
+                                            <i class="fa-solid fa-user" aria-hidden="true"></i>
                                             <span class="hero-topbar-user-avatar__status" title="Online"></span>
                                         </span>
                                         <i class="fa-solid fa-chevron-down hero-topbar-profile-trigger__chevron" aria-hidden="true"></i>
@@ -364,6 +365,7 @@
                                     </form>
                                 </x-slot>
                             </x-dropdown>
+                            </div>
                         </div>
                     </div>
                 </header>
