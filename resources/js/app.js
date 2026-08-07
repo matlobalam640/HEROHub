@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './datatables';
 import './swal-confirm';
 import './page-loader';
+import './hero-date-picker';
 import { scrollPortalSidebarActiveIntoView } from './portal-sidebar-scroll';
 
 import Alpine from 'alpinejs';

@@ -1005,4 +1005,83 @@
     background: linear-gradient(135deg, #324878 0%, rgba(62, 207, 202, 0.08) 100%) !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
+
+  /* Flatpickr — HERO branded date picker */
+  .flatpickr-calendar {
+    border-radius: 1rem;
+    border: 1px solid rgba(40, 59, 105, 0.12);
+    box-shadow: 0 18px 40px -16px rgba(40, 59, 105, 0.35);
+    font-family: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  .flatpickr-months {
+    background: linear-gradient(180deg, #ffffff 0%, var(--hero-primary-soft) 100%);
+  }
+
+  .flatpickr-months .flatpickr-month,
+  .flatpickr-current-month .flatpickr-monthDropdown-months,
+  .flatpickr-current-month input.cur-year {
+    color: var(--hero-primary);
+    font-weight: 600;
+  }
+
+  .flatpickr-weekdays {
+    background: var(--hero-primary-soft);
+  }
+
+  span.flatpickr-weekday {
+    color: var(--hero-primary);
+    font-weight: 600;
+    font-size: 11px;
+  }
+
+  .flatpickr-day {
+    border-radius: 0.5rem;
+    color: #334155;
+    font-size: 13px;
+  }
+
+  .flatpickr-day.selected,
+  .flatpickr-day.startRange,
+  .flatpickr-day.endRange,
+  .flatpickr-day.selected.inRange,
+  .flatpickr-day.startRange.inRange,
+  .flatpickr-day.endRange.inRange,
+  .flatpickr-day.selected:focus,
+  .flatpickr-day.startRange:focus,
+  .flatpickr-day.endRange:focus,
+  .flatpickr-day.selected:hover,
+  .flatpickr-day.startRange:hover,
+  .flatpickr-day.endRange:hover {
+    background: var(--hero-primary);
+    border-color: var(--hero-primary);
+    color: #ffffff;
+  }
+
+  .flatpickr-day.today {
+    border-color: var(--hero-accent-teal);
+  }
+
+  .flatpickr-day.today:hover,
+  .flatpickr-day.today:focus {
+    background: var(--hero-accent-teal-soft);
+    border-color: var(--hero-accent-teal);
+    color: var(--hero-primary);
+  }
+
+  .flatpickr-day:hover {
+    background: var(--hero-primary-soft);
+    border-color: transparent;
+  }
+
+  .flatpickr-months .flatpickr-prev-month:hover svg,
+  .flatpickr-months .flatpickr-next-month:hover svg {
+    fill: var(--hero-primary);
+  }
+
+  input.hero-date-input[readonly].flatpickr-input {
+    cursor: pointer;
+    background-color: rgb(248 250 252);
+  }
 }

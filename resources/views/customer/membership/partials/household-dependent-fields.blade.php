@@ -21,7 +21,13 @@
     </div>
     <div>
         <x-coverage-bilingual-label key="date_of_birth" />
-        <input type="date" name="{{ $fieldName('date_of_birth') }}" required value="{{ $fieldValue('date_of_birth') }}" class="{{ $inputClass }}">
+        <x-hero-date-input
+            :name="$fieldName('date_of_birth')"
+            :value="$fieldValue('date_of_birth')"
+            maxDate="{{ now()->format('Y-m-d') }}"
+            required
+            :class="$inputClass"
+        />
     </div>
     <div>
         <x-coverage-bilingual-label key="gender" />

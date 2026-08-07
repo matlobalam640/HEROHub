@@ -41,9 +41,12 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <x-coverage-bilingual-label key="preferred_start_date" class="mb-1" />
-                    <input type="date" name="preferred_coverage_start_date"
-                           value="{{ old('preferred_coverage_start_date', optional($profile?->preferred_coverage_start_date)?->format('Y-m-d')) }}"
-                           class="{{ $inputClass }}">
+                    <x-hero-date-input
+                        name="preferred_coverage_start_date"
+                        :value="old('preferred_coverage_start_date', optional($profile?->preferred_coverage_start_date)?->format('Y-m-d'))"
+                        minDate="today"
+                        :class="$inputClass"
+                    />
                 </div>
             </div>
 
@@ -127,7 +130,7 @@
                         </div>
                         <div>
                             <x-coverage-bilingual-label key="date_of_birth" class="mb-1" />
-                            <input type="date" class="{{ $inputClass }}" x-model="row.date_of_birth" :name="`dependents[${index}][date_of_birth]`" required>
+                            <input type="text" class="{{ $inputClass }} hero-date-input" x-model="row.date_of_birth" :name="`dependents[${index}][date_of_birth]`" data-max-date="{{ now()->format('Y-m-d') }}" required autocomplete="off" placeholder="Select date">
                         </div>
                         <div>
                             <x-coverage-bilingual-label key="gender" class="mb-1" />
@@ -184,11 +187,19 @@
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <x-coverage-bilingual-label key="policy_start" class="mb-1" />
-                    <input type="date" name="insurance_effective_start" value="{{ old('insurance_effective_start', optional($profile?->insurance_effective_start)?->format('Y-m-d')) }}" class="{{ $inputClass }}">
+                    <x-hero-date-input
+                        name="insurance_effective_start"
+                        :value="old('insurance_effective_start', optional($profile?->insurance_effective_start)?->format('Y-m-d'))"
+                        :class="$inputClass"
+                    />
                 </div>
                 <div>
                     <x-coverage-bilingual-label key="policy_end" class="mb-1" />
-                    <input type="date" name="insurance_effective_end" value="{{ old('insurance_effective_end', optional($profile?->insurance_effective_end)?->format('Y-m-d')) }}" class="{{ $inputClass }}">
+                    <x-hero-date-input
+                        name="insurance_effective_end"
+                        :value="old('insurance_effective_end', optional($profile?->insurance_effective_end)?->format('Y-m-d'))"
+                        :class="$inputClass"
+                    />
                 </div>
             </div>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -314,6 +325,7 @@
                     gender: '',
                     relationship: '',
                 });
+                this.$nextTick(() => window.initHeroDatePickers?.(this.$root));
             },
             removeDependent(index) {
                 if (this.dependents.length > 1) {

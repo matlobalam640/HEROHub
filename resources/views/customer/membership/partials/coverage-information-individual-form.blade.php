@@ -25,7 +25,13 @@
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                         <x-coverage-bilingual-label key="date_of_birth" />
-                        <input type="date" name="date_of_birth" required value="{{ old('date_of_birth', optional($primary?->date_of_birth)?->format('Y-m-d')) }}" class="{{ $inputClass }}">
+                        <x-hero-date-input
+                            name="date_of_birth"
+                            :value="old('date_of_birth', optional($primary?->date_of_birth)?->format('Y-m-d'))"
+                            maxDate="{{ now()->format('Y-m-d') }}"
+                            required
+                            :class="$inputClass"
+                        />
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="gender" />
