@@ -325,9 +325,9 @@
                             <x-dropdown align="right" width="48">
                                 <x-slot name="trigger">
                                     <button class="hero-topbar-icon-btn relative inline-flex h-10 items-center gap-2 px-2 sm:px-2.5">
-                                        <span class="relative flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--hero-primary)]" style="background: var(--gradient-gold-soft);">
+                                        <span class="relative flex h-9 w-9 items-center justify-center rounded-xl text-[color:var(--hero-primary)]" style="background: var(--gradient-gold);">
                                             <i class="fa-solid fa-user text-sm" aria-hidden="true"></i>
-                                            <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#2f3349]" title="Online"></span>
+                                            <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[color:var(--hero-gold-500)] ring-2 ring-white" title="Online"></span>
                                         </span>
                                         <i class="fa-solid fa-chevron-down hidden pr-1 text-xs text-slate-500 sm:inline" aria-hidden="true"></i>
                                     </button>

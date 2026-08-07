@@ -159,7 +159,7 @@
         }
         .accent-bar {
             height: 4px;
-            background: #3ecfca;
+            background: linear-gradient(90deg, #ca0600 0%, #ca0600 38%, #dec328 38%, #dec328 100%);
         }
     </style>
 </head>

@@ -42,7 +42,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm font-medium text-emerald-700"
+                    class="text-sm font-medium text-[color:var(--hero-primary)]"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

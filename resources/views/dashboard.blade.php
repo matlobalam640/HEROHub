@@ -305,18 +305,18 @@
             };
             const H = {
                 primary: cssVar('--hero-primary', '#141d35'),
-                teal: cssVar('--hero-accent-teal', '#3ecfca'),
                 gold: cssVar('--hero-accent-gold', '#dec328'),
+                red: cssVar('--hero-secondary', '#ca0600'),
                 sky: cssVar('--hero-accent-sky', '#5eb3ff'),
                 coral: cssVar('--hero-accent-coral', '#ff8a65'),
                 success: cssVar('--vuexy-success', '#10b981'),
-                danger: cssVar('--vuexy-danger', '#ef4444'),
+                danger: cssVar('--vuexy-danger', '#ca0600'),
                 muted: cssVar('--vuexy-secondary', '#94a3b8'),
             };
             const chartSeries = [
                 H.primary,
-                H.teal,
                 H.gold,
+                H.red,
                 H.sky,
                 H.success,
                 H.coral,
@@ -332,7 +332,7 @@
                 const ctx = lineEl.getContext('2d');
                 const h = lineEl.offsetHeight || 288;
                 const lineFill = ctx.createLinearGradient(0, 0, 0, h);
-                lineFill.addColorStop(0, 'rgba(62, 207, 202, 0.32)');
+                lineFill.addColorStop(0, 'rgba(222, 195, 40, 0.28)');
                 lineFill.addColorStop(0.55, 'rgba(20, 29, 53, 0.1)');
                 lineFill.addColorStop(1, 'rgba(20, 29, 53, 0.02)');
                 new window.Chart(lineEl, {
@@ -349,7 +349,7 @@
                             pointRadius: 4,
                             pointHoverRadius: 6,
                             pointBackgroundColor: '#fff',
-                            pointBorderColor: H.teal,
+                            pointBorderColor: H.gold,
                             pointBorderWidth: 2,
                         }]
                     },

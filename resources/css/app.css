@@ -334,15 +334,15 @@
     color: var(--hero-primary);
   }
 
-  /* Active: gold accent bar on light sidebar */
+  /* Active nav — Sentinel navy tile (matches style guide) */
   .portal-sidebar a.sidebar-link--pill.sidebar-link-active,
   .portal-sidebar a.sidebar-link--pill[aria-current='page'],
   .portal-sidebar a.sidebar-link--pill[data-nav-active] {
-    background-color: var(--hero-accent-gold-soft);
-    border-color: rgba(212, 168, 83, 0.28);
-    color: var(--sidebar-menu-active);
+    background-color: var(--hero-primary);
+    border-color: var(--hero-primary);
+    color: #ffffff;
     font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--sidebar-active-accent), 0 4px 14px -10px rgba(212, 168, 83, 0.22);
+    box-shadow: 0 4px 14px -8px rgba(20, 29, 53, 0.35);
   }
 
   .portal-sidebar a.sidebar-link--pill.sidebar-link-active::before,
@@ -354,8 +354,8 @@
   .portal-sidebar a.sidebar-link--pill.sidebar-link-active:hover,
   .portal-sidebar a.sidebar-link--pill[aria-current='page']:hover,
   .portal-sidebar a.sidebar-link--pill[data-nav-active]:hover {
-    background-color: var(--sidebar-menu-active-bg-hover);
-    color: var(--sidebar-menu-active);
+    background-color: var(--hero-primary-hover);
+    color: #ffffff;
   }
 
   .portal-sidebar a.sidebar-link--pill.sidebar-link-active .sidebar-icon,
@@ -364,7 +364,7 @@
   .portal-sidebar a.sidebar-link--pill[aria-current='page']:hover .sidebar-icon,
   .portal-sidebar a.sidebar-link--pill[data-nav-active] .sidebar-icon,
   .portal-sidebar a.sidebar-link--pill[data-nav-active]:hover .sidebar-icon {
-    color: var(--hero-primary);
+    color: var(--hero-gold-500);
     opacity: 1;
   }
 
@@ -378,10 +378,10 @@
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active,
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page'],
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active] {
-    background-color: var(--sidebar-menu-active-bg);
-    color: var(--sidebar-menu-active);
+    background-color: var(--hero-primary);
+    color: #ffffff;
     font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--sidebar-active-accent), 0 4px 14px -10px rgba(20, 29, 53, 0.16);
+    box-shadow: 0 4px 14px -8px rgba(20, 29, 53, 0.35);
   }
 
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active::before,
@@ -393,8 +393,8 @@
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active:hover,
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page']:hover,
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]:hover {
-    background-color: var(--sidebar-menu-active-bg-hover);
-    color: var(--sidebar-menu-active);
+    background-color: var(--hero-primary-hover);
+    color: #ffffff;
   }
 
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill).sidebar-link-active .sidebar-icon,
@@ -403,7 +403,7 @@
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[aria-current='page']:hover .sidebar-icon,
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active] .sidebar-icon,
   .portal-sidebar a.sidebar-link:not(.sidebar-link--pill)[data-nav-active]:hover .sidebar-icon {
-    color: var(--hero-primary);
+    color: var(--hero-gold-500);
     opacity: 1;
   }
 
@@ -548,7 +548,7 @@
   }
 
   .dashboard-stat-card__trend {
-    @apply inline-flex items-center rounded-full bg-[color:var(--hero-accent-teal-soft)] px-2.5 py-1 text-xs font-semibold text-[color:var(--hero-primary)] ring-1 ring-[color:var(--hero-primary-muted)];
+    @apply inline-flex items-center rounded-full bg-[color:var(--hero-accent-gold-soft)] px-2.5 py-1 text-xs font-semibold text-[color:var(--hero-primary)] ring-1 ring-[color:var(--hero-accent-gold-ring)];
   }
 
   .dashboard-stat-card__link {
@@ -935,13 +935,13 @@
   }
 
   .dashboard-activity-icon--membership {
-    background: var(--hero-accent-teal-soft);
-    color: var(--hero-accent-teal);
+    background: var(--hero-accent-gold-soft);
+    color: var(--hero-gold-600);
   }
 
   .dashboard-activity-icon--sale {
-    background: var(--hero-accent-gold-soft);
-    color: var(--hero-accent-gold);
+    background: var(--hero-secondary-soft);
+    color: var(--hero-secondary);
   }
 
   /* Plan catalog — Edit plan button contrasts with card background (plain CSS for reliable deploy) */
@@ -1171,7 +1171,7 @@
   }
 
   .hero-btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200/90 bg-white/90 px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-[color:var(--hero-primary-soft)] px-5 py-2.5 text-sm font-semibold text-[color:var(--hero-primary)] shadow-sm;
     transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
   }
 
@@ -1179,6 +1179,17 @@
     transform: translateY(-1px);
     @apply border-slate-300 bg-white;
     box-shadow: var(--shadow-soft);
+  }
+
+  .hero-btn-outlined {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-[color:var(--hero-primary)] shadow-sm;
+    transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .hero-btn-outlined:hover {
+    transform: translateY(-1px);
+    border-color: rgba(20, 29, 53, 0.2);
+    background: var(--hero-primary-soft);
   }
 
   .hero-topbar-popover {
@@ -1216,8 +1227,8 @@
 
   .hero-auth-eyebrow {
     @apply inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold text-[color:var(--hero-primary)];
-    border-color: rgba(212, 168, 83, 0.35);
-    background: var(--gradient-gold-soft);
+    border-color: rgba(20, 29, 53, 0.12);
+    background: var(--hero-primary-soft);
   }
 
   .hero-auth-title {
@@ -1269,7 +1280,8 @@
 
   .hero-empty-state__icon {
     @apply mb-4 flex h-14 w-14 items-center justify-center rounded-2xl text-xl text-[color:var(--hero-primary)];
-    background: var(--gradient-gold-soft);
+    background: var(--gradient-gold);
+    box-shadow: var(--hero-gold-shadow);
   }
 
   .hero-alert {
@@ -1277,15 +1289,21 @@
   }
 
   .hero-alert--success {
-    @apply border-emerald-200/80 bg-emerald-50/90 text-emerald-800;
+    border-color: rgba(222, 195, 40, 0.35);
+    background: rgba(250, 246, 235, 0.95);
+    color: var(--hero-primary);
   }
 
   .hero-alert--error {
-    @apply border-red-200/80 bg-red-50/90 text-red-800;
+    border-color: var(--hero-secondary-ring);
+    background: var(--hero-secondary-soft);
+    color: var(--hero-secondary-hover);
   }
 
   .hero-alert--info {
-    @apply border-sky-200/80 bg-sky-50/90 text-sky-900;
+    border-color: rgba(20, 29, 53, 0.12);
+    background: var(--hero-primary-soft);
+    color: var(--hero-primary);
   }
 
   .dashboard-welcome {

@@ -68,10 +68,10 @@
                                         $plan = $membership->plan;
                                         $status = $membership->status;
                                         $statusClass = match ($status) {
-                                            'active' => 'bg-emerald-50 text-emerald-800 ring-emerald-600/15',
-                                            'inactive' => 'bg-amber-50 text-amber-900 ring-amber-600/15',
+                                            'active' => 'bg-[color:var(--hero-accent-gold-soft)] text-[color:var(--hero-primary)] ring-[color:var(--hero-accent-gold-ring)]',
+                                            'inactive' => 'bg-[color:var(--hero-secondary-soft)] text-[color:var(--hero-secondary-hover)] ring-[color:var(--hero-secondary-ring)]',
                                             'expired' => 'bg-slate-100 text-slate-700 ring-slate-500/15',
-                                            'cancelled' => 'bg-red-50 text-red-800 ring-red-600/15',
+                                            'cancelled' => 'bg-[color:var(--hero-secondary-soft)] text-[color:var(--hero-secondary-hover)] ring-[color:var(--hero-secondary-ring)]',
                                             default => 'bg-slate-100 text-slate-700 ring-slate-500/15',
                                         };
                                         $deps = $membership->dependents;

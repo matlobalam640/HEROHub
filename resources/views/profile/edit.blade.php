@@ -26,7 +26,7 @@
                     aria-label="{{ __('Profile settings sections') }}">
                     <a href="#settings-account"
                        class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[color:var(--insta-teal-soft)] to-[color:var(--insta-blue-soft)] text-[color:var(--insta-teal-800)] shadow-sm ring-1 ring-slate-200/60"
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[color:var(--hero-primary)] shadow-sm ring-1 ring-slate-200/60" style="background: var(--gradient-gold);"
                             aria-hidden="true">
                             <i class="fa-solid fa-user"></i>
                         </span>
@@ -53,7 +53,7 @@
                 <section id="settings-account" class="scroll-mt-28 hero-portal-panel">
                     <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                         <div class="flex flex-wrap items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--insta-teal-soft)] to-[color:var(--insta-blue-soft)] text-lg font-bold tracking-tight text-[color:var(--insta-teal-800)] shadow-sm ring-1 ring-slate-200/70"
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold tracking-tight text-[color:var(--hero-primary)] shadow-sm ring-1 ring-slate-200/70" style="background: var(--gradient-gold);"
                                 aria-hidden="true">
                                 {{ $initials }}
                             </span>
