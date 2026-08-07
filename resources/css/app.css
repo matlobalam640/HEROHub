@@ -926,6 +926,36 @@
     color: var(--hero-accent-gold);
   }
 
+  /* Plan catalog — Edit plan button contrasts with card background (plain CSS for reliable deploy) */
+  .plan-edit-btn {
+    @apply inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold no-underline transition;
+  }
+
+  .plan-edit-btn--on-white-card {
+    background-image: linear-gradient(180deg, #faf6d4 0%, #f2e088 55%, #e8d76a 100%);
+    border: 1px solid rgba(120, 53, 15, 0.22);
+    color: #283b69;
+    box-shadow: 0 2px 8px -2px rgba(212, 168, 83, 0.35);
+  }
+
+  .plan-edit-btn--on-white-card:hover {
+    background-image: linear-gradient(180deg, #f2e088 0%, #dec328 100%);
+    border-color: #283b69;
+    color: #ffffff;
+  }
+
+  .plan-edit-btn--on-gold-card {
+    background-color: #ffffff;
+    border: 1px solid rgba(40, 59, 105, 0.35);
+    color: #283b69;
+  }
+
+  .plan-edit-btn--on-gold-card:hover {
+    background-color: #283b69;
+    border-color: #283b69;
+    color: #ffffff;
+  }
+
   html.dark-theme .dashboard-welcome {
     border-color: #3b4253 !important;
   }
