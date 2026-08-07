@@ -8,13 +8,53 @@ use App\Models\User;
 use App\Services\UsaPayments\UsaPaymentsQueryService;
 use App\Support\UsaPaymentsPlanMapper;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 
 class MembershipUsaPaymentsDateSyncService
 {
     public function __construct(
         private readonly UsaPaymentsQueryService $queryService,
     ) {}
+
+    /**
+     * @param  list<array<string, mixed>>  $subscriptions
+     * @return list<array<string, mixed>>
+     */
+    public function syncAllPortalMemberships(array $subscriptions, bool $apply = true): array
+    {
+        $index = $this->buildSubscriptionIndex($subscriptions);
+        $rows = [];
+
+        $memberships = Membership::query()
+            ->with(['accountUser', 'primaryMember', 'plan'])
+            ->orderBy('id')
+            ->get();
+
+        foreach ($memberships as $membership) {
+            $subscription = $this->findSubscriptionForMembership($membership, $index);
+            if ($subscription === null) {
+                $rows[] = [
+                    'membership_number' => $membership->membership_number,
+                    'email' => $this->membershipEmails($membership)[0] ?? '—',
+                    'subscription_id' => $membership->billing_subscription_id ?: '—',
+                    'coverage_starts_on' => $membership->coverage_starts_on?->toDateString(),
+                    'coverage_ends_on' => $membership->coverage_ends_on?->toDateString(),
+                    'status' => $membership->status,
+                    'matched' => false,
+                    'updated' => false,
+                    'note' => 'no USA Payments subscription match',
+                ];
+
+                continue;
+            }
+
+            $rows[] = array_merge(
+                $this->syncSubscription($subscription, $apply, $membership),
+                ['note' => 'matched']
+            );
+        }
+
+        return $rows;
+    }
 
     /**
      * @return array{
@@ -31,13 +71,13 @@ class MembershipUsaPaymentsDateSyncService
      *     updated: bool
      * }
      */
-    public function syncSubscription(array $subscription, bool $apply = true): array
+    public function syncSubscription(array $subscription, bool $apply = true, ?Membership $membership = null): array
     {
         $subscriptionId = (string) ($subscription['subscription_id'] ?? '');
         $email = strtolower(trim((string) ($subscription['email'] ?? '')));
 
         $dates = $this->resolveCoverageDates($subscription);
-        $membership = $this->findMembership($subscriptionId, $email, (string) ($subscription['gateway_plan_id'] ?? ''));
+        $membership ??= $this->findMembership($subscriptionId, $email, (string) ($subscription['gateway_plan_id'] ?? ''));
 
         $result = [
             'subscription_id' => $subscriptionId,
@@ -101,26 +141,22 @@ class MembershipUsaPaymentsDateSyncService
         $lastPayment = $this->queryService->lastSuccessfulPaymentDate($subscriptionId);
 
         $cycleDays = $this->resolveCycleDays($dayFrequency, $planName);
-        $isShortTerm = $cycleDays <= 31 || str_contains($planName, '10 day');
+        $isShortTerm = str_contains($planName, '10 day') || str_contains($planName, '10-day');
 
-        $coverageEnd = $nextCharge;
-        if ($coverageEnd === null && $lastPayment !== null) {
-            $coverageEnd = $lastPayment->copy()->addDays($cycleDays);
+        $coverageStart = $firstPayment?->copy();
+        if ($coverageStart === null && $nextCharge !== null) {
+            $coverageStart = $nextCharge->copy()->subDays($cycleDays);
+        } elseif ($coverageStart === null && $lastPayment !== null) {
+            $coverageStart = $lastPayment->copy();
         }
 
-        $coverageStart = null;
-        if ($coverageEnd !== null && ! $isShortTerm) {
-            $coverageStart = $coverageEnd->copy()->subDays($cycleDays);
-        } elseif ($firstPayment !== null) {
-            $coverageStart = $firstPayment->copy();
-            if ($coverageEnd === null) {
-                $coverageEnd = $coverageStart->copy()->addDays($cycleDays);
-            }
-        } elseif ($lastPayment !== null) {
-            $coverageStart = $lastPayment->copy();
-            if ($coverageEnd === null) {
-                $coverageEnd = $coverageStart->copy()->addDays($cycleDays);
-            }
+        $coverageEnd = $nextCharge?->copy();
+        if ($isShortTerm && $coverageStart !== null) {
+            $coverageEnd = $coverageStart->copy()->addDays(10);
+        } elseif ($coverageEnd === null && $lastPayment !== null) {
+            $coverageEnd = $lastPayment->copy()->addDays($cycleDays);
+        } elseif ($coverageEnd === null && $coverageStart !== null) {
+            $coverageEnd = $coverageStart->copy()->addDays($cycleDays);
         }
 
         if ($coverageStart !== null && $coverageEnd !== null && $coverageEnd->lte($coverageStart)) {
@@ -133,7 +169,7 @@ class MembershipUsaPaymentsDateSyncService
             $status = 'expired';
         }
 
-        $autoRenew = ! $isShortTerm || ($coverageEnd !== null && $coverageEnd->gte($today));
+        $autoRenew = ! $isShortTerm && ($coverageEnd === null || $coverageEnd->gte($today));
 
         return [
             'coverage_starts_on' => $coverageStart?->startOfDay(),
@@ -146,9 +182,110 @@ class MembershipUsaPaymentsDateSyncService
         ];
     }
 
+    /**
+     * @param  list<array<string, mixed>>  $subscriptions
+     * @return array{
+     *     by_id: array<string, array<string, mixed>>,
+     *     by_email: array<string, list<array<string, mixed>>>
+     * }
+     */
+    private function buildSubscriptionIndex(array $subscriptions): array
+    {
+        $byId = [];
+        $byEmail = [];
+
+        foreach ($subscriptions as $subscription) {
+            $id = (string) ($subscription['subscription_id'] ?? '');
+            if ($id !== '') {
+                $byId[$id] = $subscription;
+            }
+
+            $email = strtolower(trim((string) ($subscription['email'] ?? '')));
+            if ($email !== '') {
+                $byEmail[$email] ??= [];
+                $byEmail[$email][] = $subscription;
+            }
+        }
+
+        return ['by_id' => $byId, 'by_email' => $byEmail];
+    }
+
+    /**
+     * @param  array{
+     *     by_id: array<string, array<string, mixed>>,
+     *     by_email: array<string, list<array<string, mixed>>>
+     * }  $index
+     * @return array<string, mixed>|null
+     */
+    private function findSubscriptionForMembership(Membership $membership, array $index): ?array
+    {
+        $subscriptionId = trim((string) ($membership->billing_subscription_id ?? ''));
+        if ($subscriptionId !== '' && isset($index['by_id'][$subscriptionId])) {
+            return $index['by_id'][$subscriptionId];
+        }
+
+        $gatewayIds = $this->gatewayPlanIdsForMembership($membership);
+
+        foreach ($this->membershipEmails($membership) as $email) {
+            $candidates = $index['by_email'][$email] ?? [];
+            if ($candidates === []) {
+                continue;
+            }
+
+            if (count($candidates) === 1) {
+                return $candidates[0];
+            }
+
+            foreach ($candidates as $candidate) {
+                $candidatePlanId = (string) ($candidate['gateway_plan_id'] ?? '');
+                if ($candidatePlanId !== '' && in_array($candidatePlanId, $gatewayIds, true)) {
+                    return $candidate;
+                }
+            }
+
+            return $candidates[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function membershipEmails(Membership $membership): array
+    {
+        $emails = array_filter([
+            strtolower(trim((string) ($membership->accountUser?->email ?? ''))),
+            strtolower(trim((string) ($membership->primaryMember?->email ?? ''))),
+        ]);
+
+        return array_values(array_unique($emails));
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function gatewayPlanIdsForMembership(Membership $membership): array
+    {
+        $planCode = trim((string) ($membership->plan?->code ?? ''));
+        if ($planCode === '') {
+            return [];
+        }
+
+        $reverse = config('usa_payments.gateway_to_portal', []);
+        $matches = [];
+        foreach ($reverse as $gatewayId => $portalCode) {
+            if ((string) $portalCode === $planCode) {
+                $matches[] = (string) $gatewayId;
+            }
+        }
+
+        return $matches;
+    }
+
     private function resolveCycleDays(int $dayFrequency, string $planName): int
     {
-        if (str_contains($planName, '10 day')) {
+        if (str_contains($planName, '10 day') || str_contains($planName, '10-day')) {
             return 10;
         }
 

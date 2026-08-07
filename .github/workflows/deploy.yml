@@ -84,15 +84,22 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ env.DEPLOY_PATH }}
+            if [ -n "${{ secrets.USA_PAYMENTS_SECURITY_KEY }}" ] && ! grep -q '^USA_PAYMENTS_SECURITY_KEY=' .env 2>/dev/null; then
+              echo "USA_PAYMENTS_SECURITY_KEY=${{ secrets.USA_PAYMENTS_SECURITY_KEY }}" >> .env
+            fi
+            if [ -n "${{ secrets.USA_DATA_TOKENIZATION_KEY }}" ] && ! grep -q '^USA_DATA_TOKENIZATION_KEY=' .env 2>/dev/null; then
+              echo "USA_DATA_TOKENIZATION_KEY=${{ secrets.USA_DATA_TOKENIZATION_KEY }}" >> .env
+            fi
             composer install --no-dev --optimize-autoloader --no-interaction
             php artisan migrate --force
             php artisan db:seed --class=RetailPlansSeeder --force
             php artisan db:seed --class=CorporatePlansSeeder --force
             php artisan db:seed --class=SmallBusinessPlansSeeder --force
             php artisan storage:link 2>/dev/null || ln -sfn "$(pwd)/storage/app/public" "$(pwd)/public/storage"
+            php artisan config:clear
+            php artisan memberships:sync-dates-from-usa-payments --fail-on-zero-updates
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
             php artisan optimize
-            php artisan memberships:sync-dates-from-usa-payments
             chmod -R 775 storage bootstrap/cache

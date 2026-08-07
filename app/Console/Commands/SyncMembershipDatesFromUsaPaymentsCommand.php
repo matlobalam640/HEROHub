@@ -10,7 +10,8 @@ class SyncMembershipDatesFromUsaPaymentsCommand extends Command
 {
     protected $signature = 'memberships:sync-dates-from-usa-payments
                             {--subscription-id= : Sync a single USA Payments subscription id}
-                            {--dry-run : Show resolved dates without writing to the database}';
+                            {--dry-run : Show resolved dates without writing to the database}
+                            {--fail-on-zero-updates : Exit with failure when no memberships were updated}';
 
     protected $description = 'Pull actual coverage and billing dates from USA Payments (AWS gateway source) into portal memberships.';
 
@@ -19,7 +20,7 @@ class SyncMembershipDatesFromUsaPaymentsCommand extends Command
         MembershipUsaPaymentsDateSyncService $syncService,
     ): int {
         if (! config('usa_payments.security_key')) {
-            $this->error('USA_PAYMENTS_SECURITY_KEY is not configured.');
+            $this->error('USA_PAYMENTS_SECURITY_KEY is not configured on this server.');
 
             return self::FAILURE;
         }
@@ -32,47 +33,46 @@ class SyncMembershipDatesFromUsaPaymentsCommand extends Command
             : $queryService->listRecurringSubscriptions();
 
         if ($subscriptions === []) {
-            $this->warn('No subscriptions returned from USA Payments.');
+            $this->error('No subscriptions returned from USA Payments. Check USA_PAYMENTS_SECURITY_KEY and outbound API access.');
 
-            return self::SUCCESS;
+            return self::FAILURE;
         }
 
-        $matched = 0;
-        $updated = 0;
-        $unmatched = 0;
+        $rows = $singleId !== ''
+            ? collect($subscriptions)->map(fn (array $subscription) => $syncService->syncSubscription($subscription, $apply))->all()
+            : $syncService->syncAllPortalMemberships($subscriptions, $apply);
+
+        $matched = collect($rows)->where('matched', true)->count();
+        $updated = collect($rows)->where('updated', true)->count();
+        $unmatched = collect($rows)->where('matched', false)->count();
 
         $this->table(
-            ['Subscription', 'Email', 'Membership', 'Start', 'End', 'Status', 'Applied'],
-            collect($subscriptions)->map(function (array $subscription) use ($syncService, $apply, &$matched, &$updated, &$unmatched) {
-                $row = $syncService->syncSubscription($subscription, $apply);
-
-                if ($row['matched']) {
-                    $matched++;
-                } else {
-                    $unmatched++;
-                }
-
-                if ($row['updated']) {
-                    $updated++;
-                }
-
+            ['Membership', 'Email', 'Subscription', 'Start', 'End', 'Status', 'Applied', 'Note'],
+            collect($rows)->map(function (array $row) use ($apply) {
                 return [
-                    $row['subscription_id'],
-                    $row['email'],
                     $row['membership_number'] ?? '—',
+                    $row['email'] ?? '—',
+                    $row['subscription_id'] ?? '—',
                     $row['coverage_starts_on'] ?? '—',
                     $row['coverage_ends_on'] ?? '—',
-                    $row['status'],
-                    $apply ? ($row['updated'] ? 'yes' : 'no') : 'dry-run',
+                    $row['status'] ?? '—',
+                    $apply ? (($row['updated'] ?? false) ? 'yes' : 'no') : 'dry-run',
+                    $row['note'] ?? '',
                 ];
             })->all()
         );
 
         $this->newLine();
-        $this->line('Subscriptions fetched: '.count($subscriptions));
-        $this->line('Matched portal memberships: '.$matched);
-        $this->line('Unmatched subscriptions: '.$unmatched);
+        $this->line('USA Payments subscriptions fetched: '.count($subscriptions));
+        $this->line('Portal memberships matched: '.$matched);
+        $this->line('Portal memberships unmatched: '.$unmatched);
         $this->line(($apply ? 'Updated' : 'Would update').' memberships: '.$updated);
+
+        if ($this->option('fail-on-zero-updates') && $apply && $updated === 0) {
+            $this->error('No memberships were updated.');
+
+            return self::FAILURE;
+        }
 
         return self::SUCCESS;
     }

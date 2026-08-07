@@ -22,6 +22,25 @@ class MembershipUsaPaymentsDateSyncServiceTest extends TestCase
         config(['usa_payments.security_key' => 'test-security-key']);
     }
 
+    public function test_prefers_first_payment_for_coverage_start(): void
+    {
+        Http::fake([
+            '*' => Http::sequence()
+                ->push('<?xml version="1.0"?><nm_response><transaction><action><success>1</success><date>20251113120000</date></action></transaction></nm_response>')
+                ->push('<?xml version="1.0"?><nm_response><transaction><action><success>1</success><date>20251114120000</date></action></transaction></nm_response>'),
+        ]);
+
+        $dates = app(MembershipUsaPaymentsDateSyncService::class)->resolveCoverageDates([
+            'subscription_id' => '11142957081',
+            'plan_name' => 'Individual Plan Monthly Payment',
+            'day_frequency' => 30,
+            'next_charge_date' => Carbon::parse('2026-08-10'),
+        ]);
+
+        $this->assertSame('2025-11-13', $dates['coverage_starts_on']?->toDateString());
+        $this->assertSame('2026-08-10', $dates['coverage_ends_on']?->toDateString());
+    }
+
     public function test_resolves_annual_dates_from_next_charge_date(): void
     {
         Http::fake([
