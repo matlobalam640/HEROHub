@@ -1,13 +1,5 @@
 @php
     $isCustomer = auth()->check() && auth()->user()->hasRole('customer');
-    $initials = strtoupper(
-        collect(preg_split('/\s+/', trim($user->name ?? '')))
-            ->filter()
-            ->take(2)
-            ->map(fn ($p) => mb_substr($p, 0, 1))
-            ->implode('')
-    );
-    $initials = $initials !== '' ? $initials : '?';
 @endphp
 
 <x-portal-layout>
@@ -26,8 +18,7 @@
                     aria-label="{{ __('Profile settings sections') }}">
                     <a href="#settings-account"
                        class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[color:var(--hero-primary)] shadow-sm ring-1 ring-slate-200/60" style="background: var(--gradient-gold);"
-                            aria-hidden="true">
+                        <span class="hero-profile-section-icon hero-profile-section-icon--nav" aria-hidden="true">
                             <i class="fa-solid fa-user"></i>
                         </span>
                         <span class="min-w-0">
@@ -37,8 +28,7 @@
                     </a>
                     <a href="#settings-security"
                        class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 shadow-sm ring-1 ring-slate-200/80"
-                            aria-hidden="true">
+                        <span class="hero-profile-section-icon hero-profile-section-icon--nav" aria-hidden="true">
                             <i class="fa-solid fa-lock"></i>
                         </span>
                         <span class="min-w-0">
@@ -52,12 +42,11 @@
             <div class="min-w-0 space-y-6 lg:col-span-8 xl:col-span-9">
                 <section id="settings-account" class="scroll-mt-28 hero-portal-panel">
                     <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
-                        <div class="flex flex-wrap items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold tracking-tight text-[color:var(--hero-primary)] shadow-sm ring-1 ring-slate-200/70" style="background: var(--gradient-gold);"
-                                aria-hidden="true">
-                                {{ $initials }}
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span class="hero-profile-section-icon hero-profile-section-icon--panel" aria-hidden="true">
+                                <i class="fa-solid fa-user"></i>
                             </span>
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0">
                                 <h2 class="text-base font-semibold text-slate-900">{{ __('Account') }}</h2>
                                 <p class="mt-0.5 text-sm text-slate-600">
                                     @if($isCustomer)
@@ -90,8 +79,7 @@
                 <section id="settings-security" class="scroll-mt-28 hero-portal-panel">
                     <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                         <div class="flex flex-wrap items-center gap-3">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm"
-                                aria-hidden="true">
+                            <span class="hero-profile-section-icon hero-profile-section-icon--panel" aria-hidden="true">
                                 <i class="fa-solid fa-key"></i>
                             </span>
                             <div class="min-w-0">
