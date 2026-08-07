@@ -15,6 +15,7 @@ class HeroPortalWebhookService
         Plan $plan,
         array $requestData,
         UsaPaymentResponse $response,
+        ?Carbon $coverageStart = null,
     ): void {
         $url = config('heroportal.webhook_url');
         $secret = config('heroportal.webhook_secret');
@@ -36,7 +37,7 @@ class HeroPortalWebhookService
             return;
         }
 
-        $payload = $this->buildPayload($plan, $requestData, $parsed, $subscriptionId);
+        $payload = $this->buildPayload($plan, $requestData, $parsed, $subscriptionId, $coverageStart);
 
         try {
             $result = Http::timeout(20)
@@ -62,9 +63,9 @@ class HeroPortalWebhookService
      * @param  array<string, mixed>  $parsed
      * @return array<string, mixed>
      */
-    private function buildPayload(Plan $plan, array $requestData, array $parsed, string $subscriptionId): array
+    private function buildPayload(Plan $plan, array $requestData, array $parsed, string $subscriptionId, ?Carbon $coverageStart = null): array
     {
-        $start = now()->startOfDay();
+        $start = ($coverageStart ?? now())->copy()->startOfDay();
         $end = $this->coverageEnd($start, $plan);
         $base = (float) $plan->plan_amount;
         $tax = round($base * 0.10, 2);
@@ -80,6 +81,7 @@ class HeroPortalWebhookService
             'current_term_ends_at' => $end->toDateString(),
             'next_billing_at' => $end->toDateString(),
             'last_billing_at' => $start->toDateString(),
+            'created_at' => $start->toDateString(),
             'auto_collect' => 'true',
             'customer' => [
                 'email' => (string) ($requestData['email'] ?? ''),

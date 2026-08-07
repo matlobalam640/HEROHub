@@ -22,6 +22,8 @@ return [
 
     'transact_url' => env('USA_PAYMENTS_TRANSACT_URL', 'https://usapayments.transactiongateway.com/api/transact.php'),
 
+    'query_url' => env('USA_PAYMENTS_QUERY_URL', 'https://usapayments.transactiongateway.com/api/query.php'),
+
     'collect_js_url' => env('USA_PAYMENTS_COLLECT_JS_URL', 'https://usapayments.transactiongateway.com/token/Collect.js'),
 
     /*

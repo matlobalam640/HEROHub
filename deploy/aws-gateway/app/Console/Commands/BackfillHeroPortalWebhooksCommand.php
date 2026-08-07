@@ -6,6 +6,7 @@ use App\Http\Services\UsaPayments\UsaPaymentResponse;
 use App\Models\PaymentsLog;
 use App\Models\Plan;
 use App\Services\HeroPortal\HeroPortalWebhookService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class BackfillHeroPortalWebhooksCommand extends Command
@@ -58,10 +59,16 @@ class BackfillHeroPortalWebhooksCommand extends Command
                 'country' => 'USA',
             ];
 
+            $startedAt = $log->created_at ?? null;
+            $coverageStart = $startedAt instanceof \DateTimeInterface
+                ? Carbon::instance($startedAt)->startOfDay()
+                : null;
+
             $webhookService->notifySuccessfulSubscription(
                 $plan,
                 $requestData,
                 new UsaPaymentResponse($log->response),
+                $coverageStart,
             );
 
             $sent++;
