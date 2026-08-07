@@ -299,20 +299,31 @@
             if (!window.Chart) return;
 
             const root = document.documentElement;
-            const vx = (token, fallback) => {
+            const cssVar = (token, fallback) => {
                 const v = getComputedStyle(root).getPropertyValue(token).trim();
                 return v || fallback;
             };
-            const V = {
-                primary: vx('--vuexy-primary', '#7367f0'),
-                success: vx('--vuexy-success', '#28c76f'),
-                warning: vx('--vuexy-warning', '#ff9f43'),
-                danger: vx('--vuexy-danger', '#ea5455'),
-                info: vx('--vuexy-info', '#00cfe8'),
-                secondary: vx('--vuexy-secondary', '#82868b'),
+            const H = {
+                primary: cssVar('--hero-primary', '#283b69'),
+                teal: cssVar('--hero-accent-teal', '#3ecfca'),
+                gold: cssVar('--hero-accent-gold', '#d4a853'),
+                sky: cssVar('--hero-accent-sky', '#5eb3ff'),
+                coral: cssVar('--hero-accent-coral', '#ff8a65'),
+                success: cssVar('--vuexy-success', '#10b981'),
+                danger: cssVar('--vuexy-danger', '#ef4444'),
+                muted: cssVar('--vuexy-secondary', '#94a3b8'),
             };
-            const vuexySeries = [V.primary, V.success, V.warning, V.danger, V.info, V.secondary, '#a8aaae', '#283b69'];
-            const gridColor = 'rgba(148,163,184,0.25)';
+            const chartSeries = [
+                H.primary,
+                H.teal,
+                H.gold,
+                H.sky,
+                H.success,
+                H.coral,
+                H.muted,
+                cssVar('--dashboard-chart-8', '#324878'),
+            ];
+            const gridColor = 'rgba(40, 59, 105, 0.1)';
             const tickColor = '#64748b';
 
             const lineEl = document.getElementById('membershipGrowthChart');
@@ -321,9 +332,9 @@
                 const ctx = lineEl.getContext('2d');
                 const h = lineEl.offsetHeight || 288;
                 const lineFill = ctx.createLinearGradient(0, 0, 0, h);
-                lineFill.addColorStop(0, 'rgba(115, 103, 240, 0.35)');
-                lineFill.addColorStop(0.55, 'rgba(115, 103, 240, 0.12)');
-                lineFill.addColorStop(1, 'rgba(115, 103, 240, 0.02)');
+                lineFill.addColorStop(0, 'rgba(62, 207, 202, 0.32)');
+                lineFill.addColorStop(0.55, 'rgba(40, 59, 105, 0.1)');
+                lineFill.addColorStop(1, 'rgba(40, 59, 105, 0.02)');
                 new window.Chart(lineEl, {
                     type: 'line',
                     data: {
@@ -331,14 +342,14 @@
                         datasets: [{
                             label: 'New memberships',
                             data: payload.data,
-                            borderColor: V.primary,
+                            borderColor: H.primary,
                             backgroundColor: lineFill,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 4,
                             pointHoverRadius: 6,
                             pointBackgroundColor: '#fff',
-                            pointBorderColor: V.primary,
+                            pointBorderColor: H.teal,
                             pointBorderWidth: 2,
                         }]
                     },
@@ -363,7 +374,7 @@
                         labels: statusPayload.labels,
                         datasets: [{
                             data: statusPayload.data,
-                            backgroundColor: statusPayload.labels.map((_, i) => vuexySeries[i % vuexySeries.length]),
+                            backgroundColor: statusPayload.labels.map((_, i) => chartSeries[i % chartSeries.length]),
                             borderWidth: 3,
                             borderColor: '#ffffff',
                             hoverBorderColor: '#ffffff',
@@ -388,7 +399,7 @@
                         datasets: [{
                             label: 'Active memberships',
                             data: planPayload.data,
-                            backgroundColor: planPayload.data.map((_, i) => vuexySeries[i % vuexySeries.length]),
+                            backgroundColor: planPayload.data.map((_, i) => chartSeries[i % chartSeries.length]),
                             borderRadius: 8,
                             borderSkipped: false,
                         }]
@@ -416,7 +427,7 @@
                         datasets: [{
                             label: 'Sales',
                             data: salesPayload.data,
-                            backgroundColor: V.warning,
+                            backgroundColor: H.gold,
                             borderRadius: 8,
                         }]
                     },

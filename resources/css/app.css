@@ -109,13 +109,21 @@
     --hero-dashboard-glow-soft: rgba(40, 59, 105, 0.08);
     --hero-dashboard-ambient: rgba(62, 207, 202, 0.1);
 
-    /* Chart palette — accent-driven (not purple-heavy) */
+    /* Chart palette — HERO brand (legacy --vuexy-* aliases for Chart.js) */
     --vuexy-primary: #3ecfca;
     --vuexy-success: #10b981;
     --vuexy-warning: #d4a853;
     --vuexy-danger: #ef4444;
     --vuexy-info: #5eb3ff;
     --vuexy-secondary: #94a3b8;
+    --dashboard-chart-1: var(--hero-primary);
+    --dashboard-chart-2: var(--hero-accent-teal);
+    --dashboard-chart-3: var(--hero-accent-gold);
+    --dashboard-chart-4: var(--hero-accent-sky);
+    --dashboard-chart-5: var(--vuexy-success);
+    --dashboard-chart-6: var(--hero-accent-coral);
+    --dashboard-chart-7: var(--vuexy-secondary);
+    --dashboard-chart-8: #324878;
 
     /* ─── 2026 SaaS design system (8px grid) ─── */
     --space-section: 5rem;
@@ -523,7 +531,7 @@
   }
 
   .dashboard-stat-card__trend {
-    @apply inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100;
+    @apply inline-flex items-center rounded-full bg-[color:var(--hero-accent-teal-soft)] px-2.5 py-1 text-xs font-semibold text-[color:var(--hero-primary)] ring-1 ring-[color:var(--hero-primary-muted)];
   }
 
   .dashboard-stat-card__link {
@@ -589,12 +597,11 @@
     height: 22rem;
     transform: translateX(-50%);
     pointer-events: none;
-    background: radial-gradient(
-      ellipse 75% 85% at 50% 0%,
-      rgba(40, 59, 105, 0.04),
-      transparent 72%
-    );
-    opacity: 0.85;
+    background:
+      radial-gradient(ellipse 70% 80% at 50% 0%, rgba(40, 59, 105, 0.07), transparent 68%),
+      radial-gradient(ellipse 55% 65% at 88% 8%, rgba(62, 207, 202, 0.1), transparent 58%),
+      radial-gradient(ellipse 45% 50% at 8% 12%, rgba(212, 168, 83, 0.06), transparent 52%);
+    opacity: 0.9;
   }
 
   .hero-dashboard-shell > * {
@@ -616,19 +623,19 @@
   }
 
   .hero-dashboard-shell .dashboard-stat-icon--vuexy-primary {
-    box-shadow: 0 4px 16px -3px rgba(115, 103, 240, 0.4);
+    box-shadow: 0 4px 16px -3px rgba(62, 207, 202, 0.42);
   }
 
   .hero-dashboard-shell .dashboard-stat-icon--vuexy-success {
-    box-shadow: 0 4px 16px -3px rgba(40, 199, 111, 0.38);
+    box-shadow: 0 4px 16px -3px rgba(16, 185, 129, 0.38);
   }
 
   .hero-dashboard-shell .dashboard-stat-icon--vuexy-info {
-    box-shadow: 0 4px 16px -3px rgba(0, 207, 232, 0.38);
+    box-shadow: 0 4px 16px -3px rgba(94, 179, 255, 0.4);
   }
 
   .hero-dashboard-shell .dashboard-stat-icon--vuexy-warning {
-    box-shadow: 0 4px 16px -3px rgba(255, 159, 67, 0.4);
+    box-shadow: 0 4px 16px -3px rgba(212, 168, 83, 0.42);
   }
 
   .hero-dashboard-panel {
@@ -652,7 +659,7 @@
   }
 
   .hero-dashboard-shell .dashboard-card-header {
-    background: #ffffff;
+    background: linear-gradient(180deg, rgba(40, 59, 105, 0.035) 0%, #ffffff 100%);
     border-bottom-color: rgba(40, 59, 105, 0.08);
     box-shadow: none;
   }
@@ -689,8 +696,17 @@
     @apply text-xs font-semibold uppercase tracking-wide text-slate-500;
   }
 
+  .hero-dashboard-shell .dashboard-legend-label {
+    @apply text-[color:var(--hero-primary)] opacity-70;
+  }
+
   .dashboard-legend-value {
     @apply mt-0.5 text-sm font-bold tabular-nums text-slate-900;
+  }
+
+  .hero-dashboard-shell .rounded-xl.border-slate-100.bg-slate-50\/80 {
+    border-color: rgba(40, 59, 105, 0.08);
+    background: linear-gradient(180deg, rgba(40, 59, 105, 0.025) 0%, rgba(248, 250, 252, 0.9) 100%);
   }
 
   /* Simple DataTables — match HERO portal (scoped) */
@@ -807,71 +823,68 @@
   }
 
   /**
-   * Vuexy dark-layout — dashboard shell (beats light .hero-dashboard-shell rules in dark mode).
-   * Canvas #25293c / cards #2f3349 / borders #3b4253 — matches Analytics dark styling.
+   * Dark dashboard — HERO navy shell with teal ambient glow.
    */
   html.dark-theme .hero-dashboard-shell::before {
-    background: radial-gradient(
-      ellipse 75% 85% at 50% 0%,
-      rgba(115, 103, 240, 0.22),
-      transparent 70%
-    );
+    background:
+      radial-gradient(ellipse 75% 85% at 50% 0%, rgba(62, 207, 202, 0.16), transparent 70%),
+      radial-gradient(ellipse 50% 55% at 90% 10%, rgba(212, 168, 83, 0.08), transparent 55%);
     opacity: 1;
   }
 
   html.dark-theme .hero-dashboard-shell .dashboard-stat-card {
-    border-color: #3b4253 !important;
-    background: linear-gradient(165deg, #2f3349 0%, #282c41 100%) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(165deg, #324878 0%, #283b69 100%) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 10px 32px -14px rgba(0, 0, 0, 0.55),
-      0 0 48px -24px rgba(115, 103, 240, 0.12) !important;
+      0 0 48px -24px rgba(62, 207, 202, 0.1) !important;
   }
 
   html.dark-theme .hero-dashboard-shell .dashboard-stat-card:hover {
-    border-color: rgba(115, 103, 240, 0.35) !important;
+    border-color: rgba(62, 207, 202, 0.28) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.06) inset,
       0 16px 40px -14px rgba(0, 0, 0, 0.58),
-      0 0 56px -22px rgba(115, 103, 240, 0.2) !important;
+      0 0 56px -22px rgba(62, 207, 202, 0.16) !important;
   }
 
   html.dark-theme .hero-dashboard-shell .hero-dashboard-panel {
-    border-color: #3b4253 !important;
-    background: linear-gradient(180deg, #2f3349 0%, #2c3046 100%) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    background: linear-gradient(180deg, #324878 0%, #283b69 100%) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 8px 32px -16px rgba(0, 0, 0, 0.52),
-      0 0 40px -20px rgba(115, 103, 240, 0.12) !important;
+      0 0 40px -20px rgba(62, 207, 202, 0.08) !important;
   }
 
   html.dark-theme .hero-dashboard-shell .hero-dashboard-panel:hover {
-    border-color: rgba(115, 103, 240, 0.28) !important;
+    border-color: rgba(62, 207, 202, 0.22) !important;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.06) inset,
       0 12px 40px -16px rgba(0, 0, 0, 0.55),
-      0 0 52px -18px rgba(115, 103, 240, 0.18) !important;
+      0 0 52px -18px rgba(62, 207, 202, 0.14) !important;
   }
 
   html.dark-theme .hero-dashboard-shell .dashboard-card-header {
-    background: linear-gradient(180deg, #2f3349 0%, rgba(115, 103, 240, 0.1) 100%) !important;
-    border-bottom-color: #3b4253 !important;
+    background: linear-gradient(180deg, #324878 0%, rgba(62, 207, 202, 0.08) 100%) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
   }
 
   html.dark-theme .dashboard-stat-icon--vuexy-primary {
-    background-color: rgba(115, 103, 240, 0.22) !important;
+    background-color: rgba(62, 207, 202, 0.18) !important;
   }
 
   html.dark-theme .dashboard-stat-icon--vuexy-success {
-    background-color: rgba(40, 199, 111, 0.2) !important;
+    background-color: rgba(16, 185, 129, 0.2) !important;
   }
 
   html.dark-theme .dashboard-stat-icon--vuexy-info {
-    background-color: rgba(0, 207, 232, 0.2) !important;
+    background-color: rgba(94, 179, 255, 0.18) !important;
   }
 
   html.dark-theme .dashboard-stat-icon--vuexy-warning {
-    background-color: rgba(255, 159, 67, 0.2) !important;
+    background-color: rgba(212, 168, 83, 0.18) !important;
   }
 
   .dashboard-welcome {
@@ -904,13 +917,13 @@
   }
 
   .dashboard-activity-icon--membership {
-    background: rgba(115, 103, 240, 0.12);
-    color: var(--vuexy-primary);
+    background: var(--hero-accent-teal-soft);
+    color: var(--hero-accent-teal);
   }
 
   .dashboard-activity-icon--sale {
-    background: rgba(255, 159, 67, 0.12);
-    color: var(--vuexy-warning);
+    background: var(--hero-accent-gold-soft);
+    color: var(--hero-accent-gold);
   }
 
   html.dark-theme .dashboard-welcome {
