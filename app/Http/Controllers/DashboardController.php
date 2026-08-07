@@ -40,7 +40,9 @@ class DashboardController extends Controller
             'memberships_inactive' => (int) ($statusCounts['inactive'] ?? 0),
             'memberships_expired' => (int) ($statusCounts['expired'] ?? 0),
             'memberships_cancelled' => (int) ($statusCounts['cancelled'] ?? 0),
-            'memberships_new_month' => Membership::where('created_at', '>=', $monthStart)->count(),
+            'memberships_new_month' => Membership::query()
+                ->whereRaw($this->membershipStartDateExpression().' >= ?', [$monthStart->toDateString()])
+                ->count(),
             'usa_payments' => Membership::where('billing_provider', 'usa_payments')->count(),
             'companies' => Company::count(),
             'partners' => Partner::count(),
@@ -141,12 +143,13 @@ class DashboardController extends Controller
             $buckets[now()->subMonths($i)->format('Y-m')] = 0;
         }
 
-        $groupExpr = $this->monthGroupExpression('created_at');
+        $startExpr = $this->membershipStartDateExpression();
+        $groupExpr = $this->monthGroupExpression($startExpr);
 
         $rows = Membership::query()
             ->selectRaw("$groupExpr as ym, COUNT(*) as c")
-            ->where('created_at', '>=', now()->subMonths($months - 1)->startOfMonth())
-            ->groupBy('ym')
+            ->whereRaw("$startExpr >= ?", [now()->subMonths($months - 1)->startOfMonth()->toDateString()])
+            ->groupByRaw($groupExpr)
             ->pluck('c', 'ym')
             ->all();
 
@@ -249,6 +252,28 @@ class DashboardController extends Controller
             : "DATE_FORMAT({$column}, '%Y-%m')";
     }
 
+    private function membershipStartDateExpression(): string
+    {
+        if (DB::getDriverName() === 'sqlite') {
+            return "date(COALESCE(coverage_starts_on, billing_subscription_created_at, created_at))";
+        }
+
+        return 'COALESCE(coverage_starts_on, DATE(billing_subscription_created_at), DATE(created_at))';
+    }
+
+    private function membershipActivityTimestamp(Membership $membership): \Illuminate\Support\Carbon
+    {
+        if ($membership->coverage_starts_on !== null) {
+            return $membership->coverage_starts_on->copy()->startOfDay();
+        }
+
+        if ($membership->billing_subscription_created_at !== null) {
+            return $membership->billing_subscription_created_at->copy()->startOfDay();
+        }
+
+        return $membership->created_at->copy();
+    }
+
     /**
      * @return Collection<int, array{kind: string, title: string, detail: string, meta: ?string, at: \Illuminate\Support\Carbon|\DateTimeInterface}>
      */
@@ -270,7 +295,7 @@ class DashboardController extends Controller
                     'title' => $membership->membership_number,
                     'detail' => $membership->plan?->name ?? 'Membership created',
                     'meta' => $memberName ?: null,
-                    'at' => $membership->created_at,
+                    'at' => $this->membershipActivityTimestamp($membership),
                 ];
             });
 

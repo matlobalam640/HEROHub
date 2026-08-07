@@ -82,7 +82,7 @@
                 <div class="dashboard-card-header flex items-center justify-between gap-3">
                     <div>
                         <div class="dashboard-card-header__title">Membership growth</div>
-                        <div class="dashboard-card-header__sub">New memberships per month · last 12 months</div>
+                        <div class="dashboard-card-header__sub">New memberships per month · last 12 months (by coverage start)</div>
                     </div>
                     <span class="hidden rounded-full bg-[color:var(--hero-primary-soft)] px-3 py-1 text-xs font-semibold text-[color:var(--hero-primary)] sm:inline">
                         {{ number_format($stats['memberships_new_month']) }} this month
