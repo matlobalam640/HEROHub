@@ -1,21 +1,21 @@
 <x-portal-layout>
     <div class="space-y-6">
-        <div class="rounded-2xl border border-red-100 bg-gradient-to-r from-red-50/90 to-amber-50/80 px-5 py-4 shadow-sm ring-1 ring-red-100/80">
+        <div class="hero-dispatch-hero">
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <div class="text-xs font-semibold uppercase tracking-wide text-red-800/90">Dispatch · Emergency verification</div>
-                    <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">Coverage verification</h1>
-                    <p class="mt-1 max-w-3xl text-sm text-slate-700">Search the live membership database for instant confirmation of coverage during emergencies. Results reflect current plan and status in this system.</p>
+                    <div class="hero-dispatch-hero__eyebrow">Dispatch · Emergency verification</div>
+                    <h1 class="hero-dispatch-hero__title">Coverage verification</h1>
+                    <p class="hero-dispatch-hero__lead">Search the live membership database for instant confirmation of coverage during emergencies. Results reflect current plan and status in this system.</p>
                 </div>
                 <div class="hidden shrink-0 sm:block" aria-hidden="true">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white/90 text-xl text-red-600 shadow-sm ring-1 ring-red-100">
-                        <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+                    <span class="hero-dispatch-hero__icon">
+                        <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
                     </span>
                 </div>
             </div>
         </div>
 
-        <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
+        <div class="hero-portal-panel overflow-hidden">
             <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                 <div class="text-sm font-semibold text-slate-900">Member lookup</div>
                 <p class="mt-1 text-xs text-slate-600">Search by <strong>member name</strong> (given, family, or full name), <strong>membership ID</strong>, <strong>phone</strong>, <strong>company name</strong>, or a <strong>household / family member</strong> (spouse, child, visitor) on the plan.</p>
@@ -40,9 +40,9 @@
                 </form>
 
                 @if (! $hasSearched)
-                    <div class="mt-6 rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-5 text-sm text-slate-700">
-                        <p class="font-medium text-slate-900">Enter a search term to load results</p>
-                        <p class="mt-1">For fastest verification, use the membership number from the ID card, or the account holder’s phone number. You can also find a plan by searching a dependent’s name.</p>
+                    <div class="hero-dispatch-empty mt-6">
+                        <p class="font-semibold text-[color:var(--hero-primary)]">Enter a search term to load results</p>
+                        <p class="mt-1 text-slate-600">For fastest verification, use the membership number from the ID card, or the account holder’s phone number. You can also find a plan by searching a dependent’s name.</p>
                     </div>
                 @else
                     <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200/80">
@@ -68,7 +68,7 @@
                                         $plan = $membership->plan;
                                         $status = $membership->status;
                                         $statusClass = match ($status) {
-                                            'active' => 'bg-[color:var(--hero-accent-gold-soft)] text-[color:var(--hero-primary)] ring-[color:var(--hero-accent-gold-ring)]',
+                                            'active' => 'bg-[color:var(--hero-primary)] text-white ring-[color:var(--hero-primary)]',
                                             'inactive' => 'bg-[color:var(--hero-secondary-soft)] text-[color:var(--hero-secondary-hover)] ring-[color:var(--hero-secondary-ring)]',
                                             'expired' => 'bg-slate-100 text-slate-700 ring-slate-500/15',
                                             'cancelled' => 'bg-[color:var(--hero-secondary-soft)] text-[color:var(--hero-secondary-hover)] ring-[color:var(--hero-secondary-ring)]',

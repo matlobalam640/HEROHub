@@ -1347,6 +1347,39 @@
     transform: translateY(-1px);
   }
 
+  .hero-dispatch-hero {
+    @apply overflow-hidden rounded-2xl px-5 py-5 shadow-sm sm:px-6 sm:py-6;
+    background: var(--gradient-brand);
+    border-bottom: 3px solid var(--hero-gold-500);
+    box-shadow: 0 16px 40px -24px rgba(20, 29, 53, 0.55);
+  }
+
+  .hero-dispatch-hero__eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--hero-accent-gold)];
+  }
+
+  .hero-dispatch-hero__title {
+    @apply font-display mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl;
+  }
+
+  .hero-dispatch-hero__lead {
+    @apply mt-2 max-w-3xl text-sm leading-relaxed text-white/80;
+  }
+
+  .hero-dispatch-hero__icon {
+    @apply inline-flex h-12 w-12 items-center justify-center rounded-2xl text-lg;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--hero-accent-gold);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+
+  .hero-dispatch-empty {
+    @apply rounded-xl border px-4 py-5 text-sm;
+    border-color: rgba(20, 29, 53, 0.1);
+    background: linear-gradient(180deg, #ffffff 0%, var(--hero-primary-soft) 100%);
+    box-shadow: inset 3px 0 0 var(--hero-gold-500);
+  }
+
   .hero-topbar-icon-btn {
     @apply inline-flex h-10 min-h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-600 shadow-sm backdrop-blur-sm;
     transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
