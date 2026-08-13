@@ -366,6 +366,17 @@
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Partners</span>
                         </a>
                     </li>
+                    @if(auth()->user()->hasRole('admin'))
+                    <li class="sidebar-menu-item">
+                        <a href="{{ route('admin.migration.index') }}"
+                           class="sidebar-link group {{ request()->routeIs('admin.migration.*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('admin.migration.*')) aria-current="page" data-nav-active @endif
+                           title="Import memberships from CSV">
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-file-import fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Migration</span>
+                        </a>
+                    </li>
+                    @endif
                     <li class="sidebar-menu-item">
                         <a href="{{ route('portal.coming-soon', ['page' => 'settings']) }}"
                            class="sidebar-link group {{ $portalPage === 'settings' ? 'sidebar-link-active' : '' }}"

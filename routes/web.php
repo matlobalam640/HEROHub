@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\MembershipImportController;
 use App\Http\Controllers\Admin\PlanManageController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Business\BillingController;
@@ -171,6 +172,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/users/{user}', [UserManagementController::class, 'destroy'])
         ->middleware(['verified', 'role:admin'])
         ->name('admin.users.destroy');
+
+    Route::middleware(['verified', 'role:admin'])->prefix('admin/migration')->name('admin.migration.')->group(function () {
+        Route::get('/', [MembershipImportController::class, 'index'])->name('index');
+        Route::get('/template.csv', [MembershipImportController::class, 'template'])->name('template');
+        Route::post('/preview', [MembershipImportController::class, 'preview'])->name('preview');
+        Route::post('/import', [MembershipImportController::class, 'import'])->name('import');
+        Route::delete('/preview', [MembershipImportController::class, 'reset'])->name('reset');
+    });
 
     Route::get('/portal/memberships/{membership}', [StaffMembershipController::class, 'show'])
         ->middleware(['verified', 'role:admin|dispatch'])
