@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Services\HeroPortal\HeroPortalWebhookService;
+use App\Services\HeroPortal\HeroPortalWebhookService;
 use App\Http\Services\UsaPayments\SubscriptionService;
 use App\Http\Services\ZohoApi\ZohoService;
 use App\Models\PaymentsLog;
@@ -77,6 +77,7 @@ class SubscriptionController extends Controller
                 'first_name',
                 'last_name',
                 'email',
+                'company',
                 'phone',
                 'street',
                 'city',

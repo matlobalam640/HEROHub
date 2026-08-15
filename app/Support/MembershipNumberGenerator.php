@@ -35,6 +35,34 @@ class MembershipNumberGenerator
         return $candidate;
     }
 
+    /**
+     * Reserve the next sequential walk-in office enrollment number for the given year.
+     */
+    public function nextWalkInNumber(?int $year = null): string
+    {
+        $year = $year ?? (int) date('Y');
+        $prefix = 'HERO-WLK-'.$year.'-';
+
+        if ($this->lastWalkInSequence === null) {
+            $latest = Membership::query()
+                ->where('membership_number', 'like', $prefix.'%')
+                ->orderByDesc('membership_number')
+                ->value('membership_number');
+
+            $this->lastWalkInSequence = 0;
+            if (is_string($latest) && preg_match('/-(\d{6})$/', $latest, $matches)) {
+                $this->lastWalkInSequence = (int) $matches[1];
+            }
+        }
+
+        do {
+            $this->lastWalkInSequence++;
+            $candidate = $prefix.str_pad((string) $this->lastWalkInSequence, 6, '0', STR_PAD_LEFT);
+        } while (Membership::query()->where('membership_number', $candidate)->exists());
+
+        return $candidate;
+    }
+
     public function normalizeProvided(?string $value): ?string
     {
         if ($value === null) {
@@ -47,4 +75,6 @@ class MembershipNumberGenerator
     }
 
     private ?int $lastReservedSequence = null;
+
+    private ?int $lastWalkInSequence = null;
 }

@@ -100,7 +100,11 @@
 
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
                 <h2 class="text-sm font-semibold text-slate-900">Upload employee list (CSV)</h2>
-                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>. Optional: <span class="font-mono">date_of_birth</span> (or <span class="font-mono">dob</span>), <span class="font-mono">email</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span> or <span class="font-mono">plan_id</span>. Set a <strong>default plan</strong> under Company billing if rows omit plan.</p>
+                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>. Optional: <span class="font-mono">date_of_birth</span>, <span class="font-mono">email</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span>, <span class="font-mono">membership_number</span> (auto-generates <span class="font-mono">HERO-IMP-{{ date('Y') }}-XXXXXX</span> when blank). Set a <strong>default plan</strong> under Company billing if rows omit plan.</p>
+                <a href="{{ route('business.employees.import-template') }}" class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-hero-primary hover:underline">
+                    <i class="fa-solid fa-download" aria-hidden="true"></i>
+                    Download sample CSV
+                </a>
                 <form method="POST" action="{{ route('business.employees.import') }}" enctype="multipart/form-data" class="mt-4 space-y-3">
                     @csrf
                     <input type="file" name="file" accept=".csv,.txt" required class="block w-full text-sm text-slate-600">

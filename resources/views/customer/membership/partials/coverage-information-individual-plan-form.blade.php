@@ -17,7 +17,7 @@
     <div class="coverage-vip-form-column">
         <header class="coverage-vip-title-bar coverage-individual-plan-header">
             <h1 class="coverage-vip-title">{{ $formTitle }}</h1>
-            <p class="coverage-individual-plan-intro">{{ \App\Support\CoverageFormTranslations::t('individual_plan_intro') }}</p>
+            <p class="coverage-individual-plan-intro">{{ \App\Support\CoverageFormTranslations::en('individual_plan_intro') }}</p>
         </header>
 
         <form method="POST" action="{{ route('customer.membership.coverage.update') }}" class="coverage-vip-form">
@@ -25,7 +25,7 @@
             @method('PUT')
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('personal_information') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('personal_information') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-1">
                     @include('customer.membership.partials.coverage-form-name-fields', ['prefix' => ''])
                     <div class="coverage-vip-grid coverage-vip-grid-2">
@@ -58,14 +58,14 @@
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="primary_care_provider" class="mb-1" />
-                        <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::t('primary_care_provider_prompt') }}</p>
+                        <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::en('primary_care_provider_prompt') }}</p>
                         <textarea name="primary_care_provider" rows="3" required class="{{ $inputClass }}">{{ old('primary_care_provider', $profile?->primary_care_provider) }}</textarea>
                     </div>
                 </div>
             </section>
 
             <section class="coverage-vip-section coverage-individual-emergency-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('emergency_contact') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('emergency_contact') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="first_name" class="mb-1" />
@@ -88,11 +88,11 @@
                         <div class="coverage-vip-question-options">
                             <label class="coverage-vip-radio">
                                 <input type="radio" name="emergency_contact_gender" value="male" @checked(old('emergency_contact_gender', $profile?->emergency_contact_gender) === 'male')>
-                                <span>{{ \App\Support\CoverageFormTranslations::t('gender_male') }}</span>
+                                <span>{{ \App\Support\CoverageFormTranslations::en('gender_male') }}</span>
                             </label>
                             <label class="coverage-vip-radio">
                                 <input type="radio" name="emergency_contact_gender" value="female" @checked(old('emergency_contact_gender', $profile?->emergency_contact_gender) === 'female')>
-                                <span>{{ \App\Support\CoverageFormTranslations::t('gender_female') }}</span>
+                                <span>{{ \App\Support\CoverageFormTranslations::en('gender_female') }}</span>
                             </label>
                         </div>
                     </div>
@@ -100,18 +100,18 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('insurance_section') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('insurance_section') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="health_plan_provider" class="mb-1" />
-                        <input type="text" name="health_plan_provider" required value="{{ old('health_plan_provider', $profile?->health_plan_provider) }}" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::t('select') }}">
+                        <input type="text" name="health_plan_provider" required value="{{ old('health_plan_provider', $profile?->health_plan_provider) }}" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::en('select') }}">
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="health_insurer" class="mb-1" />
-                        <input type="text" name="health_insurer" required value="{{ old('health_insurer', $profile?->health_insurer) }}" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::t('select') }}">
+                        <input type="text" name="health_insurer" required value="{{ old('health_insurer', $profile?->health_insurer) }}" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::en('select') }}">
                     </div>
                 </div>
-                <p class="coverage-vip-help coverage-individual-insurance-note">{{ \App\Support\CoverageFormTranslations::t('insurance_record_notice') }}</p>
+                <p class="coverage-vip-help coverage-individual-insurance-note">{{ \App\Support\CoverageFormTranslations::en('insurance_record_notice') }}</p>
             </section>
 
             @include('customer.membership.partials.coverage-individual-health-questionnaire', [
@@ -120,10 +120,10 @@
             ])
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('medical_section') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('medical_section') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-1">
                     <div>
-                        <p class="coverage-vip-checklist-title">{{ \App\Support\CoverageFormTranslations::t('medical_checklist') }}</p>
+                        <p class="coverage-vip-checklist-title">{{ \App\Support\CoverageFormTranslations::en('medical_checklist') }}</p>
                         <div class="coverage-vip-checklist">
                             @foreach ($individualMedicalConditions as $flag => $labels)
                                 <label class="coverage-vip-check">
@@ -135,13 +135,13 @@
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="other_medical" class="mb-1" />
-                        <textarea name="other_medical_info" rows="4" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::t('notes_placeholder') }}">{{ old('other_medical_info', $profile?->other_medical_info) }}</textarea>
+                        <textarea name="other_medical_info" rows="4" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::en('notes_placeholder') }}">{{ old('other_medical_info', $profile?->other_medical_info) }}</textarea>
                     </div>
                     <div class="coverage-vip-grid coverage-vip-grid-2">
                         <div>
                             <x-coverage-bilingual-label key="allergies" class="mb-1" />
                             <input type="text" name="allergies" value="{{ old('allergies', $profile?->allergies) }}" class="{{ $inputClass }}"
-                                   placeholder="{{ \App\Support\CoverageFormTranslations::t('allergies_placeholder') }}">
+                                   placeholder="{{ \App\Support\CoverageFormTranslations::en('allergies_placeholder') }}">
                         </div>
                         <div>
                             <x-coverage-bilingual-label key="chronic_conditions" class="mb-1" />
@@ -152,19 +152,19 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('terms_section') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('terms_section') }}</h2>
                 <div class="coverage-vip-terms-box">
                     @include('customer.membership.partials.coverage-terms-content')
                 </div>
                 <label class="coverage-vip-check coverage-vip-check-block">
                     <input type="checkbox" name="terms_accepted" value="1" required @checked(old('terms_accepted') || $profile?->terms_accepted_at)>
-                    <span>{{ \App\Support\CoverageFormTranslations::t('terms_accept') }}</span>
+                    <span>{{ \App\Support\CoverageFormTranslations::en('terms_accept') }}</span>
                 </label>
             </section>
 
             <div class="coverage-vip-submit-wrap">
                 <button type="submit" class="coverage-vip-submit">
-                    {{ \App\Support\CoverageFormTranslations::t('submit') }}
+                    {{ \App\Support\CoverageFormTranslations::en('submit') }}
                 </button>
             </div>
         </form>

@@ -2,9 +2,9 @@
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     <div class="lg:col-span-2 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-        <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
-            <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::t('primary_member') }}</h2>
-            <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::t('membership_number') }} {{ $membership->membership_number }}</p>
+        <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+            <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('primary_member') }}</h2>
+            <p class="mt-1 text-xs text-slate-500">{{ \App\Support\CoverageFormTranslations::en('membership_number') }} {{ $membership->membership_number }}</p>
         </div>
         <div class="p-6 text-slate-900">
             <form method="POST" action="{{ route('customer.membership.coverage.update') }}" class="space-y-4">
@@ -36,10 +36,10 @@
                     <div>
                         <x-coverage-bilingual-label key="gender" />
                         <select name="gender" required class="{{ $inputClass }}">
-                            <option value="">{{ \App\Support\CoverageFormTranslations::t('select') }}</option>
+                            <option value="">{{ \App\Support\CoverageFormTranslations::en('select') }}</option>
                             @foreach ($genderOptionKeys as $value => $labelKey)
                                 <option value="{{ $value }}" @selected(old('gender', $primary?->gender) === $value)>
-                                    {{ \App\Support\CoverageFormTranslations::t($labelKey) }}
+                                    {{ \App\Support\CoverageFormTranslations::en($labelKey) }}
                                 </option>
                             @endforeach
                         </select>
@@ -70,7 +70,7 @@
 
                 <div class="pt-2">
                     <button type="submit" class="inline-flex rounded-lg bg-hero-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-hero-primary-hover">
-                        {{ \App\Support\CoverageFormTranslations::t('save_continue') }}
+                        {{ \App\Support\CoverageFormTranslations::en('save_continue') }}
                     </button>
                 </div>
             </form>
@@ -79,8 +79,8 @@
 
     <div class="space-y-6">
         <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-            <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
-                <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::t('coverage_type') }}</h2>
+            <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
+                <h2 class="text-sm font-semibold text-slate-900">{{ \App\Support\CoverageFormTranslations::en('coverage_type') }}</h2>
             </div>
             <div class="p-6 text-sm text-slate-700">
                 <p class="font-medium text-slate-900">{{ $membership->plan?->name ?? '—' }}</p>
@@ -89,13 +89,13 @@
 
         @if ($missingFields !== [])
             <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                <p class="font-semibold">{{ \App\Support\CoverageFormTranslations::t('reminder') }}</p>
-                <p class="mt-1">{{ \App\Support\CoverageFormTranslations::t('reminder_body') }}</p>
+                <p class="font-semibold">{{ \App\Support\CoverageFormTranslations::en('reminder') }}</p>
+                <p class="mt-1">{{ \App\Support\CoverageFormTranslations::en('reminder_body') }}</p>
             </div>
         @else
             <div class="rounded-2xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-900">
-                <p class="font-semibold">{{ \App\Support\CoverageFormTranslations::t('profile_complete') }}</p>
-                <p class="mt-1">{{ \App\Support\CoverageFormTranslations::t('profile_complete_body') }}</p>
+                <p class="font-semibold">{{ \App\Support\CoverageFormTranslations::en('profile_complete') }}</p>
+                <p class="mt-1">{{ \App\Support\CoverageFormTranslations::en('profile_complete_body') }}</p>
             </div>
         @endif
     </div>

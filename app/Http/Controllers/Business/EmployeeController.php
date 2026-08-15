@@ -8,9 +8,11 @@ use App\Models\Member;
 use App\Models\Membership;
 use App\Models\Plan;
 use App\Services\CompanyBillingService;
+use App\Services\CompanyEmployeeCsvImportService;
+use App\Support\MembershipNumberGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -19,7 +21,9 @@ class EmployeeController extends Controller
     use ResolvesBusinessCompany;
 
     public function __construct(
-        private CompanyBillingService $billingService
+        private CompanyBillingService $billingService,
+        private CompanyEmployeeCsvImportService $employeeImportService,
+        private MembershipNumberGenerator $membershipNumberGenerator,
     ) {}
 
     public function index(Request $request): View|RedirectResponse
@@ -80,7 +84,7 @@ class EmployeeController extends Controller
         ]);
 
         $membership = Membership::create([
-            'membership_number' => 'HERO-CO-'.strtoupper(Str::random(10)),
+            'membership_number' => $this->membershipNumberGenerator->nextImportNumber(),
             'plan_id' => (int) $validated['plan_id'],
             'account_user_id' => null,
             'company_id' => $company->id,
@@ -89,6 +93,7 @@ class EmployeeController extends Controller
             'coverage_ends_on' => now()->addYear(),
             'auto_renew' => true,
             'status' => 'active',
+            'billing_provider' => 'manual',
         ]);
 
         Member::create([
@@ -157,6 +162,18 @@ class EmployeeController extends Controller
         return back()->with('status', 'Coverage status updated.');
     }
 
+    public function importTemplate(): Response
+    {
+        abort_unless(auth()->user()?->hasRole('business'), 403);
+
+        $filename = 'herohub-employee-import-template.csv';
+
+        return response($this->employeeImportService->sampleCsvContents(), 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
+    }
+
     public function import(Request $request): RedirectResponse
     {
         $company = $this->currentCompany($request);
@@ -168,127 +185,20 @@ class EmployeeController extends Controller
             'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
         ]);
 
-        $defaultPlanId = $company->default_plan_id;
-        abort_unless($defaultPlanId, 422, 'Set a default enrollment plan under Company billing before importing.');
+        $result = $this->employeeImportService->importForCompany(
+            $company,
+            (string) $request->file('file')->getRealPath()
+        );
 
-        $path = $request->file('file')->getRealPath();
-        $handle = fopen($path, 'r');
-        if ($handle === false) {
-            return back()->withErrors(['file' => 'Could not read the file.']);
+        if ($result['added'] === 0 && $result['skipped'] === 0 && $result['messages'] !== []) {
+            return back()->withErrors(['file' => implode(' ', $result['messages'])]);
         }
 
-        $header = fgetcsv($handle);
-        if ($header === false) {
-            fclose($handle);
+        $status = "Import finished: {$result['added']} employees added, {$result['skipped']} rows skipped.";
 
-            return back()->withErrors(['file' => 'The CSV is empty.']);
-        }
-
-        $header = array_map(fn ($h) => strtolower(trim((string) $h)), $header);
-        $map = array_flip($header);
-        foreach (['first_name', 'last_name'] as $required) {
-            if (! isset($map[$required])) {
-                fclose($handle);
-
-                return back()->withErrors(['file' => "CSV must include a \"{$required}\" column."]);
-            }
-        }
-
-        $added = 0;
-        $skipped = 0;
-
-        while (($row = fgetcsv($handle)) !== false) {
-            $first = trim((string) ($row[$map['first_name']] ?? ''));
-            $last = trim((string) ($row[$map['last_name']] ?? ''));
-            if ($first === '' || $last === '') {
-                $skipped++;
-
-                continue;
-            }
-
-            $email = isset($map['email']) ? trim((string) ($row[$map['email']] ?? '')) : '';
-            $phone = isset($map['phone']) ? trim((string) ($row[$map['phone']] ?? '')) : '';
-            $dobRaw = null;
-            if (isset($map['date_of_birth'])) {
-                $dobRaw = trim((string) ($row[$map['date_of_birth']] ?? ''));
-            } elseif (isset($map['dob'])) {
-                $dobRaw = trim((string) ($row[$map['dob']] ?? ''));
-            }
-            $dob = $this->normalizeDate($dobRaw);
-            $planId = $defaultPlanId;
-            if (isset($map['plan_id']) && $row[$map['plan_id']] !== '' && $row[$map['plan_id']] !== null) {
-                $planId = (int) $row[$map['plan_id']];
-            } elseif (isset($map['plan_code']) && trim((string) ($row[$map['plan_code']] ?? '')) !== '') {
-                $code = trim((string) $row[$map['plan_code']]);
-                $p = Plan::query()->where('code', $code)->first();
-                if ($p) {
-                    $planId = $p->id;
-                }
-            }
-
-            if (! Plan::query()->whereKey($planId)->exists()) {
-                $skipped++;
-
-                continue;
-            }
-
-            $membership = Membership::create([
-                'membership_number' => 'HERO-CO-'.strtoupper(Str::random(10)),
-                'plan_id' => $planId,
-                'account_user_id' => null,
-                'company_id' => $company->id,
-                'partner_id' => null,
-                'coverage_starts_on' => now(),
-                'coverage_ends_on' => now()->addYear(),
-                'auto_renew' => true,
-                'status' => 'active',
-            ]);
-
-            Member::create([
-                'membership_id' => $membership->id,
-                'is_primary' => true,
-                'first_name' => $first,
-                'last_name' => $last,
-                'date_of_birth' => $dob,
-                'phone' => $phone !== '' ? $phone : null,
-                'email' => $email !== '' ? $email : null,
-                'qr_token' => (string) Str::uuid(),
-            ]);
-
-            $added++;
-        }
-
-        fclose($handle);
-
-        $this->billingService->recalculate($company);
-
-        return redirect()->route('business.employees.index')->with('status', "Import finished: {$added} employees added, {$skipped} rows skipped.");
-    }
-
-    private function normalizeDate(?string $value): ?string
-    {
-        if ($value === null || trim($value) === '') {
-            return null;
-        }
-
-        $value = trim($value);
-        $formats = ['Y-m-d', 'm/d/Y', 'd/m/Y', 'm-d-Y', 'd-m-Y'];
-
-        foreach ($formats as $format) {
-            try {
-                $parsed = Carbon::createFromFormat($format, $value);
-                if ($parsed !== false) {
-                    return $parsed->toDateString();
-                }
-            } catch (\Throwable) {
-                // Try next format.
-            }
-        }
-
-        try {
-            return Carbon::parse($value)->toDateString();
-        } catch (\Throwable) {
-            return null;
-        }
+        return redirect()
+            ->route('business.employees.index')
+            ->with('status', $status)
+            ->with('employee_import_messages', $result['messages']);
     }
 }

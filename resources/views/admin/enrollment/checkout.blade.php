@@ -1,19 +1,9 @@
-@php
-    $cancelRoute = $purpose === 'plan_change'
-        ? route('customer.membership.plan')
-        : route('customer.membership');
-    $headline = $purpose === 'plan_change' ? 'Plan change checkout' : 'Membership renewal';
-    $subtitle = $purpose === 'plan_change'
-        ? 'Review your new plan and pay securely with USA Payments.'
-        : 'Renew your membership and pay securely with USA Payments.';
-@endphp
-
 <x-portal-layout>
     <div class="w-full max-w-none space-y-6">
         <div>
-            @include('customer.membership.partials.portal-eyebrow')
-            <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ $headline }}</h1>
-            <p class="mt-1 text-sm text-slate-600">{{ $subtitle }}</p>
+            <div class="text-sm font-medium text-hero-primary">Admin · Office walk-in</div>
+            <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">Collect payment</h1>
+            <p class="mt-1 text-sm text-slate-600">Charge the member's card to activate membership <span class="font-mono">{{ $membership->membership_number }}</span>.</p>
         </div>
 
         @if ($errors->any())
@@ -33,11 +23,9 @@
                     <div class="text-xs text-slate-500">Visa, MasterCard, Discover, American Express, and more</div>
                 </div>
                 <div class="p-6 text-slate-900">
-                    <form id="usa-payments-form" method="POST" action="{{ route('customer.membership.usa-payments.submit') }}" class="space-y-4">
+                    <form id="usa-payments-form" method="POST" action="{{ route('admin.enrollment.checkout.submit') }}" class="space-y-4">
                         @csrf
-                        @if ($token)
-                            <input type="hidden" name="token" value="{{ $token }}">
-                        @endif
+                        <input type="hidden" name="token" value="{{ $token }}">
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
@@ -123,7 +111,7 @@
                                     class="rounded-lg bg-hero-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-hero-primary-hover">
                                 Pay ${{ number_format($amounts['total'], 2) }}
                             </button>
-                            <a href="{{ $cancelRoute }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-400">
+                            <a href="{{ route('admin.enrollment.index') }}" class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-400">
                                 Cancel
                             </a>
                         </div>
@@ -134,9 +122,7 @@
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
                 <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                     <div class="text-sm font-semibold text-slate-900">Order summary</div>
-                    @if ($purpose === 'plan_change')
-                        <div class="text-xs text-slate-500">Current: {{ $membership->plan?->name ?? '—' }}</div>
-                    @endif
+                    <div class="text-xs text-slate-500">Pending until payment succeeds</div>
                 </div>
                 <div class="space-y-3 p-6 text-sm text-slate-700">
                     <div class="flex justify-between gap-3">
@@ -155,12 +141,9 @@
                         <span>Total</span>
                         <span class="tabular-nums text-hero-primary">${{ number_format($amounts['total'], 2) }}</span>
                     </div>
-                    @if ($membership->coverage_ends_on)
-                        <p class="border-t border-slate-100 pt-4 text-xs text-slate-500">
-                            Current coverage ends {{ $membership->coverage_ends_on->format('M j, Y') }}.
-                            After payment, coverage will extend from that date (or today if expired).
-                        </p>
-                    @endif
+                    <p class="border-t border-slate-100 pt-4 text-xs text-slate-500">
+                        Membership # <span class="font-mono">{{ $membership->membership_number }}</span> will activate when payment is approved.
+                    </p>
                 </div>
             </div>
         </div>

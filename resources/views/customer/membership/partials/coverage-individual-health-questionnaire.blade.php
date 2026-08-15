@@ -1,5 +1,5 @@
 <section class="coverage-vip-section">
-    <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('health_questionnaire_section') }}</h2>
+    <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('health_questionnaire_section') }}</h2>
     <div class="coverage-vip-questionnaire">
         @foreach ($individualHealthQuestionnaire as $key => $labels)
             <div>

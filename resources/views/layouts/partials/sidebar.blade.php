@@ -351,9 +351,9 @@
                         </div>
                     </li>
                     <li class="sidebar-menu-item">
-                        <a href="{{ route('portal.coming-soon', ['page' => 'companies']) }}"
-                           class="sidebar-link group {{ $portalPage === 'companies' ? 'sidebar-link-active' : '' }}"
-                           @if($portalPage === 'companies') aria-current="page" data-nav-active @endif>
+                        <a href="{{ route('admin.companies.index') }}"
+                           class="sidebar-link group {{ request()->routeIs('admin.companies.*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('admin.companies.*')) aria-current="page" data-nav-active @endif>
                             <span class="sidebar-icon shrink-0"><i class="fa-solid fa-building-columns fa-fw" aria-hidden="true"></i></span>
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Companies</span>
                         </a>
@@ -366,6 +366,17 @@
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Partners</span>
                         </a>
                     </li>
+                    @if(auth()->user()->hasAnyRole(['admin', 'dispatch']))
+                    <li class="sidebar-menu-item">
+                        <a href="{{ route('admin.enrollment.index') }}"
+                           class="sidebar-link group {{ request()->routeIs('admin.enrollment.*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('admin.enrollment.*')) aria-current="page" data-nav-active @endif
+                           title="Enroll office walk-in members">
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-id-card fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Walk-in enroll</span>
+                        </a>
+                    </li>
+                    @endif
                     @if(auth()->user()->hasRole('admin'))
                     <li class="sidebar-menu-item">
                         <a href="{{ route('admin.migration.index') }}"

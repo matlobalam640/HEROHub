@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\MembershipImportController;
+use App\Http\Controllers\Admin\WalkInEnrollmentController;
 use App\Http\Controllers\Admin\PlanManageController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Business\BillingController;
@@ -140,6 +142,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/current-company', [BusinessPortalController::class, 'switchCompany'])->name('company.switch');
 
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::get('/employees/import-template.csv', [EmployeeController::class, 'importTemplate'])->name('employees.import-template');
         Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
         Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
         Route::delete('/employees/{membership}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
@@ -179,6 +182,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/preview', [MembershipImportController::class, 'preview'])->name('preview');
         Route::post('/import', [MembershipImportController::class, 'import'])->name('import');
         Route::delete('/preview', [MembershipImportController::class, 'reset'])->name('reset');
+    });
+
+    Route::middleware(['verified', 'role:admin'])->prefix('admin/companies')->name('admin.companies.')->group(function () {
+        Route::get('/', [CompanyController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['verified', 'role:admin|dispatch'])->prefix('admin/enrollment')->name('admin.enrollment.')->group(function () {
+        Route::get('/', [WalkInEnrollmentController::class, 'index'])->name('index');
+        Route::post('/', [WalkInEnrollmentController::class, 'store'])->name('store');
+        Route::get('/checkout/{token}', [WalkInEnrollmentController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout', [WalkInEnrollmentController::class, 'submitCheckout'])->name('checkout.submit');
     });
 
     Route::get('/portal/memberships/{membership}', [StaffMembershipController::class, 'show'])

@@ -78,6 +78,22 @@ return [
             'yearly' => 'HR-03CY',
             'monthly' => 'HR-03CM-5',
         ],
+
+        // Small business / corporate (gateway plan_id matches portal code)
+        'SMB_TEAM' => ['monthly' => 'SMB_TEAM', 'yearly' => 'SMB_TEAM'],
+        'ENTERPRISE' => ['monthly' => 'ENTERPRISE', 'yearly' => 'ENTERPRISE'],
+        'HB-01' => ['yearly' => 'HB-01'],
+        'HB-02' => ['yearly' => 'HB-02'],
+        'HB-03A' => ['yearly' => 'HB-03A'],
+        'HB-03B' => ['yearly' => 'HB-03B'],
+        'HB-04A' => ['yearly' => 'HB-04A'],
+        'HB-04B' => ['yearly' => 'HB-04B'],
+        'HC-01' => ['yearly' => 'HC-01'],
+        'HC-02' => ['yearly' => 'HC-02'],
+        'HC-03A' => ['yearly' => 'HC-03A'],
+        'HC-03B' => ['yearly' => 'HC-03B'],
+        'HC-04A' => ['yearly' => 'HC-04A'],
+        'HC-04B' => ['yearly' => 'HC-04B'],
     ],
 
     'gateway_plans' => [
@@ -127,6 +143,20 @@ return [
         'HR-03CM-6' => 'HR-03C',
         'HR-03CY-5' => 'HR-03C',
         'HR-03CY-6' => 'HR-03C',
+        'SMB_TEAM' => 'SMB_TEAM',
+        'ENTERPRISE' => 'ENTERPRISE',
+        'HB-01' => 'HB-01',
+        'HB-02' => 'HB-02',
+        'HB-03A' => 'HB-03A',
+        'HB-03B' => 'HB-03B',
+        'HB-04A' => 'HB-04A',
+        'HB-04B' => 'HB-04B',
+        'HC-01' => 'HC-01',
+        'HC-02' => 'HC-02',
+        'HC-03A' => 'HC-03A',
+        'HC-03B' => 'HC-03B',
+        'HC-04A' => 'HC-04A',
+        'HC-04B' => 'HC-04B',
     ],
 
 ];

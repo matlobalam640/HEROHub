@@ -24,7 +24,7 @@
 
         <div class="grid gap-6 lg:grid-cols-2">
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
+                <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                     <div class="text-sm font-semibold text-slate-900">Current billing</div>
                     <div class="text-xs text-slate-500">Membership {{ $membership->membership_number }}</div>
                 </div>
@@ -54,7 +54,7 @@
 
             @if ($canUpdateCardOnline)
                 <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-                    <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
+                    <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                         <div class="text-sm font-semibold text-slate-900">Update card on file</div>
                         <div class="text-xs text-slate-500">Securely updates your USA Payments recurring subscription</div>
                     </div>
@@ -88,7 +88,7 @@
         </div>
 
         <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-md shadow-slate-200/50 ring-1 ring-slate-100">
-            <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
+            <div class="hero-panel-header border-b border-slate-100 bg-gradient-to-r from-slate-50 to-[color:var(--dashboard-gold-soft)] px-6 py-4">
                 <div class="text-sm font-semibold text-slate-900">Billing metadata</div>
                 <div class="text-xs text-slate-500">For staff-managed or legacy billing references</div>
             </div>

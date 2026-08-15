@@ -14,7 +14,7 @@
                 @include('customer.membership.partials.portal-eyebrow')
                 <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">{{ $formTitle }}</h1>
                 @unless ($usesFamilyForm)
-                    <p class="mt-2 text-sm text-slate-600">{{ \App\Support\CoverageFormTranslations::t('individual_intro') }}</p>
+                    <p class="mt-2 text-sm text-slate-600">{{ \App\Support\CoverageFormTranslations::en('individual_intro') }}</p>
                 @endunless
             </div>
         @endunless

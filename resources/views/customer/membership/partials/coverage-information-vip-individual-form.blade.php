@@ -18,7 +18,7 @@
     <div class="coverage-vip-form-column">
         <header class="coverage-vip-title-bar">
             <h1 class="coverage-vip-title">{{ $formTitle }}</h1>
-            <p class="coverage-vip-subtitle">{{ \App\Support\CoverageFormTranslations::t('membership_number') }} {{ $membership->membership_number }}</p>
+            <p class="coverage-vip-subtitle">{{ \App\Support\CoverageFormTranslations::en('membership_number') }} {{ $membership->membership_number }}</p>
         </header>
 
         <form method="POST" action="{{ route('customer.membership.coverage.update') }}" enctype="multipart/form-data" class="coverage-vip-form">
@@ -26,7 +26,7 @@
             @method('PUT')
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('personal_information') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('personal_information') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     @include('customer.membership.partials.coverage-form-name-fields', ['prefix' => ''])
                     <div>
@@ -50,7 +50,7 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('identification') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('identification') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="nationality" class="mb-1" />
@@ -59,7 +59,7 @@
                     <div>
                         <x-coverage-bilingual-label key="resident_status" class="mb-1" />
                         <select name="resident_status" required class="{{ $inputClass }}">
-                            <option value="">{{ \App\Support\CoverageFormTranslations::t('select') }}</option>
+                            <option value="">{{ \App\Support\CoverageFormTranslations::en('select') }}</option>
                             @foreach ($residentStatusOptions as $value => $label)
                                 <option value="{{ $value }}" @selected(old('resident_status', $profile?->resident_status) === $value)>{{ $label }}</option>
                             @endforeach
@@ -83,15 +83,15 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('physical_metrics') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('physical_metrics') }}</h2>
                 <div class="coverage-vip-unit-toggle">
                     <label class="coverage-vip-radio">
                         <input type="radio" name="measurement_unit" value="metric" @checked($measurementUnit === 'metric') required>
-                        <span>{{ \App\Support\CoverageFormTranslations::t('unit_metric') }}</span>
+                        <span>{{ \App\Support\CoverageFormTranslations::en('unit_metric') }}</span>
                     </label>
                     <label class="coverage-vip-radio">
                         <input type="radio" name="measurement_unit" value="imperial" @checked($measurementUnit === 'imperial') required>
-                        <span>{{ \App\Support\CoverageFormTranslations::t('unit_imperial') }}</span>
+                        <span>{{ \App\Support\CoverageFormTranslations::en('unit_imperial') }}</span>
                     </label>
                 </div>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
@@ -111,35 +111,35 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('full_address') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('full_address') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-1">
                     @include('customer.membership.partials.coverage-form-address-fields', ['prefix' => ''])
                 </div>
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('photo_id') }} &amp; {{ \App\Support\CoverageFormTranslations::t('passport') }}</h2>
-                <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::t('file_upload_help') }}</p>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('photo_id') }} &amp; {{ \App\Support\CoverageFormTranslations::en('passport') }}</h2>
+                <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::en('file_upload_help') }}</p>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="photo_id" class="mb-1" />
                         <input type="file" name="photo_id" accept=".jpg,.jpeg,.png,.pdf" @if(! $profile?->photo_id_path) required @endif class="{{ $inputClass }}">
                         @if ($profile?->photo_id_path)
-                            <p class="coverage-vip-file-note">{{ \App\Support\CoverageFormTranslations::t('file_on_file') }}</p>
+                            <p class="coverage-vip-file-note">{{ \App\Support\CoverageFormTranslations::en('file_on_file') }}</p>
                         @endif
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="passport" class="mb-1" />
                         <input type="file" name="passport" accept=".jpg,.jpeg,.png,.pdf" @if(! $profile?->passport_path) required @endif class="{{ $inputClass }}">
                         @if ($profile?->passport_path)
-                            <p class="coverage-vip-file-note">{{ \App\Support\CoverageFormTranslations::t('file_on_file') }}</p>
+                            <p class="coverage-vip-file-note">{{ \App\Support\CoverageFormTranslations::en('file_on_file') }}</p>
                         @endif
                     </div>
                 </div>
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('emergency_contact') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('emergency_contact') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-3">
                     <div>
                         <x-coverage-bilingual-label key="first_name" class="mb-1" />
@@ -157,8 +157,8 @@
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('insurance_section') }}</h2>
-                <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::t('insurance_section_help') }}</p>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('insurance_section') }}</h2>
+                <p class="coverage-vip-help">{{ \App\Support\CoverageFormTranslations::en('insurance_section_help') }}</p>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="health_plan_name" class="mb-1" />
@@ -201,12 +201,12 @@
             ])
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('medical_section') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('medical_section') }}</h2>
                 <div class="coverage-vip-grid coverage-vip-grid-2">
                     <div>
                         <x-coverage-bilingual-label key="blood_type" class="mb-1" />
                         <select name="blood_type" required class="{{ $inputClass }}">
-                            <option value="">{{ \App\Support\CoverageFormTranslations::t('select') }}</option>
+                            <option value="">{{ \App\Support\CoverageFormTranslations::en('select') }}</option>
                             @foreach ($bloodTypeOptions as $value => $label)
                                 <option value="{{ $value }}" @selected(old('blood_type', $profile?->blood_type) === $value)>{{ $label }}</option>
                             @endforeach
@@ -215,7 +215,7 @@
                     <div>
                         <x-coverage-bilingual-label key="allergies" class="mb-1" />
                         <input type="text" name="allergies" required value="{{ old('allergies', $profile?->allergies) }}" class="{{ $inputClass }}"
-                               placeholder="{{ \App\Support\CoverageFormTranslations::t('allergies_placeholder') }}">
+                               placeholder="{{ \App\Support\CoverageFormTranslations::en('allergies_placeholder') }}">
                     </div>
                 </div>
                 <div class="coverage-vip-grid coverage-vip-grid-1 mt-4">
@@ -224,7 +224,7 @@
                         <textarea name="chronic_conditions" rows="3" class="{{ $inputClass }}">{{ old('chronic_conditions', $profile?->chronic_conditions) }}</textarea>
                     </div>
                     <div>
-                        <p class="coverage-vip-checklist-title">{{ \App\Support\CoverageFormTranslations::t('medical_checklist') }}</p>
+                        <p class="coverage-vip-checklist-title">{{ \App\Support\CoverageFormTranslations::en('medical_checklist') }}</p>
                         <div class="coverage-vip-checklist">
                             @foreach ($medicalConditionFlags as $flag => $labels)
                                 <label class="coverage-vip-check">
@@ -236,25 +236,25 @@
                     </div>
                     <div>
                         <x-coverage-bilingual-label key="other_medical" class="mb-1" />
-                        <textarea name="other_medical_info" rows="4" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::t('notes_placeholder') }}">{{ old('other_medical_info', $profile?->other_medical_info) }}</textarea>
+                        <textarea name="other_medical_info" rows="4" class="{{ $inputClass }}" placeholder="{{ \App\Support\CoverageFormTranslations::en('notes_placeholder') }}">{{ old('other_medical_info', $profile?->other_medical_info) }}</textarea>
                     </div>
                 </div>
             </section>
 
             <section class="coverage-vip-section">
-                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::t('terms_section') }}</h2>
+                <h2 class="coverage-vip-section-title">{{ \App\Support\CoverageFormTranslations::en('terms_section') }}</h2>
                 <div class="coverage-vip-terms-box">
                     @include('customer.membership.partials.coverage-terms-content')
                 </div>
                 <label class="coverage-vip-check coverage-vip-check-block">
                     <input type="checkbox" name="terms_accepted" value="1" required @checked(old('terms_accepted') || $profile?->terms_accepted_at)>
-                    <span>{{ \App\Support\CoverageFormTranslations::t('terms_accept') }}</span>
+                    <span>{{ \App\Support\CoverageFormTranslations::en('terms_accept') }}</span>
                 </label>
             </section>
 
             <div class="coverage-vip-submit-wrap">
                 <button type="submit" class="coverage-vip-submit">
-                    {{ \App\Support\CoverageFormTranslations::t('submit') }}
+                    {{ \App\Support\CoverageFormTranslations::en('submit') }}
                 </button>
             </div>
         </form>

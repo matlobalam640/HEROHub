@@ -45,6 +45,16 @@ class Plan extends Model
         return $this->hasMany(Membership::class);
     }
 
+    public function isBusinessCategory(): bool
+    {
+        return in_array($this->category ?? '', ['business', 'corporate'], true);
+    }
+
+    public function isRetailCategory(): bool
+    {
+        return ($this->category ?? '') === 'retail';
+    }
+
     /**
      * USD amount for Stripe Checkout (plan change), or null if Stripe cannot charge this interval.
      * Only USD plans are supported for this path.

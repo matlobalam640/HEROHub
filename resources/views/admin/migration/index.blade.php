@@ -36,10 +36,14 @@
                 <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                     <div class="text-sm font-semibold text-slate-900">Import summary</div>
                 </div>
-                <div class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="grid gap-4 p-6 sm:grid-cols-2 lg:grid-cols-5">
                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Users created</div>
                         <div class="mt-1 text-2xl font-bold text-slate-900">{{ $importResult['created_users'] ?? 0 }}</div>
+                    </div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Companies created</div>
+                        <div class="mt-1 text-2xl font-bold text-slate-900">{{ $importResult['created_companies'] ?? 0 }}</div>
                     </div>
                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                         <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Memberships created</div>
@@ -72,8 +76,10 @@
                     <div class="text-sm font-semibold text-slate-900">1. Download template</div>
                 </div>
                 <div class="space-y-4 p-6 text-sm text-slate-700">
-                    <p>Use the sample CSV with the exact column headers the importer expects. Required columns: <strong>email, first_name, last_name, plan_code</strong>.</p>
+                    <p>Use the sample CSV with the exact column headers the importer expects. Required columns: <strong>record_type, first_name, last_name, plan_code</strong>.</p>
+                    <p>Set <strong>record_type</strong> to <span class="font-mono">b2c</span> (individual customer), <span class="font-mono">b2b_company</span> (creates company + HR owner), or <span class="font-mono">b2b_employee</span> (employee under a company). Email is required for <span class="font-mono">b2c</span> and <span class="font-mono">b2b_company</span>; <strong>company_name</strong> is required for both business types.</p>
                     <p>Leave <strong>membership_number</strong> blank to auto-generate <span class="font-mono">HERO-IMP-{{ date('Y') }}-000001</span> style IDs. Provide a value only when preserving a legacy membership ID.</p>
+                    <p>B2B companies appear under <a href="{{ route('admin.companies.index') }}" class="font-semibold text-hero-primary hover:underline">Companies</a>. HR users can import employees from the company portal using the same employee CSV layout.</p>
                     <a href="{{ route('admin.migration.template') }}"
                        class="inline-flex items-center gap-2 rounded-xl bg-hero-primary px-4 py-2.5 text-sm font-semibold text-white shadow-hero-cta hover:bg-hero-primary-hover">
                         <i class="fa-solid fa-download" aria-hidden="true"></i>
@@ -143,8 +149,10 @@
                         <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                             <tr>
                                 <th class="px-4 py-3">Line</th>
+                                <th class="px-4 py-3">Type</th>
                                 <th class="px-4 py-3">Email</th>
                                 <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Company</th>
                                 <th class="px-4 py-3">Plan</th>
                                 <th class="px-4 py-3">Membership #</th>
                                 <th class="px-4 py-3">Status</th>
@@ -162,8 +170,10 @@
                                 @endphp
                                 <tr>
                                     <td class="px-4 py-3 font-mono text-xs">{{ $row['line'] }}</td>
-                                    <td class="px-4 py-3">{{ $row['email'] }}</td>
+                                    <td class="px-4 py-3 font-mono text-xs">{{ $row['record_type'] }}</td>
+                                    <td class="px-4 py-3">{{ $row['email'] ?: '—' }}</td>
                                     <td class="px-4 py-3">{{ $row['first_name'] }} {{ $row['last_name'] }}</td>
+                                    <td class="px-4 py-3">{{ $row['company_name'] ?: '—' }}</td>
                                     <td class="px-4 py-3 font-mono text-xs">{{ $row['plan_code'] }}</td>
                                     <td class="px-4 py-3 font-mono text-xs">{{ $row['resolved_membership_number'] ?: 'auto' }}</td>
                                     <td class="px-4 py-3">{{ $row['resolved_status'] }}</td>
@@ -210,10 +220,12 @@
                 <div class="text-sm font-semibold text-slate-900">Duplicate rules</div>
             </div>
             <ul class="list-disc space-y-2 p-6 pl-10 text-sm text-slate-700">
-                <li>Duplicate <strong>email</strong> in the same file is rejected.</li>
+                <li><strong>b2c</strong> — creates a customer account and individual membership (retail plans only).</li>
+                <li><strong>b2b_company</strong> — creates a company record and HR portal owner (business/corporate plans).</li>
+                <li><strong>b2b_employee</strong> — creates an employee membership under an existing company (import company rows first).</li>
+                <li>Duplicate <strong>email</strong> in the same file is rejected for b2c and b2b_company rows.</li>
                 <li>Duplicate <strong>membership_number</strong> in the same file is rejected.</li>
-                <li>Rows with an existing <strong>billing_subscription_id</strong> (AWS gateway) are skipped.</li>
-                <li>Existing portal email links to the same user account; a new membership is created unless blocked by errors.</li>
+                <li>Rows with an existing <strong>billing_subscription_id</strong> (AWS gateway) are skipped for b2c imports.</li>
             </ul>
         </div>
     </div>
