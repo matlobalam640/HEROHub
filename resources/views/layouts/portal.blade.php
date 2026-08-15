@@ -68,6 +68,9 @@
                     { label: 'My Membership', url: '{{ route('customer.membership') }}' },
                     { label: 'Customers', url: '{{ route('portal.coming-soon', ['page' => 'customers']) }}' },
                     { label: 'Coverage Verification', url: '{{ route('dispatch.verification') }}' },
+                    @if(auth()->user()->hasAnyRole(['admin', 'dispatch']))
+                    { label: 'Walk-in member', url: '{{ route('admin.enrollment.index') }}' },
+                    @endif
                     { label: 'Memberships', url: '{{ route('portal.coming-soon', ['page' => 'memberships']) }}' },
                     { label: 'Retail Membership Plans', url: '{{ route('portal.plans.retail') }}' },
                     { label: 'Small Business Plans', url: '{{ route('portal.plans.small-business') }}' },

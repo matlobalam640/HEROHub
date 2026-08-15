@@ -1,7 +1,7 @@
 <x-portal-layout>
     <div class="w-full max-w-none space-y-6">
         <div>
-            <div class="text-sm font-medium text-hero-primary">Admin · Office walk-in</div>
+            <div class="text-sm font-medium text-hero-primary">Dispatch · Walk-in member</div>
             <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">Collect payment</h1>
             <p class="mt-1 text-sm text-slate-600">Charge the member's card to activate membership <span class="font-mono">{{ $membership->membership_number }}</span>.</p>
         </div>

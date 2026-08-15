@@ -3,7 +3,7 @@
         <div class="hero-dispatch-hero">
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <div class="hero-dispatch-hero__eyebrow">Admin · Office walk-in</div>
+                    <div class="hero-dispatch-hero__eyebrow">Dispatch · Walk-in member</div>
                     <h1 class="hero-dispatch-hero__title">Enroll walk-in member</h1>
                     <p class="hero-dispatch-hero__lead">Add members who visit the office in person. Collect payment with USA Payments on this device, or activate immediately for cash/check/comp memberships.</p>
                 </div>
