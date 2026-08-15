@@ -226,6 +226,7 @@
                 <li>Duplicate <strong>email</strong> in the same file is rejected for b2c and b2b_company rows.</li>
                 <li>Duplicate <strong>membership_number</strong> in the same file is rejected.</li>
                 <li>Rows with an existing <strong>billing_subscription_id</strong> (AWS gateway) are skipped for b2c imports.</li>
+                <li><strong>B2B</strong> (<span class="font-mono">b2b_company</span>, <span class="font-mono">b2b_employee</span>) is CSV-only — not synced from AWS. <strong>Walk-in enroll</strong> is retail (B2C) only.</li>
             </ul>
         </div>
     </div>

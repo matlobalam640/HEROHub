@@ -77,7 +77,6 @@ class SubscriptionController extends Controller
                 'first_name',
                 'last_name',
                 'email',
-                'company',
                 'phone',
                 'street',
                 'city',

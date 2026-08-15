@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Mail\Membership\AdminMembershipEventMail;
 use App\Mail\Membership\UserMembershipEventMail;
-use App\Models\Company;
+use App\Models\Member;
 use App\Models\Membership;
 use App\Models\Plan;
 use App\Models\User;
@@ -20,19 +20,9 @@ use Illuminate\Validation\ValidationException;
 
 class SubscriptionWebhookService
 {
-    public function __construct(
-        private readonly BusinessMembershipProvisioner $businessProvisioner = new BusinessMembershipProvisioner(),
-    ) {}
-
     /**
      * @param  array<string, mixed>  $payload
-     * @return array{
-     *     membership: Membership,
-     *     created: bool,
-     *     user: ?User,
-     *     record_type: string,
-     *     company: ?Company,
-     * }
+     * @return array{membership: Membership, created: bool, user: ?User}
      */
     public function sync(array $payload): array
     {
@@ -51,8 +41,11 @@ class SubscriptionWebhookService
             throw ValidationException::withMessages(['plan' => "No portal plan matches code {$planCode}."]);
         }
 
-        $recordType = $this->businessProvisioner->resolveRecordType($payload, $plan);
-        $this->assertRecordTypeMatchesPlan($recordType, $plan);
+        if ($plan->isBusinessCategory()) {
+            throw ValidationException::withMessages([
+                'plan' => 'Business and corporate plans must be enrolled via admin CSV migration, not AWS subscriptions.',
+            ]);
+        }
 
         $customer = $this->decodeJsonMaybe($payload['customer'] ?? null);
         $customer = is_array($customer) ? $customer : [];
@@ -64,19 +57,13 @@ class SubscriptionWebhookService
         $userCreated = false;
         $user = User::query()->where('email', $email)->first();
         if (! $user && config('heroportal.webhook_auto_create_users')) {
-            $user = $this->createPortalUser($customer, $email, $recordType !== 'b2b_employee');
+            $user = $this->createPortalUser($customer, $email);
             $userCreated = true;
         }
-        if (! $user && $recordType !== 'b2b_employee') {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'user' => 'No portal user exists for this email. Create the account first, or set HERO_WEBHOOK_AUTO_CREATE_USERS=true.',
             ]);
-        }
-
-        if ($user && $recordType === 'b2b_company') {
-            $this->businessProvisioner->ensureBusinessUser($user);
-        } elseif ($user && $recordType === 'b2c') {
-            $this->businessProvisioner->ensureCustomerUser($user);
         }
 
         $membershipNumber = $this->resolveMembershipNumber($payload, $subscriptionId);
@@ -96,99 +83,43 @@ class SubscriptionWebhookService
             $coverageEnd,
             $customer,
             $billingTimeline,
-            $billingProvider,
-            $recordType,
+            $billingProvider
         ) {
-            $company = null;
+            $customerId = (string) ($payload['customer_id'] ?? Arr::get($customer, 'customer_id') ?? '');
 
-            if ($recordType === 'b2b_company') {
-                if (! $user) {
-                    throw ValidationException::withMessages([
-                        'user' => 'An HR portal user is required for b2b_company subscriptions.',
-                    ]);
-                }
+            $membership = Membership::query()->updateOrCreate(
+                ['billing_subscription_id' => $subscriptionId],
+                [
+                    'membership_number' => $membershipNumber,
+                    'plan_id' => $plan->id,
+                    'account_user_id' => $user->id,
+                    'coverage_starts_on' => $coverageStart,
+                    'coverage_ends_on' => $coverageEnd,
+                    'auto_renew' => $this->inferAutoRenew($payload),
+                    'status' => $status,
+                    'billing_provider' => $billingProvider,
+                    'billing_customer_id' => $customerId !== '' ? $customerId : null,
+                    'billing_subscription_created_at' => $billingTimeline['billing_subscription_created_at'],
+                    'billing_next_billing_at' => $billingTimeline['billing_next_billing_at'],
+                    'billing_last_billing_at' => $billingTimeline['billing_last_billing_at'],
+                    'billing_auto_collect' => $billingTimeline['billing_auto_collect'],
+                ]
+            );
 
-                $context = $this->businessProvisioner->companyContextFromPayload($payload, $customer, $user->email);
-                $company = $this->businessProvisioner->upsertCompany($context, $plan, $user);
-                $membership = $this->businessProvisioner->syncCompanyBillingMembership(
-                    $payload,
-                    $customer,
-                    $user,
-                    $company,
-                    $plan,
-                    $subscriptionId,
-                    $membershipNumber,
-                    $status,
-                    $coverageStart,
-                    $coverageEnd,
-                    $billingTimeline,
-                    $billingProvider,
-                );
-            } elseif ($recordType === 'b2b_employee') {
-                $company = $this->businessProvisioner->resolveCompanyForEmployeePayload($payload, $customer);
-                $membership = $this->businessProvisioner->syncEmployeeMembership(
-                    $payload,
-                    $customer,
-                    $company,
-                    $plan,
-                    $subscriptionId,
-                    $membershipNumber,
-                    $status,
-                    $coverageStart,
-                    $coverageEnd,
-                    $billingTimeline,
-                    $billingProvider,
-                    $user,
-                );
-            } else {
-                if (! $user) {
-                    throw ValidationException::withMessages([
-                        'user' => 'No portal user exists for this email.',
-                    ]);
-                }
+            $created = $membership->wasRecentlyCreated;
+            $this->syncPrimaryMember($membership, $customer, $user);
 
-                $customerId = (string) ($payload['customer_id'] ?? Arr::get($customer, 'customer_id') ?? '');
-
-                $membership = Membership::query()->updateOrCreate(
-                    ['billing_subscription_id' => $subscriptionId],
-                    [
-                        'membership_number' => $membershipNumber,
-                        'plan_id' => $plan->id,
-                        'account_user_id' => $user->id,
-                        'company_id' => null,
-                        'partner_id' => null,
-                        'coverage_starts_on' => $coverageStart,
-                        'coverage_ends_on' => $coverageEnd,
-                        'auto_renew' => $this->inferAutoRenew($payload),
-                        'status' => $status,
-                        'billing_provider' => $billingProvider,
-                        'billing_customer_id' => $customerId !== '' ? $customerId : null,
-                        'billing_subscription_created_at' => $billingTimeline['billing_subscription_created_at'],
-                        'billing_next_billing_at' => $billingTimeline['billing_next_billing_at'],
-                        'billing_last_billing_at' => $billingTimeline['billing_last_billing_at'],
-                        'billing_auto_collect' => $billingTimeline['billing_auto_collect'],
-                    ]
-                );
-
-                $this->businessProvisioner->syncPrimaryMemberFromCustomer($membership, $customer, $user);
-            }
-
-            return [
-                'membership' => $membership,
-                'created' => $membership->wasRecentlyCreated,
-                'company' => $company,
-            ];
+            return ['membership' => $membership, 'created' => $created];
         });
 
-        $membership = $result['membership']->fresh(['plan', 'company']);
-        $company = $result['company'];
+        $membership = $result['membership']->fresh(['plan']);
 
-        if (config('heroportal.webhook_new_membership_mail') && $user) {
+        if (config('heroportal.webhook_new_membership_mail')) {
             $passwordResetUrl = $this->resolvePasswordResetUrlForNewUser($user, $userCreated);
             if ($result['created']) {
-                $this->notifyMembershipCreated($membership, $user, $userCreated, $passwordResetUrl, $recordType, $company);
+                $this->notifyMembershipCreated($membership, $user, $userCreated, $passwordResetUrl);
             } else {
-                $this->notifyMembershipUpdated($membership, $user, $recordType, $company);
+                $this->notifyMembershipUpdated($membership, $user);
             }
         }
 
@@ -196,67 +127,24 @@ class SubscriptionWebhookService
             'membership' => $membership,
             'created' => $result['created'],
             'user' => $user,
-            'record_type' => $recordType,
-            'company' => $company,
         ];
     }
 
-    private function assertRecordTypeMatchesPlan(string $recordType, Plan $plan): void
+    private function notifyMembershipCreated(Membership $membership, User $user, bool $userCreated, ?string $passwordResetUrl): void
     {
-        if ($recordType === 'b2c' && $plan->isBusinessCategory()) {
-            throw ValidationException::withMessages([
-                'plan' => 'Retail checkout cannot use a business/corporate plan without record_type b2b_company or b2b_employee.',
-            ]);
-        }
-
-        if (in_array($recordType, ['b2b_company', 'b2b_employee'], true) && ! $plan->isBusinessCategory()) {
-            throw ValidationException::withMessages([
-                'plan' => 'Business subscriptions must use a business or corporate portal plan.',
-            ]);
-        }
-    }
-
-    private function notifyMembershipCreated(
-        Membership $membership,
-        User $user,
-        bool $userCreated,
-        ?string $passwordResetUrl,
-        string $recordType,
-        ?Company $company,
-    ): void {
-        if ($recordType === 'b2b_company') {
-            $actionUrl = $passwordResetUrl ?: route('business.portal', [], true);
-            $actionLabel = $passwordResetUrl ? 'Create your portal password' : 'Open company portal';
-            $detailLines = [
-                'Your organization subscription is active in the HERO portal.',
-                'Company: '.($company?->name ?? '—'),
-                'Status: '.ucfirst((string) $membership->status),
-            ];
-            $headline = 'Your company subscription is now active.';
-            $subject = 'Your HERO company subscription is active';
-        } elseif ($recordType === 'b2b_employee') {
-            $actionUrl = route('customer.membership', [], true);
-            $actionLabel = 'Review coverage';
-            $detailLines = [
-                'Employee coverage was activated under '.($company?->name ?? 'your company').'.',
-                'Status: '.ucfirst((string) $membership->status),
-            ];
-            $headline = 'Your employee coverage is now active.';
-            $subject = 'Your HERO employee coverage is active';
-        } else {
-            $actionUrl = $passwordResetUrl ?: route('customer.membership', [], true);
-            $actionLabel = $passwordResetUrl ? 'Create your portal password' : 'Open My membership';
-            $detailLines = [
-                'Your membership has been activated in the HERO portal.',
-                'Status: '.ucfirst((string) $membership->status),
-            ];
-            $headline = 'Your membership is now active in the portal.';
-            $subject = 'Your HERO membership is active';
-        }
+        $membershipUrl = route('customer.membership', [], true);
+        $actionUrl = $membershipUrl;
+        $actionLabel = 'Open My membership';
+        $detailLines = [
+            'Your membership has been activated in the HERO portal.',
+            'Status: '.ucfirst((string) $membership->status),
+        ];
 
         if ($userCreated && $passwordResetUrl) {
+            $actionUrl = $passwordResetUrl;
+            $actionLabel = 'Create your portal password';
             $detailLines[] = 'A portal account was created for this email from your subscription.';
-            $detailLines[] = 'Use the button to set your password, then sign in.';
+            $detailLines[] = 'Use the button to set your password, then sign in to access your membership.';
         } elseif ($userCreated) {
             $detailLines[] = 'A portal account was created for this email. Use "Forgot password" on sign in if needed.';
         } else {
@@ -265,8 +153,8 @@ class SubscriptionWebhookService
 
         Mail::to($user->email)->queue(new UserMembershipEventMail(
             user: $user,
-            subjectLine: $subject,
-            headline: $headline,
+            subjectLine: 'Your HERO membership is active',
+            headline: 'Your membership is now active in the portal.',
             membershipNumber: $membership->membership_number,
             planName: $membership->plan?->name,
             detailLines: $detailLines,
@@ -275,69 +163,49 @@ class SubscriptionWebhookService
             footerNote: 'If you did not request this, contact HERO support immediately.',
         ));
 
-        $adminLines = [
-            'Record type: '.$recordType,
-            'Membership #: '.$membership->membership_number,
-            'Plan: '.($membership->plan?->name ?? '—'),
-            'User email: '.$user->email,
-            'Portal user newly created: '.($userCreated ? 'yes' : 'no'),
-            'Billing subscription ID: '.($membership->billing_subscription_id ?: '—'),
-        ];
-        if ($company) {
-            $adminLines[] = 'Company: '.$company->name;
-        }
-
         $this->notifyAdmins(
             subject: 'Admin alert: new membership created',
             headline: 'A new subscription created a portal membership.',
-            detailLines: $adminLines,
+            detailLines: [
+                'Membership #: '.$membership->membership_number,
+                'Plan: '.($membership->plan?->name ?? '—'),
+                'User email: '.$user->email,
+                'Portal user newly created: '.($userCreated ? 'yes' : 'no'),
+                'Billing subscription ID: '.($membership->billing_subscription_id ?: '—'),
+            ],
             membership: $membership,
         );
     }
 
-    private function notifyMembershipUpdated(
-        Membership $membership,
-        User $user,
-        string $recordType,
-        ?Company $company,
-    ): void {
-        $detailLines = [
-            'Status: '.ucfirst((string) $membership->status),
-            'Coverage start: '.($membership->coverage_starts_on?->toDateString() ?? '—'),
-            'Coverage end: '.($membership->coverage_ends_on?->toDateString() ?? '—'),
-            'Next billing date: '.($membership->billing_next_billing_at?->toDateString() ?? '—'),
-        ];
-        if ($company) {
-            $detailLines[] = 'Company: '.$company->name;
-        }
-
-        $actionUrl = $recordType === 'b2b_company'
-            ? route('business.portal', [], true)
-            : route('customer.membership', [], true);
-
+    private function notifyMembershipUpdated(Membership $membership, User $user): void
+    {
         Mail::to($user->email)->queue(new UserMembershipEventMail(
             user: $user,
             subjectLine: 'Your HERO membership was updated',
             headline: 'Your membership details were updated from billing sync.',
             membershipNumber: $membership->membership_number,
             planName: $membership->plan?->name,
-            detailLines: $detailLines,
-            actionUrl: $actionUrl,
-            actionLabel: $recordType === 'b2b_company' ? 'Open company portal' : 'Review membership',
+            detailLines: [
+                'Status: '.ucfirst((string) $membership->status),
+                'Coverage start: '.($membership->coverage_starts_on?->toDateString() ?? '—'),
+                'Coverage end: '.($membership->coverage_ends_on?->toDateString() ?? '—'),
+                'Next billing date: '.($membership->billing_next_billing_at?->toDateString() ?? '—'),
+            ],
+            actionUrl: route('customer.membership', [], true),
+            actionLabel: 'Review membership',
             footerNote: 'If these details are unexpected, contact HERO support.',
         ));
 
         $this->notifyAdmins(
             subject: 'Admin alert: membership updated',
             headline: 'A subscription update modified an existing membership.',
-            detailLines: array_merge([
-                'Record type: '.$recordType,
+            detailLines: [
                 'Membership #: '.$membership->membership_number,
                 'Plan: '.($membership->plan?->name ?? '—'),
                 'User email: '.$user->email,
                 'Status: '.ucfirst((string) $membership->status),
                 'Billing subscription ID: '.($membership->billing_subscription_id ?: '—'),
-            ], $company ? ['Company: '.$company->name] : []),
+            ],
             membership: $membership,
         );
     }
@@ -383,6 +251,38 @@ class SubscriptionWebhookService
         );
 
         return $passwordResetUrl;
+    }
+
+    private function resolvePlanCode(array $payload): ?string
+    {
+        foreach (['plan_code', 'gateway_plan_code', 'membership_plan_code', 'plan_identifier', 'product_code', 'sku'] as $key) {
+            $value = trim((string) ($payload[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        $lineItems = $this->decodeJsonMaybe($payload['line_items'] ?? null);
+        if (is_array($lineItems) && isset($lineItems[0]) && is_array($lineItems[0])) {
+            foreach (['code', 'plan_code', 'product_code', 'sku'] as $key) {
+                $value = trim((string) ($lineItems[0][$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+        }
+
+        $plan = $this->decodeJsonMaybe($payload['plan'] ?? null);
+        if (is_array($plan)) {
+            foreach (['plan_code', 'code', 'product_code', 'sku'] as $key) {
+                $value = trim((string) ($plan[$key] ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -528,7 +428,37 @@ class SubscriptionWebhookService
     /**
      * @param  array<string, mixed>  $customer
      */
-    private function createPortalUser(array $customer, string $email, bool $assignCustomerRole): User
+    private function syncPrimaryMember(Membership $membership, array $customer, User $user): void
+    {
+        $display = trim((string) (Arr::get($customer, 'display_name') ?: $user->name));
+        $parts = preg_split('/\s+/', $display, 2, PREG_SPLIT_NO_EMPTY) ?: [];
+        $first = $parts[0] ?? 'Member';
+        $last = $parts[1] ?? 'Member';
+
+        $primary = Member::query()->firstOrNew([
+            'membership_id' => $membership->id,
+            'is_primary' => true,
+        ]);
+
+        $primary->fill([
+            'first_name' => $first,
+            'last_name' => $last,
+            'email' => $user->email,
+            'phone' => trim((string) (Arr::get($customer, 'phone') ?? '')) ?: null,
+            'country' => trim((string) (Arr::get($customer, 'country') ?? '')) ?: $primary->country,
+            'city' => trim((string) (Arr::get($customer, 'city') ?? '')) ?: $primary->city,
+        ]);
+
+        if (! $primary->qr_token) {
+            $primary->qr_token = (string) Str::uuid();
+        }
+        $primary->save();
+    }
+
+    /**
+     * @param  array<string, mixed>  $customer
+     */
+    private function createPortalUser(array $customer, string $email): User
     {
         $display = trim((string) (Arr::get($customer, 'display_name') ?: $email));
         $name = $display !== '' ? $display : $email;
@@ -539,10 +469,7 @@ class SubscriptionWebhookService
             'password' => Str::password(32),
             'email_verified_at' => now(),
         ]);
-
-        if ($assignCustomerRole) {
-            $user->assignRole('customer');
-        }
+        $user->assignRole('customer');
 
         return $user;
     }

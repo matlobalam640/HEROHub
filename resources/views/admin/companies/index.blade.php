@@ -86,13 +86,12 @@
 
         <div class="hero-portal-panel overflow-hidden">
             <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
-                <div class="text-sm font-semibold text-slate-900">B2B vs B2C in migration</div>
+                <div class="text-sm font-semibold text-slate-900">How companies are added</div>
             </div>
             <ul class="list-disc space-y-2 p-6 pl-10 text-sm text-slate-700">
-                <li><strong>b2c</strong> — individual customer account + membership (<span class="font-mono">account_user_id</span> set, retail plans).</li>
-                <li><strong>b2b_company</strong> — creates the company record, HR portal owner, and default business plan.</li>
-                <li><strong>b2b_employee</strong> — employee membership under an existing company (same CSV or admin Companies list).</li>
-                <li>Company HR users can bulk-import employees from their portal using the same column layout.</li>
+                <li><strong>CSV migration</strong> — use <span class="font-mono">record_type=b2b_company</span> and <span class="font-mono">b2b_employee</span> rows under <a href="{{ route('admin.migration.index') }}" class="font-semibold text-hero-primary hover:underline">Migration</a>.</li>
+                <li><strong>Walk-in enroll</strong> — retail (B2C) members only; business accounts are not created from the office checkout flow.</li>
+                <li><strong>AWS subscriptions</strong> — sync retail memberships only; B2B is not created from the payment gateway.</li>
             </ul>
         </div>
     </div>
