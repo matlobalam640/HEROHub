@@ -68,7 +68,7 @@
                     @csrf
 
                     <div class="sm:col-span-2">
-                        <label for="plan_id" class="block text-sm font-medium text-slate-700">Plan</label>
+                        <label for="plan_id" class="block text-sm font-medium text-slate-700">Plans</label>
                         <select id="plan_id" name="plan_id" required class="mt-2 w-full rounded-xl border border-slate-200 text-sm focus:border-hero-primary focus:ring-hero-primary">
                             @foreach ($walkInPlanGroups as $category => $groupLabel)
                                 @php $groupPlans = $plans->where('category', $category); @endphp
