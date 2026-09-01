@@ -59,6 +59,29 @@
                     'business' => 'Small business',
                     'corporate' => 'Corporate',
                 ];
+                $walkInPlansByCategory = collect($walkInPlanGroups)
+                    ->keys()
+                    ->mapWithKeys(function (string $category) use ($plans) {
+                        return [
+                            $category => $plans->where('category', $category)->map(function ($plan) {
+                                $price = (float) ($plan->price ?? 0) > 0
+                                    ? '$'.number_format((float) $plan->price, 2)
+                                    : (((float) ($plan->price_monthly ?? 0) > 0)
+                                        ? '$'.number_format((float) $plan->price_monthly, 2).'/mo'
+                                        : null);
+
+                                return [
+                                    'id' => $plan->id,
+                                    'label' => $plan->name.' ('.$plan->code.')'.($price ? ' — '.$price : ''),
+                                ];
+                            })->values(),
+                        ];
+                    })
+                    ->filter(fn ($group) => $group->isNotEmpty());
+                $oldPlanId = old('plan_id');
+                $oldPlanCategory = $oldPlanId
+                    ? $plans->firstWhere('id', (int) $oldPlanId)?->category
+                    : null;
             @endphp
             <div class="hero-portal-panel overflow-hidden">
                 <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
@@ -67,27 +90,59 @@
                 <form method="POST" action="{{ route('admin.enrollment.store') }}" class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
                     @csrf
 
-                    <div class="sm:col-span-2">
-                        <label for="plan_id" class="block text-sm font-medium text-slate-700">Plans</label>
-                        <select id="plan_id" name="plan_id" required class="mt-2 w-full rounded-xl border border-slate-200 text-sm focus:border-hero-primary focus:ring-hero-primary">
-                            @foreach ($walkInPlanGroups as $category => $groupLabel)
-                                @php $groupPlans = $plans->where('category', $category); @endphp
-                                @if ($groupPlans->isNotEmpty())
-                                    <optgroup label="{{ $groupLabel }}">
-                                        @foreach ($groupPlans as $plan)
-                                            <option value="{{ $plan->id }}" @selected(old('plan_id') == $plan->id)>
-                                                {{ $plan->name }} ({{ $plan->code }})
-                                                @if ((float) ($plan->price ?? 0) > 0)
-                                                    — ${{ number_format((float) $plan->price, 2) }}
-                                                @elseif ((float) ($plan->price_monthly ?? 0) > 0)
-                                                    — ${{ number_format((float) $plan->price_monthly, 2) }}/mo
-                                                @endif
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endif
-                            @endforeach
-                        </select>
+                    <div
+                        class="sm:col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2"
+                        x-data="{
+                            plansByCategory: @js($walkInPlansByCategory),
+                            planType: @js(old('plan_category', $oldPlanCategory ?? '')),
+                            planId: @js(old('plan_id', '')),
+                            plansForType() {
+                                return this.planType ? (this.plansByCategory[this.planType] ?? []) : [];
+                            },
+                            syncPlanSelection() {
+                                const plans = this.plansForType();
+                                if (! plans.some((plan) => String(plan.id) === String(this.planId))) {
+                                    this.planId = plans.length === 1 ? String(plans[0].id) : '';
+                                }
+                            },
+                        }"
+                        x-init="syncPlanSelection()"
+                    >
+                        <div>
+                            <label for="plan_category" class="block text-sm font-medium text-slate-700">Plan type</label>
+                            <select
+                                id="plan_category"
+                                name="plan_category"
+                                x-model="planType"
+                                @change="syncPlanSelection()"
+                                required
+                                class="mt-2 w-full rounded-xl border border-slate-200 text-sm focus:border-hero-primary focus:ring-hero-primary"
+                            >
+                                <option value="">Select plan type</option>
+                                @foreach ($walkInPlanGroups as $category => $groupLabel)
+                                    @if ($walkInPlansByCategory->has($category))
+                                        <option value="{{ $category }}" @selected(old('plan_category', $oldPlanCategory) === $category)>{{ $groupLabel }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="plan_id" class="block text-sm font-medium text-slate-700">Plan</label>
+                            <select
+                                id="plan_id"
+                                name="plan_id"
+                                x-model="planId"
+                                :disabled="! planType"
+                                required
+                                class="mt-2 w-full rounded-xl border border-slate-200 text-sm focus:border-hero-primary focus:ring-hero-primary disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                            >
+                                <option value="">Select a plan</option>
+                                <template x-for="plan in plansForType()" :key="plan.id">
+                                    <option :value="plan.id" x-text="plan.label"></option>
+                                </template>
+                            </select>
+                            <p class="mt-1 text-xs text-slate-500" x-show="! planType" x-cloak>Choose a plan type first to load matching plans.</p>
+                        </div>
                     </div>
 
                     <div class="sm:col-span-2">

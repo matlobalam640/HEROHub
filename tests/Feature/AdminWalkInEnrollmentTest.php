@@ -63,8 +63,9 @@ class AdminWalkInEnrollmentTest extends TestCase
             ->get(route('admin.enrollment.index'))
             ->assertOk()
             ->assertSee('Enroll walk-in member', false)
-            ->assertSee('Small business team', false)
-            ->assertSee('Local annual', false);
+            ->assertSee('Plan type', false)
+            ->assertSee('Select plan type', false)
+            ->assertSee('Select a plan', false);
     }
 
     public function test_manual_walk_in_enrollment_accepts_small_business_plan(): void
