@@ -15,6 +15,9 @@ use Illuminate\Validation\ValidationException;
 
 class WalkInEnrollmentService
 {
+    /** @var list<string> */
+    public const WALK_IN_PLAN_CATEGORIES = ['retail', 'business', 'corporate'];
+
     public function __construct(
         private readonly MembershipNumberGenerator $membershipNumberGenerator = new MembershipNumberGenerator(),
     ) {}
@@ -32,7 +35,7 @@ class WalkInEnrollmentService
     public function createPendingRetailEnrollment(array $data): array
     {
         return DB::transaction(function () use ($data) {
-            $plan = $this->resolveRetailPlan((int) $data['plan_id']);
+            $plan = $this->resolveWalkInPlan((int) $data['plan_id']);
             $email = strtolower(trim($data['email']));
             $user = $this->resolveOrCreateCustomer($email, trim($data['first_name']), trim($data['last_name']));
 
@@ -80,7 +83,7 @@ class WalkInEnrollmentService
     public function enrollRetailWithManualPayment(array $data, string $interval = 'yearly'): Membership
     {
         return DB::transaction(function () use ($data, $interval) {
-            $plan = $this->resolveRetailPlan((int) $data['plan_id']);
+            $plan = $this->resolveWalkInPlan((int) $data['plan_id']);
             $email = strtolower(trim($data['email']));
             $user = $this->resolveOrCreateCustomer($email, trim($data['first_name']), trim($data['last_name']));
 
@@ -114,17 +117,17 @@ class WalkInEnrollmentService
         });
     }
 
-    private function resolveRetailPlan(int $planId): Plan
+    private function resolveWalkInPlan(int $planId): Plan
     {
         $plan = Plan::query()
             ->whereKey($planId)
-            ->where('category', 'retail')
+            ->whereIn('category', self::WALK_IN_PLAN_CATEGORIES)
             ->where('active', true)
             ->first();
 
         if (! $plan) {
             throw ValidationException::withMessages([
-                'plan_id' => 'Select a valid active retail plan.',
+                'plan_id' => 'Select a valid active plan.',
             ]);
         }
 

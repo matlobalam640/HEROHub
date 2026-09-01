@@ -90,7 +90,7 @@
             </div>
             <ul class="list-disc space-y-2 p-6 pl-10 text-sm text-slate-700">
                 <li><strong>CSV migration</strong> — use <span class="font-mono">record_type=b2b_company</span> and <span class="font-mono">b2b_employee</span> rows under <a href="{{ route('admin.migration.index') }}" class="font-semibold text-hero-primary hover:underline">Migration</a>.</li>
-                <li><strong>Walk-in member</strong> — retail (B2C) members only; business accounts are not created from the office checkout flow.</li>
+                <li><strong>Walk-in member</strong> — retail, small business, and corporate plans; business company accounts are still created via CSV migration.</li>
                 <li><strong>AWS subscriptions</strong> — sync retail memberships only; B2B is not created from the payment gateway.</li>
             </ul>
         </div>

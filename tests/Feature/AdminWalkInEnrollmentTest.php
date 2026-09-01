@@ -48,11 +48,56 @@ class AdminWalkInEnrollmentTest extends TestCase
         $admin = User::factory()->create();
         $admin->assignRole('admin');
         $this->createRetailPlan();
+        Plan::create([
+            'code' => 'SMB-01',
+            'name' => 'Small business team',
+            'category' => 'business',
+            'sort_order' => 1,
+            'billing_interval' => 'monthly',
+            'price_monthly' => 199.00,
+            'currency' => 'USD',
+            'active' => true,
+        ]);
 
         $this->actingAs($admin)
             ->get(route('admin.enrollment.index'))
             ->assertOk()
-            ->assertSee('Enroll walk-in member', false);
+            ->assertSee('Enroll walk-in member', false)
+            ->assertSee('Small business team', false)
+            ->assertSee('Local annual', false);
+    }
+
+    public function test_manual_walk_in_enrollment_accepts_small_business_plan(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        $plan = Plan::create([
+            'code' => 'SMB-02',
+            'name' => 'Small business annual',
+            'category' => 'business',
+            'sort_order' => 1,
+            'billing_interval' => 'yearly',
+            'price' => 2400.00,
+            'currency' => 'USD',
+            'active' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.enrollment.store'), [
+                'plan_id' => $plan->id,
+                'interval' => 'yearly',
+                'payment_method' => 'manual',
+                'first_name' => 'Biz',
+                'last_name' => 'WalkIn',
+                'email' => 'biz.walkin@example.com',
+            ])
+            ->assertRedirect(route('admin.enrollment.index'))
+            ->assertSessionHas('status');
+
+        $membership = Membership::query()->whereHas('accountUser', fn ($q) => $q->where('email', 'biz.walkin@example.com'))->first();
+        $this->assertNotNull($membership);
+        $this->assertSame($plan->id, $membership->plan_id);
+        $this->assertSame('active', $membership->status);
     }
 
     public function test_manual_walk_in_enrollment_creates_active_membership(): void

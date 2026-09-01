@@ -27,11 +27,18 @@ class WalkInEnrollmentController extends Controller
         abort_unless($request->user()?->hasAnyRole(['admin', 'dispatch']), 403);
 
         $plans = Plan::query()
-            ->where('category', 'retail')
+            ->whereIn('category', WalkInEnrollmentService::WALK_IN_PLAN_CATEGORIES)
             ->where('active', true)
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortBy(fn (Plan $plan) => sprintf(
+                '%d-%04d-%s',
+                array_search($plan->category, WalkInEnrollmentService::WALK_IN_PLAN_CATEGORIES, true) ?: 99,
+                (int) $plan->sort_order,
+                $plan->name,
+            ))
+            ->values();
 
         return view('admin.enrollment.index', [
             'plans' => $plans,
@@ -56,7 +63,7 @@ class WalkInEnrollmentController extends Controller
 
         $plan = Plan::query()
             ->whereKey($validated['plan_id'])
-            ->where('category', 'retail')
+            ->whereIn('category', WalkInEnrollmentService::WALK_IN_PLAN_CATEGORIES)
             ->where('active', true)
             ->firstOrFail();
 

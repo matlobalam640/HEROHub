@@ -50,9 +50,16 @@
 
         @if ($plans->isEmpty())
             <div class="hero-portal-panel p-6 text-sm text-amber-900">
-                No active retail plans are available. Activate retail catalog plans before enrolling walk-in members.
+                No active plans are available. Activate retail, small business, or corporate catalog plans before enrolling walk-in members.
             </div>
         @else
+            @php
+                $walkInPlanGroups = [
+                    'retail' => 'Retail',
+                    'business' => 'Small business',
+                    'corporate' => 'Corporate',
+                ];
+            @endphp
             <div class="hero-portal-panel overflow-hidden">
                 <div class="hero-panel-header border-b border-slate-100 px-6 py-4">
                     <div class="text-sm font-semibold text-slate-900">Member details</div>
@@ -61,13 +68,24 @@
                     @csrf
 
                     <div class="sm:col-span-2">
-                        <label for="plan_id" class="block text-sm font-medium text-slate-700">Retail plan</label>
+                        <label for="plan_id" class="block text-sm font-medium text-slate-700">Plan</label>
                         <select id="plan_id" name="plan_id" required class="mt-2 w-full rounded-xl border border-slate-200 text-sm focus:border-hero-primary focus:ring-hero-primary">
-                            @foreach ($plans as $plan)
-                                <option value="{{ $plan->id }}" @selected(old('plan_id') == $plan->id)>
-                                    {{ $plan->name }} ({{ $plan->code }})
-                                    @if ($plan->price !== null) — ${{ number_format((float) $plan->price, 2) }} @endif
-                                </option>
+                            @foreach ($walkInPlanGroups as $category => $groupLabel)
+                                @php $groupPlans = $plans->where('category', $category); @endphp
+                                @if ($groupPlans->isNotEmpty())
+                                    <optgroup label="{{ $groupLabel }}">
+                                        @foreach ($groupPlans as $plan)
+                                            <option value="{{ $plan->id }}" @selected(old('plan_id') == $plan->id)>
+                                                {{ $plan->name }} ({{ $plan->code }})
+                                                @if ((float) ($plan->price ?? 0) > 0)
+                                                    — ${{ number_format((float) $plan->price, 2) }}
+                                                @elseif ((float) ($plan->price_monthly ?? 0) > 0)
+                                                    — ${{ number_format((float) $plan->price_monthly, 2) }}/mo
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endif
                             @endforeach
                         </select>
                     </div>
