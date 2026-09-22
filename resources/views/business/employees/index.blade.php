@@ -4,7 +4,14 @@
             <div>
                 <div class="text-sm font-medium text-hero-primary">Business / Corporate</div>
                 <h1 class="font-display mt-1 text-2xl font-semibold tracking-tight text-slate-900">Employees &amp; coverage</h1>
-                <p class="mt-1 text-sm text-slate-600">{{ $company->name }}</p>
+                <p class="mt-1 text-sm text-slate-600">{{ $company->name }}
+                    @if ($company->seat_limit)
+                        · Seats: {{ $company->billing_cached_active_employees ?? $employees->where('status', 'active')->count() }} / {{ $company->seat_limit }}
+                        @if ($remainingSeats !== null)
+                            ({{ $remainingSeats }} remaining)
+                        @endif
+                    @endif
+                </p>
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('business.portal') }}" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm hover:border-hero-primary">← Portal</a>
@@ -82,7 +89,7 @@
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
-                    <input name="email" type="email" value="{{ old('email') }}" placeholder="Email (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
+                    <input name="email" type="email" required value="{{ old('email') }}" placeholder="Email (required for portal invite)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
                     <input name="phone" value="{{ old('phone') }}" placeholder="Phone (optional)" class="rounded-lg border-slate-300 text-sm focus:border-hero-primary focus:ring-hero-primary sm:col-span-2">
                     <div class="sm:col-span-2">
                         <label class="text-xs font-medium text-slate-600">Plan</label>
@@ -100,7 +107,7 @@
 
             <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
                 <h2 class="text-sm font-semibold text-slate-900">Upload employee list (CSV)</h2>
-                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>. Optional: <span class="font-mono">date_of_birth</span>, <span class="font-mono">email</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span>, <span class="font-mono">membership_number</span> (auto-generates <span class="font-mono">HERO-IMP-{{ date('Y') }}-XXXXXX</span> when blank). Set a <strong>default plan</strong> under Company billing if rows omit plan.</p>
+                <p class="mt-1 text-xs text-slate-500">Required columns: <span class="font-mono">first_name</span>, <span class="font-mono">last_name</span>, <span class="font-mono">email</span>. Optional: <span class="font-mono">date_of_birth</span>, <span class="font-mono">phone</span>, <span class="font-mono">plan_code</span>. Each employee with a new email receives a portal invite. Imports cannot exceed your plan seat limit@if($company->seat_limit) ({{ $company->seat_limit }})@endif.</p>
                 <a href="{{ route('business.employees.import-template') }}" class="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-hero-primary hover:underline">
                     <i class="fa-solid fa-download" aria-hidden="true"></i>
                     Download sample CSV

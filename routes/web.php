@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BusinessEnrollmentController;
 use App\Http\Controllers\Admin\CompanyController;
 use App\Http\Controllers\Admin\MembershipImportController;
 use App\Http\Controllers\Admin\WalkInEnrollmentController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Business\BillingController;
 use App\Http\Controllers\Business\CorporateEnrollmentController;
 use App\Http\Controllers\Business\EmployeeController;
+use App\Http\Controllers\Business\PlanCheckoutController as BusinessPlanCheckoutController;
 use App\Http\Controllers\Business\SmallBusinessEnrollmentController;
 use App\Http\Controllers\Business\PortalController as BusinessPortalController;
 use App\Http\Controllers\Business\VisitorController as BusinessVisitorController;
@@ -141,6 +143,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [BusinessPortalController::class, 'index'])->name('portal');
         Route::post('/current-company', [BusinessPortalController::class, 'switchCompany'])->name('company.switch');
 
+        Route::get('/plan-checkout', [BusinessPlanCheckoutController::class, 'show'])->name('plan-checkout.show');
+        Route::post('/plan-checkout', [BusinessPlanCheckoutController::class, 'store'])->name('plan-checkout.store');
+
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
         Route::get('/employees/import-template.csv', [EmployeeController::class, 'importTemplate'])->name('employees.import-template');
         Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -186,6 +191,11 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['verified', 'role:admin'])->prefix('admin/companies')->name('admin.companies.')->group(function () {
         Route::get('/', [CompanyController::class, 'index'])->name('index');
+    });
+
+    Route::middleware(['verified', 'role:admin|dispatch'])->prefix('admin/business-enrollment')->name('admin.business-enrollment.')->group(function () {
+        Route::get('/', [BusinessEnrollmentController::class, 'index'])->name('index');
+        Route::post('/', [BusinessEnrollmentController::class, 'store'])->name('store');
     });
 
     Route::middleware(['verified', 'role:admin|dispatch'])->prefix('admin/enrollment')->name('admin.enrollment.')->group(function () {

@@ -40,6 +40,15 @@
             </div>
 
             @if($company)
+                @if($company->isPendingPayment())
+                    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-slate-900">
+                        <p class="font-semibold">Activate your company plan</p>
+                        <p class="mt-1 text-sm text-slate-700">Choose a Small Business or Corporate plan and pay with USA Payments to unlock employee enrollment.</p>
+                        <a href="{{ route('business.plan-checkout.show') }}" class="mt-3 inline-flex items-center gap-2 rounded-xl bg-hero-primary px-4 py-2 text-sm font-semibold text-white hover:bg-hero-primary-hover">
+                            Select plan &amp; pay
+                        </a>
+                    </div>
+                @else
                 @unless(\App\Support\CorporateEnrollmentRequirement::isComplete($company, \App\Support\CompanyEnrollmentKind::SMALL_BUSINESS))
                     <div class="rounded-2xl border border-sky-200 bg-sky-50 p-5 text-slate-900">
                         <p class="font-semibold">{{ \App\Support\SmallBusinessFormTranslations::en('enrollment_banner_title') }}</p>
@@ -59,6 +68,7 @@
                         </a>
                     </div>
                 @endunless
+                @endif
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">

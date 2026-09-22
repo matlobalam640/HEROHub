@@ -30,6 +30,7 @@
                     <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                         <tr>
                             <th class="px-4 py-3">Company</th>
+                            <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">HR owner</th>
                             <th class="px-4 py-3">Default plan</th>
                             <th class="px-4 py-3">Employees</th>
@@ -43,6 +44,16 @@
                                     <div class="font-semibold text-slate-900">{{ $company->name }}</div>
                                     @if ($company->city || $company->country)
                                         <div class="text-xs text-slate-500">{{ collect([$company->city, $company->country])->filter()->implode(', ') }}</div>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if ($company->isPendingPayment())
+                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">Pending payment</span>
+                                    @else
+                                        <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">Active</span>
+                                    @endif
+                                    @if ($company->seat_limit)
+                                        <div class="mt-1 text-xs text-slate-500">Seats: {{ $company->seat_limit }}</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
@@ -67,8 +78,10 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-8 text-center text-slate-600">
-                                    No companies yet. Import a CSV with <span class="font-mono">record_type=b2b_company</span> rows under
+                                <td colspan="6" class="px-4 py-8 text-center text-slate-600">
+                                    No companies yet. Use
+                                    <a href="{{ route('admin.business-enrollment.index') }}" class="font-semibold text-hero-primary hover:underline">Business enroll</a>
+                                    or import CSV <span class="font-mono">b2b_company</span> rows under
                                     <a href="{{ route('admin.migration.index') }}" class="font-semibold text-hero-primary hover:underline">Migration</a>.
                                 </td>
                             </tr>
@@ -89,8 +102,9 @@
                 <div class="text-sm font-semibold text-slate-900">How companies are added</div>
             </div>
             <ul class="list-disc space-y-2 p-6 pl-10 text-sm text-slate-700">
+                <li><strong>Business enroll</strong> — create company + HR invite under <a href="{{ route('admin.business-enrollment.index') }}" class="font-semibold text-hero-primary hover:underline">Business enroll</a>; HR selects SMB/Corporate plan and pays with USA Payments.</li>
                 <li><strong>CSV migration</strong> — use <span class="font-mono">record_type=b2b_company</span> and <span class="font-mono">b2b_employee</span> rows under <a href="{{ route('admin.migration.index') }}" class="font-semibold text-hero-primary hover:underline">Migration</a>.</li>
-                <li><strong>Walk-in member</strong> — retail, small business, and corporate plans; business company accounts are still created via CSV migration.</li>
+                <li><strong>Walk-in member</strong> — individual (B2C) enrollments only.</li>
                 <li><strong>AWS subscriptions</strong> — sync retail memberships only; B2B is not created from the payment gateway.</li>
             </ul>
         </div>

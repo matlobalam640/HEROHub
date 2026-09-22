@@ -192,6 +192,14 @@
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
+                        <a href="{{ route('business.plan-checkout.show') }}"
+                           class="sidebar-link group {{ request()->routeIs('business.plan-checkout.*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('business.plan-checkout.*')) aria-current="page" data-nav-active @endif>
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-credit-card fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Plan &amp; payment</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
                         <a href="{{ route('business.employees.index') }}"
                            class="sidebar-link group {{ request()->routeIs('business.employees.*') || request()->routeIs('business.visitors.*') ? 'sidebar-link-active' : '' }}"
                            @if(request()->routeIs('business.employees.*') || request()->routeIs('business.visitors.*')) aria-current="page" data-nav-active @endif>
@@ -295,6 +303,15 @@
                            title="Enroll office walk-in members">
                             <span class="sidebar-icon shrink-0"><i class="fa-solid fa-id-card fa-fw" aria-hidden="true"></i></span>
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Walk-in member</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{{ route('admin.business-enrollment.index') }}"
+                           class="sidebar-link group {{ request()->routeIs('admin.business-enrollment.*') ? 'sidebar-link-active' : '' }}"
+                           @if(request()->routeIs('admin.business-enrollment.*')) aria-current="page" data-nav-active @endif
+                           title="Enroll a business and invite HR to the company portal">
+                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-building fa-fw" aria-hidden="true"></i></span>
+                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Business enroll</span>
                         </a>
                     </li>
                     @endif

@@ -10,10 +10,12 @@ use App\Models\Plan;
 use App\Services\CompanyBillingService;
 use App\Services\CompanyEmployeeCsvImportService;
 use App\Support\MembershipNumberGenerator;
+use App\Support\PortalInvite;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
@@ -32,6 +34,10 @@ class EmployeeController extends Controller
         if (! $company) {
             return redirect()->route('business.portal')
                 ->withErrors(['company' => 'No company is available. Contact support to link your HR account to an organization.']);
+        }
+
+        if ($company->isPendingPayment()) {
+            return redirect()->route('business.plan-checkout.show');
         }
 
         $coverage = $request->query('coverage');
@@ -54,7 +60,7 @@ class EmployeeController extends Controller
 
         $plans = Plan::query()
             ->where('active', true)
-            ->whereIn('category', ['business', 'corporate', 'retail'])
+            ->whereIn('category', ['business', 'corporate'])
             ->orderBy('category')
             ->orderBy('name')
             ->get();
@@ -64,6 +70,7 @@ class EmployeeController extends Controller
             'employees' => $employees,
             'plans' => $plans,
             'filter' => $filter,
+            'remainingSeats' => $company->remainingSeats(),
         ]);
     }
 
@@ -74,26 +81,46 @@ class EmployeeController extends Controller
             return redirect()->route('business.portal')->withErrors(['company' => 'No company selected.']);
         }
 
+        if ($company->isPendingPayment()) {
+            return redirect()->route('business.plan-checkout.show');
+        }
+
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:80'],
             'last_name' => ['required', 'string', 'max:80'],
             'date_of_birth' => ['required', 'date', 'before_or_equal:today'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'plan_id' => ['required', 'exists:plans,id'],
         ]);
 
+        if (! $company->canAddEmployees(1)) {
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'Company employee seat limit reached ('.$company->seat_limit.').']);
+        }
+
+        try {
+            [$user, $userCreated] = $this->employeeImportService->resolveOrCreateEmployeeUser(
+                strtolower(trim($validated['email'])),
+                $validated['first_name'],
+                $validated['last_name'],
+            );
+        } catch (ValidationException $e) {
+            return back()->withInput()->withErrors($e->errors());
+        }
+
         $membership = Membership::create([
             'membership_number' => $this->membershipNumberGenerator->nextImportNumber(),
             'plan_id' => (int) $validated['plan_id'],
-            'account_user_id' => null,
+            'account_user_id' => $user->id,
             'company_id' => $company->id,
             'partner_id' => null,
             'coverage_starts_on' => now(),
             'coverage_ends_on' => now()->addYear(),
             'auto_renew' => true,
             'status' => 'active',
-            'billing_provider' => 'manual',
+            'billing_provider' => 'company',
         ]);
 
         Member::create([
@@ -103,13 +130,31 @@ class EmployeeController extends Controller
             'last_name' => $validated['last_name'],
             'date_of_birth' => $validated['date_of_birth'],
             'phone' => $validated['phone'] ?? null,
-            'email' => $validated['email'] ?? null,
+            'email' => strtolower(trim($validated['email'])),
             'qr_token' => (string) Str::uuid(),
         ]);
 
+        if ($userCreated) {
+            PortalInvite::sendUserInvite(
+                user: $user,
+                subject: 'Your HERO member portal invitation',
+                headline: 'You have been enrolled by '.$company->name.'.',
+                detailLines: [
+                    'Company: '.$company->name,
+                    'Membership #: '.$membership->membership_number,
+                    'Create your password to open your member portal and view coverage.',
+                ],
+                actionUrl: PortalInvite::passwordSetupUrl($user),
+                actionLabel: 'Create your portal password',
+            );
+        }
+
         $this->billingService->recalculate($company);
 
-        return redirect()->route('business.employees.index')->with('status', 'Employee added.');
+        return redirect()->route('business.employees.index')->with(
+            'status',
+            $userCreated ? 'Employee added and portal invite sent.' : 'Employee added and linked to an existing portal account.'
+        );
     }
 
     public function destroy(Request $request, Membership $membership): RedirectResponse
@@ -181,6 +226,10 @@ class EmployeeController extends Controller
             return redirect()->route('business.portal')->withErrors(['company' => 'No company selected.']);
         }
 
+        if ($company->isPendingPayment()) {
+            return redirect()->route('business.plan-checkout.show');
+        }
+
         $request->validate([
             'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
         ]);
@@ -194,7 +243,7 @@ class EmployeeController extends Controller
             return back()->withErrors(['file' => implode(' ', $result['messages'])]);
         }
 
-        $status = "Import finished: {$result['added']} employees added, {$result['skipped']} rows skipped.";
+        $status = "Import finished: {$result['added']} employees added, {$result['invited']} invites sent, {$result['skipped']} rows skipped.";
 
         return redirect()
             ->route('business.employees.index')
