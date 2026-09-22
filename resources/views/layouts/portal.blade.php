@@ -67,15 +67,16 @@
                     { label: 'Reports', url: '{{ route('portal.coming-soon', ['page' => 'reports']) }}' },
                     { label: 'My Membership', url: '{{ route('customer.membership') }}' },
                     { label: 'Customers', url: '{{ route('portal.coming-soon', ['page' => 'customers']) }}' },
+                    { label: 'Companies', url: '{{ route('admin.companies.index') }}' },
                     { label: 'Coverage Verification', url: '{{ route('dispatch.verification') }}' },
                     @if(auth()->user()->hasAnyRole(['admin', 'dispatch']))
                     { label: 'Walk-in member', url: '{{ route('admin.enrollment.index') }}' },
+                    { label: 'Business enroll', url: '{{ route('admin.business-enrollment.index') }}' },
                     @endif
                     { label: 'Memberships', url: '{{ route('portal.coming-soon', ['page' => 'memberships']) }}' },
                     { label: 'Retail Membership Plans', url: '{{ route('portal.plans.retail') }}' },
                     { label: 'Small Business Plans', url: '{{ route('portal.plans.small-business') }}' },
                     { label: 'Corporate Plans', url: '{{ route('portal.plans.corporate') }}' },
-                    { label: 'Companies', url: '{{ route('portal.coming-soon', ['page' => 'companies']) }}' },
                     { label: 'Partners', url: '{{ route('portal.coming-soon', ['page' => 'partners']) }}' },
                     { label: 'Settings', url: '{{ route('portal.coming-soon', ['page' => 'settings']) }}' },
                     { label: 'Profile', url: '{{ route('profile.edit') }}' },

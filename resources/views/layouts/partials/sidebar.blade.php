@@ -333,13 +333,33 @@
                             <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Memberships</span>
                         </a>
                     </li>
-                    <li class="sidebar-menu-item">
-                        <a href="{{ route('portal.coming-soon', ['page' => 'customers']) }}"
-                           class="sidebar-link group {{ $portalPage === 'customers' ? 'sidebar-link-active' : '' }}"
-                           @if($portalPage === 'customers') aria-current="page" data-nav-active @endif>
-                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-users-gear fa-fw" aria-hidden="true"></i></span>
-                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Customers</span>
-                        </a>
+                    <li class="sidebar-menu-item sidebar-plans-group">
+                        <div class="space-y-1">
+                            <div
+                                class="sidebar-section-label block !mt-0.5 !pb-1 !pt-2 !normal-case !tracking-normal !text-[0.7rem] text-[color:var(--sidebar-text-strong)]"
+                                @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless
+                            >Customers</div>
+                            <ul role="list" class="sidebar-plans-nest space-y-1">
+                                <li class="sidebar-menu-item">
+                                    <a href="{{ route('portal.coming-soon', ['page' => 'customers']) }}"
+                                       class="sidebar-link group text-[0.8125rem] {{ $portalPage === 'customers' ? 'sidebar-link-active' : '' }}"
+                                       @if($portalPage === 'customers') aria-current="page" data-nav-active @endif
+                                       title="Customers">
+                                        <span class="sidebar-icon shrink-0"><i class="fa-solid fa-users-gear fa-fw" aria-hidden="true"></i></span>
+                                        <span class="min-w-0 flex-1 truncate leading-snug" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>All customers</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-menu-item">
+                                    <a href="{{ route('admin.companies.index') }}"
+                                       class="sidebar-link group text-[0.8125rem] {{ request()->routeIs('admin.companies.*') ? 'sidebar-link-active' : '' }}"
+                                       @if(request()->routeIs('admin.companies.*')) aria-current="page" data-nav-active @endif
+                                       title="Companies">
+                                        <span class="sidebar-icon shrink-0"><i class="fa-solid fa-building-columns fa-fw" aria-hidden="true"></i></span>
+                                        <span class="min-w-0 flex-1 truncate leading-snug" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Companies</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="sidebar-menu-item sidebar-plans-group">
                         <div class="space-y-1">
@@ -377,14 +397,6 @@
                                 </li>
                             </ul>
                         </div>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="{{ route('admin.companies.index') }}"
-                           class="sidebar-link group {{ request()->routeIs('admin.companies.*') ? 'sidebar-link-active' : '' }}"
-                           @if(request()->routeIs('admin.companies.*')) aria-current="page" data-nav-active @endif>
-                            <span class="sidebar-icon shrink-0"><i class="fa-solid fa-building-columns fa-fw" aria-hidden="true"></i></span>
-                            <span class="min-w-0 flex-1 truncate" @unless($mobile) x-show="!sidebarCollapsed" x-cloak @endunless>Companies</span>
-                        </a>
                     </li>
                     <li class="sidebar-menu-item">
                         <a href="{{ route('portal.coming-soon', ['page' => 'partners']) }}"
