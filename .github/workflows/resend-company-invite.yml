@@ -1,0 +1,84 @@
+name: Resend company portal invite
+
+on:
+  workflow_dispatch:
+    inputs:
+      company_name:
+        description: Company name fragment (e.g. JPG)
+        required: true
+        type: string
+      hr_email:
+        description: HR portal email to invite
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  resend:
+    name: Resend invite on Hostinger
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send fixed set-password invite
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd /home/u407096753/domains/rosybrown-anteater-512968.hostingersite.com/public_html
+            php <<'PHP'
+            <?php
+            require __DIR__ . '/vendor/autoload.php';
+            $app = require __DIR__ . '/bootstrap/app.php';
+            $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+            $email = '${{ inputs.hr_email }}';
+            $companyNeedle = '${{ inputs.company_name }}';
+
+            $company = App\Models\Company::query()
+                ->where('name', 'like', '%' . $companyNeedle . '%')
+                ->orderByDesc('id')
+                ->first();
+            $user = App\Models\User::query()->where('email', strtolower(trim($email)))->first();
+
+            if (! $company) {
+                fwrite(STDERR, "Company not found for: {$companyNeedle}\n");
+                exit(1);
+            }
+            if (! $user) {
+                fwrite(STDERR, "User not found for: {$email}\n");
+                exit(1);
+            }
+
+            echo "Company #{$company->id} {$company->name}\n";
+            echo "User #{$user->id} {$user->email}\n";
+            echo "QUEUE_CONNECTION=" . config('queue.default') . "\n";
+            echo "APP_URL=" . config('app.url') . "\n";
+
+            $setupUrl = App\Support\PortalInvite::passwordSetupUrl($user)
+                ?: route('password.request', [], true);
+
+            // Send synchronously so we do not depend on a queue worker.
+            Illuminate\Support\Facades\Mail::to($user->email)->send(new App\Mail\Membership\UserMembershipEventMail(
+                user: $user,
+                subjectLine: 'Your HERO company portal invitation',
+                headline: 'Your company portal is ready — set your password to continue.',
+                detailLines: [
+                    'Company: ' . $company->name,
+                    'Use the button below to set (or reset) your password, then sign in to the company portal.',
+                    'Next step after login: choose a Small Business or Corporate plan and pay with USA Payments to activate coverage.',
+                    'Until payment is complete, employee enrollment stays locked.',
+                ],
+                actionUrl: $setupUrl,
+                actionLabel: 'Create your portal password',
+                footerNote: 'If you did not expect this invitation, contact HERO support.',
+            ));
+
+            $company->forceFill(['invited_at' => now()])->save();
+            echo "Invite sent with set-password link.\n";
+            echo "DONE\n";
+            PHP
