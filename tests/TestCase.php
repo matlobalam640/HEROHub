@@ -14,6 +14,9 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        // CI does not run `npm run build`; avoid ViteManifestNotFoundException on every Blade response.
+        $this->withoutVite();
+
         // phpunit.xml uses sqlite :memory: so tests never touch the DB from .env.
         // Dashboard and other code expect Spatie roles to exist when those tables are present.
         if (config('database.default') === 'sqlite' && Schema::hasTable('roles')) {
