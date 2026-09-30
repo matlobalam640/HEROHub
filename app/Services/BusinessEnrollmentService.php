@@ -129,9 +129,8 @@ class BusinessEnrollmentService
 
     private function sendInvites(Company $company, User $owner, bool $ownerCreated): void
     {
-        $setupUrl = $ownerCreated
-            ? PortalInvite::passwordSetupUrl($owner)
-            : route('login', [], true);
+        // Always send a set-password link so HR can create/reset credentials from the invite.
+        $setupUrl = PortalInvite::passwordSetupUrl($owner) ?: route('password.request', [], true);
 
         PortalInvite::sendUserInvite(
             user: $owner,
@@ -139,11 +138,12 @@ class BusinessEnrollmentService
             headline: 'Your company portal is ready — set your password to continue.',
             detailLines: [
                 'Company: '.$company->name,
-                'Next step: sign in, choose a Small Business or Corporate plan, and pay with USA Payments to activate coverage.',
+                'Use the button below to set (or reset) your password, then sign in to the company portal.',
+                'Next step after login: choose a Small Business or Corporate plan and pay with USA Payments to activate coverage.',
                 'Until payment is complete, employee enrollment stays locked.',
             ],
             actionUrl: $setupUrl,
-            actionLabel: $ownerCreated ? 'Create your portal password' : 'Sign in to company portal',
+            actionLabel: 'Create your portal password',
         );
 
         PortalInvite::notifyAdmins(
@@ -155,6 +155,7 @@ class BusinessEnrollmentService
                 'Billing email: '.($company->billing_email ?: '—'),
                 'Phone: '.($company->phone ?: '—'),
                 'Status: pending payment',
+                'Portal user newly created: '.($ownerCreated ? 'yes' : 'no (existing account)'),
             ],
             actionUrl: route('admin.companies.index', [], true),
             actionLabel: 'Open companies list',
