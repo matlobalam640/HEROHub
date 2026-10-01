@@ -17,19 +17,18 @@ permissions:
 
 jobs:
   resend:
-    name: Resend invite on Hostinger
+    name: Resend invite on Lightsail
     runs-on: ubuntu-latest
     steps:
       - name: Send fixed set-password invite
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.LIGHTSAIL_SSH_HOST }}
+          username: ${{ secrets.LIGHTSAIL_SSH_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
           script: |
             set -e
-            cd /home/u407096753/domains/rosybrown-anteater-512968.hostingersite.com/public_html
+            cd /var/www/herohub
             php <<'PHP'
             <?php
             require __DIR__ . '/vendor/autoload.php';
@@ -56,13 +55,11 @@ jobs:
 
             echo "Company #{$company->id} {$company->name}\n";
             echo "User #{$user->id} {$user->email}\n";
-            echo "QUEUE_CONNECTION=" . config('queue.default') . "\n";
             echo "APP_URL=" . config('app.url') . "\n";
 
             $setupUrl = App\Support\PortalInvite::passwordSetupUrl($user)
                 ?: route('password.request', [], true);
 
-            // Send synchronously so we do not depend on a queue worker.
             Illuminate\Support\Facades\Mail::to($user->email)->send(new App\Mail\Membership\UserMembershipEventMail(
                 user: $user,
                 subjectLine: 'Your HERO company portal invitation',
