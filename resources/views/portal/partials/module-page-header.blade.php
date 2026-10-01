@@ -17,7 +17,7 @@
             <div class="flex max-w-full flex-wrap items-stretch gap-3 lg:max-w-[42%] lg:justify-end">
                 @foreach($metrics as $metric)
                     <div class="hero-portal-page-header__metric flex min-w-[6rem] flex-1 flex-col sm:flex-initial sm:min-w-[7.5rem]">
-                        <span class="text-[10px] font-semibold uppercase leading-tight tracking-wide text-slate-500">{{ $metric['label'] }}</span>
+                        <span class="text-[10px] font-semibold uppercase leading-tight tracking-wide text-slate-600">{{ $metric['label'] }}</span>
                         <span class="mt-1 text-lg font-bold tabular-nums leading-none text-[color:var(--hero-primary)]">
                             @if(is_int($metric['value']) || is_float($metric['value']))
                                 {{ number_format($metric['value']) }}

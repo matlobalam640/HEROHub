@@ -17,11 +17,11 @@
             ],
         ])
         @if($membership->accountUser)
-            <p class="text-xs text-slate-600 dark:text-slate-400">
+            <p class="text-sm text-slate-700">
                 Account holder:
-                <span class="font-medium text-slate-800 dark:text-slate-200">{{ $membership->accountUser->name }}</span>
-                <span class="text-slate-400"> · </span>
-                {{ $membership->accountUser->email }}
+                <span class="font-semibold text-[color:var(--hero-ink)]">{{ $membership->accountUser->name }}</span>
+                <span class="text-slate-500"> · </span>
+                <span class="font-medium text-slate-800">{{ $membership->accountUser->email }}</span>
             </p>
         @endif
 

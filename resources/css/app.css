@@ -7,6 +7,20 @@
 }
 
 @layer base {
+  /*
+   | Light-theme contrast: Tailwind slate-400/500/600 read too faint on HERO page backgrounds.
+   | Bump muted body/label text one step darker site-wide (dark-theme unchanged).
+   */
+  html:not(.dark-theme) .text-slate-400 {
+    color: #475569; /* slate-600 */
+  }
+  html:not(.dark-theme) .text-slate-500 {
+    color: #334155; /* slate-700 */
+  }
+  html:not(.dark-theme) .text-slate-600 {
+    color: #1e293b; /* slate-800 */
+  }
+
   :root {
     /* Hero Sentinel design system — Primary #141D35 · Secondary #CA0600 · Tertiary #DEC328 */
     --hero-primary: #141d35;
