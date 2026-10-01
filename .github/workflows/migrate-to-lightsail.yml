@@ -1,0 +1,110 @@
+name: Migrate Hostinger DB to Lightsail
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    name: Dump Hostinger DB and import on Lightsail
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y sshpass rsync mysql-client
+
+      - name: Dump Hostinger database and fetch .env
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          set -euo pipefail
+          mkdir -p migrate
+          HOST="${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}"
+          PORT="${{ secrets.SSH_PORT }}"
+          PATH_REMOTE="/home/u407096753/domains/rosybrown-anteater-512968.hostingersite.com/public_html"
+          sshpass -e scp -P "$PORT" -o StrictHostKeyChecking=no "$HOST:$PATH_REMOTE/.env" migrate/hostinger.env
+          # Parse DB_* from .env
+          DB_HOST=$(grep -E '^DB_HOST=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          DB_PORT=$(grep -E '^DB_PORT=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          DB_DATABASE=$(grep -E '^DB_DATABASE=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          DB_USERNAME=$(grep -E '^DB_USERNAME=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          DB_PASSWORD=$(grep -E '^DB_PASSWORD=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+          echo "Remote DB name: $DB_DATABASE"
+          # Dump via remote mysql client on Hostinger
+          sshpass -e ssh -p "$PORT" -o StrictHostKeyChecking=no "$HOST" \
+            "mysqldump -h '$DB_HOST' -P '${DB_PORT:-3306}' -u '$DB_USERNAME' -p'$DB_PASSWORD' '$DB_DATABASE' --single-transaction --routines --triggers" \
+            > migrate/herohub.sql
+          ls -lh migrate/herohub.sql
+          head -c 200 migrate/herohub.sql
+          echo
+
+      - name: Prepare Lightsail SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/lightsail.pem
+          chmod 600 ~/.ssh/lightsail.pem
+          ssh-keyscan -H "${{ secrets.LIGHTSAIL_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Upload dump and Hostinger env to Lightsail
+        run: |
+          scp -i ~/.ssh/lightsail.pem -o StrictHostKeyChecking=no \
+            migrate/herohub.sql migrate/hostinger.env \
+            ${{ secrets.LIGHTSAIL_SSH_USERNAME }}@${{ secrets.LIGHTSAIL_SSH_HOST }}:~/
+
+      - name: Import DB and write production .env on Lightsail
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.LIGHTSAIL_SSH_HOST }}
+          username: ${{ secrets.LIGHTSAIL_SSH_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            mysql -u herohub -p'${{ secrets.LIGHTSAIL_DB_PASSWORD }}' herohub < ~/herohub.sql
+            echo "Import row check:"
+            mysql -u herohub -p'${{ secrets.LIGHTSAIL_DB_PASSWORD }}' -N -e "SELECT COUNT(*) AS users FROM herohub.users; SELECT COUNT(*) AS companies FROM herohub.companies;"
+            # Build .env from Hostinger copy with Lightsail overrides
+            cp ~/hostinger.env /tmp/herohub.env
+            python3 - <<'PY'
+            from pathlib import Path
+            p = Path('/tmp/herohub.env')
+            text = p.read_text()
+            overrides = {
+              'APP_URL': 'https://membership.heroclientrescue.com',
+              'APP_ENV': 'production',
+              'APP_DEBUG': 'false',
+              'DB_CONNECTION': 'mysql',
+              'DB_HOST': '127.0.0.1',
+              'DB_PORT': '3306',
+              'DB_DATABASE': 'herohub',
+              'DB_USERNAME': 'herohub',
+              'DB_PASSWORD': '''${{ secrets.LIGHTSAIL_DB_PASSWORD }}''',
+              'SESSION_DOMAIN': 'membership.heroclientrescue.com',
+              'SANCTUM_STATEFUL_DOMAINS': 'membership.heroclientrescue.com',
+            }
+            lines = []
+            seen = set()
+            for line in text.splitlines():
+              if not line or line.startswith('#') or '=' not in line:
+                lines.append(line)
+                continue
+              k = line.split('=', 1)[0]
+              if k in overrides:
+                lines.append(f"{k}={overrides[k]}")
+                seen.add(k)
+              else:
+                lines.append(line)
+            for k, v in overrides.items():
+              if k not in seen:
+                lines.append(f"{k}={v}")
+            Path('/tmp/herohub.env').write_text('\n'.join(lines) + '\n')
+            PY
+            sudo mkdir -p /var/www/herohub
+            sudo mv /tmp/herohub.env /var/www/herohub/.env
+            sudo chown ubuntu:www-data /var/www/herohub/.env
+            sudo chmod 640 /var/www/herohub/.env
+            rm -f ~/herohub.sql ~/hostinger.env
+            echo "ENV_READY"
