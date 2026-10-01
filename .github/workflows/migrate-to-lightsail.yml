@@ -34,9 +34,13 @@ jobs:
           DB_USERNAME=$(grep -E '^DB_USERNAME=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
           DB_PASSWORD=$(grep -E '^DB_PASSWORD=' migrate/hostinger.env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
           echo "Remote DB name: $DB_DATABASE"
+          # Hostinger auth fails on ::1 when host is "localhost" — force IPv4 loopback.
+          if [ "$DB_HOST" = "localhost" ] || [ "$DB_HOST" = "::1" ]; then
+            DB_HOST="127.0.0.1"
+          fi
           # Dump via remote mysql client on Hostinger
           sshpass -e ssh -p "$PORT" -o StrictHostKeyChecking=no "$HOST" \
-            "mysqldump -h '$DB_HOST' -P '${DB_PORT:-3306}' -u '$DB_USERNAME' -p'$DB_PASSWORD' '$DB_DATABASE' --single-transaction --routines --triggers" \
+            "mysqldump -h '$DB_HOST' -P '${DB_PORT:-3306}' -u '$DB_USERNAME' -p'$DB_PASSWORD' '$DB_DATABASE' --protocol=TCP --single-transaction --routines --triggers" \
             > migrate/herohub.sql
           ls -lh migrate/herohub.sql
           head -c 200 migrate/herohub.sql
